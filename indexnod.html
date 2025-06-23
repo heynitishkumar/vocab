@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word Dictionary</title>
+<script>
+    window.addEventListener("message", function(event) {
+        var dictionaryFrame = document.getElementById("dictionaryFrame");
+        dictionaryFrame.src = event.data + ".html"; // Loads the requested page
+    });
+</script>
+
+</head>
+<body>
+
+<h2>Click on a word to see its meaning and synonyms:</h2>
+
+<!-- First iframe for clickable words -->
+<iframe src="wordsnod.html" width="40%" height="720px" ></iframe>
+
+<!-- Second iframe explicitly references `dictionary.html` -->
+<iframe id="dictionaryFrame" name="dictionaryFrame" src="dictionarynod.html" width="55%" height="720px"></iframe>
+
+</body>
+</html>

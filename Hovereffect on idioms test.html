@@ -1,0 +1,179 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dictionary Preview</title>
+    <style>
+ body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-wrap: wrap; /* Allows wrapping to new rows */
+    justify-content: center; /* Centers the boxes */
+    gap: 10px; /* Space between items */
+    background-color: #f4f4f4;;
+     
+}
+
+.dictionary-container {
+    display: flex;
+    flex-wrap: wrap; /* Ensures wrapping for multiple rows */
+    justify-content: center; /* Centers the boxes */
+    gap: 20px; /* Adds spacing between boxes */
+}
+
+.dictionary-box {
+    position: relative; /* Allows positioning of sticky note */
+    width: 350px;
+    min-height: 150px;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.sticky-note {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    width: auto;
+    height: auto;
+    background-color: #ffeb3b;
+    font-weight: bold;
+    text-align: center;
+    padding: 10px;
+    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
+    transform: rotate(-5deg);
+    border-radius: 5px;
+}
+
+/* First Sticky Note - Top Right */
+.sticky-top-right {
+    top: -10px;
+    right: -10px;
+}
+
+/* Second Sticky Note - Directly Below the First */
+.sticky-bottom-right {
+    top: 80px; /* Adjust this value based on desired spacing */
+    right: -10px;
+}
+
+        
+        .word {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .phonetic {
+            font-size: 18px;
+            color: gray;
+        }
+        .meaning {
+            margin-top: 10px;
+            font-size: 16px;
+        }
+        .synonyms {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #0078D4;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .synonyms a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 80px;
+            height: 30px;
+            border-radius: 30%;
+            background-color: #0078D4;
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        .synonyms a:hover {
+            background-color: #005a9e;
+        }
+        .example {
+            margin-top: 10px;
+            font-style: italic;
+            color: #555;
+        }
+
+/* Position arrow in front of the grouped elements */
+.curly-arrow {
+    position: absolute;
+    left: 50%;
+    top: 30px;
+    transform: translateX(-50%);
+    text-align: center;
+}
+
+/* Style label */
+.arrow-label {
+    font-size: 18px;
+    font-weight: bold;
+    color: red;
+    margin-top: -15px;
+}
+
+.tooltip {
+    position: relative;
+    cursor: pointer;
+    padding: 5px;
+}
+
+/* Tooltip Bubble Box */
+.tooltip::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    background: #333;
+    color: white;
+    padding: 10px;
+    font-size: 14px;
+    width: 200px; /* Fixed width for more text */
+    border-radius: 10px; /* Rounded corners */
+    white-space: normal; /* Allows wrapping */
+    opacity: 0;
+    transition: opacity 0s ease-in-out;
+    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Position Right */
+.tooltip:hover::after {
+    opacity: 0.9;
+    left: 110%; /* Moves tooltip to the right */
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* Position Left */
+.tooltip[data-position="left"]:hover::after {
+    left: auto;
+    right: 110%; /* Moves tooltip to the left */
+}
+
+
+    </style>
+</head>
+<body>
+
+<div class="dictionary-box">
+    <div class="word"><font color="Red">To be unsuccessful</font></div>
+    
+    <div class="meaning">
+        <strong>
+<li><span class="tooltip" data-tooltip="To fail or be unsuccessful and this is the thing that everyone have to face at least once in a life " data-position="left">Fall through</span></li>
+<li><span class="tooltip" data-tooltip="To suffer misfortune or failure">Come a cropper</span></li>
+<li><span class="tooltip" data-tooltip="Without success" >In vain</span></li>
+<li><span class="tooltip" data-tooltip="To fail dramatically" >Get down like a lead balloon</span></li>
+</strong>
+    </div>
+    </div>
+
+
+</body>
+</html>

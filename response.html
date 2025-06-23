@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>NIMCET Accurate Evaluator</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    #result { margin-top: 20px; font-size: 16px; }
+    .section { margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <h2>NIMCET Result Evaluator</h2>
+  <p>Upload your NIMCET result HTML file:</p>
+  <input type="file" id="fileInput" accept=".html">
+  <div id="result">Waiting for file upload...</div>
+
+  <script>
+    const markingScheme = {
+      "Mathematics": { correct: 0, wrong: 0, unattempted: 0, right: 12, wrongM: -3 },
+      "General English": { correct: 0, wrong: 0, unattempted: 0, right: 4, wrongM: -1 },
+      "Computer Awareness": { correct: 0, wrong: 0, unattempted: 0, right: 6, wrongM: -1.5 },
+      "Analytical Ability & Logical Reasoning": { correct: 0, wrong: 0, unattempted: 0, right: 6, wrongM: -1.5 }
+    };
+
+    document.getElementById("fileInput").addEventListener("change", function () {
+      const file = this.files[0];
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        evaluate(e.target.result);
+      };
+      reader.readAsText(file);
+    });
+
+    function evaluate(html) {
+      const result = html;
+      const blocks = result.split('<div class="question-pnl"');
+      let currentSection = null;
+
+      for (let block of blocks) {
+        // Detect section
+        const sectionMatch = block.match(/Section\s*:\s*<\/span>\s*<span class="bold">([^<]+)<\/span>/);
+        if (sectionMatch) {
+          const name = sectionMatch[1].trim();
+          if (markingScheme[name]) currentSection = name;
+        }
+
+        if (!currentSection || !block.includes("Chosen Option")) continue;
+
+        // Get chosen
+        const chosenMatch = block.match(/Chosen Option\s*:<\/td>\s*<td class="bold">\s*([-\d]+)\s*<\/td>/);
+        const chosen = chosenMatch ? chosenMatch[1].trim() : "--";
+
+        // Get correct
+        const correctMatch = block.match(/class="rightAns"[^>]*>\s*<img[^>]*>\s*(\d+)\./);
+        const correct = correctMatch ? correctMatch[1] : "--";
+
+        const sec = markingScheme[currentSection];
+        if (chosen === "--" || chosen === "-") {
+          sec.unattempted++;
+        } else if (chosen === correct) {
+          sec.correct++;
+        } else {
+          sec.wrong++;
+        }
+      }
+
+      // Print result
+      let total = 0;
+      let output = "";
+      for (let [sec, v] of Object.entries(markingScheme)) {
+        const score = v.correct * v.right + v.wrong * v.wrongM;
+        total += score;
+        output += `
+          <div class="section">
+            <b>${sec}</b><br>
+            ✅ Correct: ${v.correct}<br>
+            ❌ Incorrect: ${v.wrong}<br>
+            ⚪ Unattempted: ${v.unattempted}<br>
+            🎯 Score: <b>${score.toFixed(2)}</b>
+          </div><hr>`;
+      }
+      output += `<h2>🧮 Total Score: ${total.toFixed(2)}</h2>`;
+      document.getElementById("result").innerHTML = output;
+    }
+  </script>
+</body>
+</html>

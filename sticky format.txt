@@ -1,0 +1,18 @@
+<div class="dictionary-container">
+  <div class="dictionary-box">
+     <div class="word"><font color="Red">    </font></div> 
+        <div class="meaning">
+          <strong>
+            <li>
+
+
+          </strong>
+        </div>
+      <div class="sticky-note sticky-top-right">   </div> 
+ 
+
+      <div class="sticky-note sticky-bottom-right"><font color="Aqua">   </font>
+       <li>      </div>
+
+  </div>
+</div>

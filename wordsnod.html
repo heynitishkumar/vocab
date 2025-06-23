@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Words</title>
+ <script>
+    function loadDefinition(word) {
+        window.parent.postMessage(word, "*"); // Sends the selected word to the parent page
+    }
+</script>
+
+</head>
+<body>
+
+<h3>Select a word:</h3>
+<ul>
+    <li><a href="#" onclick="loadDefinition('abettor')">Abettor</a></li>
+    <li><a href="#" onclick="loadDefinition('ablaze')">Ablaze </a></li>
+<li><a href="#" onclick="loadDefinition('abnegation')">Abnegation </a></li>
+<li><a href="#" onclick="loadDefinition('abolition')">Abolition </a></li>
+<li><a href="#" onclick="loadDefinition('abortive')"> Abortive</a></li>
+<li><a href="#" onclick="loadDefinition('abruptly')">Abruptly </a></li>
+<li><a href="#" onclick="loadDefinition('absorbing')">Absorbing </a></li>
+<li><a href="#" onclick="loadDefinition('abysmal')">Abysmal</a></li>
+<li><a href="#" onclick="loadDefinition('acclaim')">Acclaim </a></li>
+<li><a href="#" onclick="loadDefinition('accoutrement')">Accoutrement </a></li>
+<li><a href="#" onclick="loadDefinition('accrue')">Accrue </a></li>
+
+</ul>
+
+</body>
+</html>

@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dictionary Preview</title>
+    <style>
+ body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-wrap: wrap; /* Allows wrapping to new rows */
+    justify-content: center; /* Centers the boxes */
+    gap: 100px; /* Space between items */
+    background-color: #f4f4f4;;
+     
+}
+
+.dictionary-container {
+    display: flex;
+    flex-wrap: wrap; /* Ensures wrapping for multiple rows */
+    justify-content: center; /* Centers the boxes */
+    gap: 20px; /* Adds spacing between boxes */
+}
+
+.dictionary-box {
+    position: relative; /* Allows positioning of sticky note */
+    width: 350px;
+    min-height: 150px;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.sticky-note {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    width: auto;
+    height: auto;
+    background-color: #ffeb3b;
+    font-weight: bold;
+    text-align: center;
+    padding: 10px;
+    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
+    transform: rotate(-5deg);
+    border-radius: 5px;
+}
+
+/* First Sticky Note - Top Right */
+.sticky-top-right {
+    top: -10px;
+    right: -10px;
+}
+
+/* Second Sticky Note - Directly Below the First */
+.sticky-bottom-right {
+    top: 80px; /* Adjust this value based on desired spacing */
+    right: -10px;
+}
+
+        
+        .word {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .phonetic {
+            font-size: 18px;
+            color: gray;
+        }
+        .meaning {
+            margin-top: 10px;
+            font-size: 16px;
+        }
+        .synonyms {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #0078D4;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .synonyms a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 80px;
+            height: 30px;
+            border-radius: 30%;
+            background-color: #0078D4;
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        .synonyms a:hover {
+            background-color: #005a9e;
+        }
+        .example {
+            margin-top: 10px;
+            font-style: italic;
+            color: #555;
+        }
+
+/* Position arrow in front of the grouped elements */
+.curly-arrow {
+    position: absolute;
+    left: 50%;
+    top: 30px;
+    transform: translateX(-50%);
+    text-align: center;
+}
+
+/* Style label */
+.arrow-label {
+    font-size: 18px;
+    font-weight: bold;
+    color: red;
+    margin-top: -15px;
+}
+
+.tooltip {
+    position: relative;
+    cursor: pointer;
+    padding: 5px;
+}
+
+/* Tooltip Bubble Box */
+.tooltip::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    background: #333;
+    color: white;
+    padding: 10px;
+    font-size: 14px;
+    width: 150px; /* Fixed width for more text */
+    border-radius: 10px; /* Rounded corners */
+    white-space: normal; /* Allows wrapping */
+    opacity: 0;
+    transition: opacity 0s ease-in-out;
+    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Position Right */
+.tooltip:hover::after {
+    opacity: 0.99;
+    left: 110%; /* Moves tooltip to the right */
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* Position Left */
+.tooltip[data-position="left"]:hover::after {
+    left: auto;
+    right: 110%; /* Moves tooltip to the left */
+}
+
+    </style>
+</head>
+<body>
+
+<div class="dictionary-box">
+    <div class="word"><font color="Red">To be unsuccessful</font></div>
+    
+    <div class="meaning">
+        <strong>
+<li><span class="tooltip" data-tooltip=" To fail" > Fall through 
+<li> <span class="tooltip" data-tooltip="suffer a defeat or disaster:" > Come a cropper
+<li><span class="tooltip" data-tooltip="without success or a result " >In vain
+<li><span class="tooltip" data-tooltip="to be poorly received or to fail miserably " >Get down like a lead balloon
+<li><span class="tooltip" data-tooltip="Fail to produce results " >End in smoking
+<li><span class="tooltip" data-tooltip=" Be totally wasted" >go down the drain
+<li><span class="tooltip" data-tooltip="Something has gone wrong or not happened as planned " >go awry
+<li><span class="tooltip" data-tooltip=" In a complete and embarrassing failure" >End in fiasco
+<li><span class="tooltip" data-tooltip="A situation or event which is much less impressive than expected " >damp squib
+<li><span class="tooltip" data-tooltip="spoil someone's plans; cause someone's downfall " >cook someone's Goose
+<li><span class="tooltip" data-tooltip="Deteriorate shockingly " >go to the dogs
+<li><span class="tooltip" data-tooltip="To be utterly vanished or lost " >go to the winds
+<li><span class="tooltip" data-tooltip="The final action or event that definitively leads to the fialure or demise of something that was already in a precarious state " >last nail in the coffin
+<li><span class="tooltip" data-tooltip="A process of returning to a place or state and then causing it to be destroyed, harmed or spoiled " >go Back and Ruin
+<li><span class="tooltip" data-tooltip=" To become out of control, start malfunctioning, or become chaotic, often in a sudden  and noticeable way" >go haywire
+
+</strong>
+    </div>
+    </div>
+
+<div class="dictionary-box">
+    <div class="word"><font color="Red">To be successful</font></div>
+    <div class="phonetic"> </div>
+    <div class="meaning">
+        <strong>
+<li><span class="tooltip" data-tooltip=" To produce positive or successful results" >Bear fruit
+<li><span class="tooltip" data-tooltip=" Do very good business" >Do a roaring trade
+<li><span class="tooltip" data-tooltip=" Sudden or short term success" >Flash in the pan
+<li><span class="tooltip" data-tooltip="to be very helpful or successful in achieving something " >Go a long way
+<li><span class="tooltip" data-tooltip=" to succeed when others thought you would not: " >Have the last laugh
+<li><span class="tooltip" data-tooltip="be increasingly successful.
+ " >Go places
+</strong>
+    </div>
+    </div>
+<div class="dictionary-container">
+<div class="dictionary-box">
+    <div class="word"><font color="Red">Difficult Task</font></div>
+    
+    <div class="meaning">
+        <strong>
+<li><span class="tooltip" data-tooltip=" To constantly pursue things that are unrealistic or unlikely to happen." data-position="left" >Chase rainbows
+<li><span class="tooltip" data-tooltip="a task requiring huge amounts of physical strength
+ " data-position="left">Herculean Task
+<li><span class="tooltip" data-tooltip="A task that is very daunting from the outset and continues to be challenging.
+ " data-position="left">Uphill task
+<li><span class="tooltip" data-tooltip=" a problem that is very difficult to solve or a person who is very difficult to understand" data-position="left" >A hard nut to crack
+<li> <span class="tooltip" data-tooltip=" to solve a difficult problem in a very direct way by doing something forceful or extreme" data-position="left">Cut the Gordian knot
+<li><span class="tooltip" data-tooltip="a dilemma or difficult circumstance from which there is no escape because of mutually conflicting or dependent conditions " data-position="left" >Catch 22
+<li><span class="tooltip" data-tooltip="a prolific source of troubles, " >Pandora's box
+<li><span class="tooltip" data-tooltip="a conclusive test of the success or value of something:
+ " >Acid Test
+<li><span class="tooltip" data-tooltip="Anything which is perpetually doing but never done; An endless job" >Penelope's web
+<li><span class="tooltip" data-tooltip="to establish yourself doing a job or creating something in an unusual way that only you or that only a small number of people do: " >Carve out a niche
+<li><span class="tooltip" data-tooltip="a troublesome or hazardous situation
+ " >Hornet's Nest
+
+
+</strong>
+    </div>
+ <div class="sticky-note sticky-top-right"><li><span class="tooltip" data-tooltip="be sold quickly and in large quantities
+ "  data-position="left">Sell like hot cake <li><span class="tooltip" data-tooltip=" over or after a long period of time; eventually:
+" data-position="left" >In the long run<li><span class="tooltip" data-tooltip=" to get married to someone or the performance of a marriage ceremony. " data-position="left" >Tie knot</div> 
+
+    <!-- Second Sticky Note (Directly Below the First) -->
+    <div class="sticky-note sticky-bottom-right">Another important note!</div>
+    </div>
+</div>
+
+
+<div class="dictionary-container">
+    <div class="dictionary-box">
+        <div class="word"><font color="Red">Very easy task</font></div>
+        <div class="meaning">
+            <strong>
+<li><span class="tooltip" data-tooltip="an absurdly or surprisingly easy task. " >A cake walk
+<li><span class="tooltip" data-tooltip=" something easily achieved." data-position="left" >A piece of cake
+<li><span class="tooltip" data-tooltip=" a position that involves minimal or no direct involvement in the actual work or activities" data-position="left" >An armchair job
+<li><span class="tooltip" data-tooltip="something that is very easy to do.  " data-position="left" >Child's play
+<li><span class="tooltip" data-tooltip="something is very easy to do or that it's effortless.  "  data-position="left"> Walk in the garden/park
+ </strong>
+        </div>
+        
+
+
+
+ <div class="sticky-note sticky-top-right">Remember this!</div> 
+
+    <!-- Second Sticky Note (Directly Below the First) -->
+    <div class="sticky-note sticky-bottom-right"><li><span class="tooltip" data-tooltip="used in reference to a possible time in the future when money will be needed.
+" data-position="left"> Rainy days<li><span class="tooltip" data-tooltip="to leave someone in a difficult situation without any help " data-position="left">High and Dry</div>
+
+    </div>
+        <!-- Add more dictionary-box elements here -->
+</div>
+
+
+<div class="dictionary-box">
+    <div class="word"><font color="Red">Foolishness</font></div>
+    
+    <div class="meaning">
+        <strong>
+<li>A nig nog
+<li><span class="tooltip" data-tooltip=" very silly or foolish." >As daft as a brush
+<li><span class="tooltip" data-tooltip="someone who is perceived as silly, stupid, or lacking intelligence " >Bird brained
+<li><span class="tooltip" data-tooltip="a born fool or idiot: " >God's ape
+<li><span class="tooltip" data-tooltip="a state of deceptive happiness based on false beliefs or illusions " > Fool's paradise
+<li><span class="tooltip" data-tooltip="unintentionally saying something inappropriate, insensitive, or hurtful " >Foot in mouth
+
+</strong>
+    </div>
+    </div>
+
+<div class="dictionary-box">
+    <div class="word"><font color="Red">Friends/Comradary</font></div>
+    
+    <div class="meaning">
+        <strong>
+<li><span class="tooltip" data-tooltip=" an intimate and trusted friend." >Alter ego
+<li><span class="tooltip" data-tooltip="a very close or intimate friend. " >Bosom friend
+<li><span class="tooltip" data-tooltip=" individuals who are friendly and supportive during pleasant times but are not reliable or present when things get difficult" >Summer friends
+<li><span class="tooltip" data-tooltip="a person whose friendship cannot be relied on in times of difficulty. " >Fair weather friends
+</strong>
+    </div>
+    </div>
+
+<div class="dictionary-container">
+<div class="dictionary-box">
+    <div class="word"><font color="Red">Enmity/Enemy</font></div> 
+    <div class="meaning">
+        <strong>
+<li><span class="tooltip" data-tooltip=" to have a disagreement or argument with someone"  data-position=" ">Cross swords
+<li><span class="tooltip" data-tooltip="(of two people) be bitterly hostile towards each other "  data-position="left">At daggers drawn
+<li><span class="tooltip" data-tooltip=" misunderstanding or having different aims from one another."  data-position="left">At cross purposes
+<li><span class="tooltip" data-tooltip=" in violent dispute or disagreement."  data-position="left">At loggerheads
+<li><span class="tooltip" data-tooltip=" in conflict or at variance."  data-position=" "> At odds
+<li><span class="tooltip" data-tooltip="strong feelings of bitterness and resentment, or a deeply unpleasant experience "  data-position="left">Gall and wormwood
+<li><span class="tooltip" data-tooltip="ill feeling. "  data-position=" ">Bad Blood
+<li><span class="tooltip" data-tooltip="to be in disagreement or contradiction with something else "  data-position="left">At variance with
+
+</strong>
+    </div>
+ <div class="sticky-note sticky-top-right"><span class="tooltip" data-tooltip=" a constant threat of danger or disaster hanging over someone's head"  data-position="left">Damocles sword</div> 
+
+    <!-- Second Sticky Note (Directly Below the First) -->
+    <div class="sticky-note sticky-bottom-right"><font color="Aqua">Blood related</font>
+<li><span class="tooltip" data-tooltip="actions done without emotion or sympathy, often used in the context of murder or other heinous crimes "  data-position="left">Cold BLood<li>Bad Blood<li><span class="tooltip" data-tooltip=" a person from a high social class or noble family"  data-position="left">Blue Blood</div>
+
+    </div>
+</div>
+
+<div class="dictionary-box">
+    <div class="word"><font color="Red">Bee related</font></div>
+    
+    <div class="meaning">
+        <strong>
+<li><span class="tooltip" data-tooltip=" a place that is very busy and crowded, filled with people who are actively working or engaged in some activity"  >Beehive
+<li><span class="tooltip" data-tooltip="to be preoccupied or obsessed with something " >A bee in one's bonnet
+
+
+</strong>
+    </div>
+    </div>
+
+<div class="dictionary-box">
+    <div class="word"><font color="Red">Bone related</font>(Quarrel)</div>
+    
+    <div class="meaning">
+        <strong>
+<li><span class="tooltip" data-tooltip="to have a grievance, complaint, or dispute with someone that you want to address or settle "  >A bone to pick
+<li><span class="tooltip" data-tooltip="a subject or issue over which there is continuing disagreement. "  >Bone of contention
+
+</strong>
+    </div>
+    </div>
+
+<div class="dictionary-box">
+    <div class="word"><font color="Red"> Axe related </font></div>
+    
+    <div class="meaning">
+        <strong>
+            <ul>
+                <div class="arrow-group">
+                    <li id="first-item"><span class="tooltip" data-tooltip="to be fired or dismissed from a job "  data-position="left ">Get the Axe</li>
+                    <li><span class="tooltip" data-tooltip="to be dismissed suddenly from a job "  data-position="left "> Get the sack</li>
+                    <li><span class="tooltip" data-tooltip=" people will be dismissed or forced to resign."  data-position="left ">Heads will roll</li>
+                    <li><span class="tooltip" data-tooltip=" "  data-position="left ">Get an apple</li>
+                    <li><span class="tooltip" data-tooltip="be dismissed from one's job. "  data-position="left ">Get the boot</li>
+                    <li id="last-item"><span class="tooltip" data-tooltip=" a notice of dismissal from employment."  data-position="left ">Pink Slip</li>
+                </div>
+                <li><span class="tooltip" data-tooltip="end a quarrel or conflict and become friendly. "  data-position=" left">Bury the hatchet</li>
+                <li><span class="tooltip" data-tooltip="forget past offences or causes of conflict and be reconciled. "  data-position="left ">Let bygones be bygones</li>
+                <li><span class="tooltip" data-tooltip="avoid interfering in a situation that is currently causing no problems but may well do so as a result of such interference. "  data-position="left ">Let sleeping dogs lie</li>
+            </ul>
+        </strong>
+    </div>
+
+  </div>
+
+<div class="dictionary-container">
+<div class="dictionary-box">
+    <div class="word"><font color="Red">Fear/Frightened  </font></div>
+    
+    <div class="meaning">
+<strong>
+<li>Chill to the heart
+<li>Cold feet
+</strong>
+    </div>
+<div class="sticky-note sticky-bottom-right"><font color="Maroon"><li>Awe Inspiring   </font>
+<br>causing you to feel great respect or admiration
+    </div></div></div>
+
+
+<div class="dictionary-container">
+<div class="dictionary-box">
+    <div class="word"><font color="Red">Resembing/Equal  </font></div>
+    <div class="meaning">
+<strong>
+<li> Chip of the old block
+<li>Dead ringer
+<li>Fit to hold a candle to 
+
+
+</strong>
+       </div>
+ <div class="sticky-note sticky-top-right"><li>Chip on one's shouler-<br><font color="Blue">Angry due to unfairness </font>   </div> 
+ 
+
+     </div>
+
+    </div>
+</div>
+
+<div class="dictionary-container">
+<div class="dictionary-box">
+    <div class="word"><font color="Red">In Trouble    </font></div> 
+    <div class="meaning">
+        <strong>
+<li>Get into a soup
+<li>Find oneself in troubled water
+<li>Come to grief
+<li>Back to the wall
+<li>In dutch 
+<li>Go/get into hot water
+<li>Be in the eye of the storm
+<li>In a fix
+<li>In a tight corner
+<li>Bear the Brunt
+
+
+</strong>
+    </div>
+ <div class="sticky-note sticky-top-right"><li>Dutch courage <li> Adam's wine/Ale</div> 
+ <div class="sticky-note sticky-bottom-right">
+ <li> Out of the woods<li> Come hell or <br>high water        </div>
+
+
+    </div>
+</div>
+
+<div class="dictionary-box">
+    <div class="word"><font color="Red">Superior/Honest  </font></div>
+    
+    <div class="meaning">
+<strong>
+<li>Above board
+<li>Above par
+<li>Cut above
+
+
+</strong>
+    </div>
+    </div>
+
+<div class="dictionary-container">
+<div class="dictionary-box">
+    <div class="word"><font color="Red">Challenge/Defeat    </font></div> 
+    <div class="meaning">
+        <strong>
+<li>Accept the gauntlet
+<li>Throw down the gauntlet
+<li>Throw in the towel
+
+
+</strong>
+    </div>
+
+ 
+
+<div class="sticky-note sticky-bottom-right"><font color="Brown"> To surrender  </font>
+<li> Yield to <li>Give in <li>Cave in     </div>
+
+    </div>
+</div>
+<div class="dictionary-container">
+<div class="dictionary-box">
+    <div class="word"><font color="Red">Clock idioms    </font></div> 
+    <div class="meaning">
+        <strong>
+<li>Against the clock
+<li>Around the clock
+<li>Burn midnight oil
+
+
+</strong>
+    </div>
+ <div class="sticky-note sticky-top-right"><li>Graveyard shift   </div> 
+ 
+
+
+    </div>
+</div>
+
+<div class="dictionary-box">
+    <div class="word"><font color="Red">To be healthy  </font></div>
+    
+    <div class="meaning">
+<strong>
+<li>Alive and kicking
+<li>Hale and Hearty
+<li>Fit as a fiddle
+
+
+</strong>
+    </div>
+    </div>
+
+<div class="dictionary-box">
+    <div class="word"><font color="Red">Surprise/Unexpected  </font></div>
+    
+    <div class="meaning">
+<strong>
+<li>All agog
+<li>Taken aback (<i>Phrasal verb</i>)
+<li>Bolt from the blue
+
+</strong>
+    </div>
+    </div>
+<div class="dictionary-container">
+<div class="dictionary-box">
+    <div class="word"><font color="Red">Related to Boat    </font></div> 
+    <div class="meaning">
+        <strong>
+<li>In the same boat 
+<li>Miss the boat
+<li>Burn one's boat
+<li>Rock the boat
+
+
+</strong>
+    </div>
+ <div class="sticky-note sticky-top-right">Burn one's bridges   </div> 
+ 
+
+<div class="sticky-note sticky-bottom-right"><li> Miss the bus     </div>
+
+    </div>
+</div>
+
+<div class="dictionary-box">
+    <div class="word"><font color="Red">Inexpert/Expert  </font></div>
+    
+    <div class="meaning">
+<strong>
+<li>All thumbs
+<li>Bull in a china shope
+<li>Class at cutting edge
+<li>Past master
+
+
+</strong>
+    </div>
+    </div>
+
+
+<div class="dictionary-box">
+    <div class="word"><font color="Red">Academic/Literary  </font></div>
+    
+    <div class="meaning">
+<strong>
+<li>Alma mater
+<li>Alumnus
+<li>Magnum opus
+<li>Dramatis Personae
+<li>Swan song
+
+
+</strong>
+    </div>
+    </div>
+<div class="dictionary-box">
+    <div class="word"><font color="Red">Subordinate/Lead role  </font></div>
+    
+    <div class="meaning">
+<strong>
+<li>Always bridesmaid, never a bride
+<li>Play second fiddle
+<li>Back burner
+<li>Backseat driver
+<li>Be in the driving seat
+
+
+</strong>
+    </div>
+    </div>
+
+
+
+<div class="dictionary-box">
+  <div class="word"><font color="Red">Eye idioms  </font></div>
+   <div class="meaning">
+     <strong>
+       <li>An eye for an eye 
+       <li>Blow for blow
+       <li>Eye opener
+       <li>To see eye to eye
+       <li>Eye wash
+       <li>Green eyed monster
+
+
+     </strong>
+   </div>
+</div>
+
+<div class="dictionary-container">
+<div class="dictionary-box">
+    <div class="word"><font color="Red">At the right time / Instantly    </font></div> 
+    <div class="meaning">
+        <strong>
+<li>Hit the nail on the head
+<li>At nick of the time 
+<li>Fullness of time
+<li>At the drop of a hat
+<li>Blink of an eye
+<li>On the spur of the moment
+<li>In a jiffy
+<li>In two shakes
+
+
+</strong>
+    </div>
+  
+
+<div class="sticky-note sticky-bottom-right">
+<li>40 winks      </div>
+
+    </div>
+</div>
+<div class="dictionary-container">
+<div class="dictionary-box">
+    <div class="word"><font color="Red">Related to book    </font></div> 
+    <div class="meaning">
+        <strong>
+<li>An open book
+<li>Bring to the books
+<li>Be in good books of
+<li>Be in bad books of 
+<li>By the book
+<li>Cook the books
+<li>Doctor the document
+
+
+</strong>
+    </div>
+ <div class="sticky-note sticky-top-right"><li>Sentence to death<li>Hard and Fast   </div> 
+ 
+
+<div class="sticky-note sticky-bottom-right"><font color="Aqua">Book   </font> Means:-
+<li> Book<li>To punish<li>Reserve    </div>
+
+    </div>
+</div>
+
+<div class="dictionary-container">
+<div class="dictionary-box">
+    <div class="word"><font color="Red">To think about    </font></div> 
+    <div class="meaning">
+        <strong>
+<li>Have something of the brain
+<li>Beat one's brain out
+<li>Cudgel one's brain
+<li>Food for thought
+<li>Chew the cud
+<li>Ponder over
+
+
+</strong>
+    </div>
+ <div class="sticky-note sticky-top-right"> <li>Fall through<br>-->Unsuccessful<li>Fall out<br>-->To quarrel  </div> 
+ 
+
+<div class="sticky-note sticky-bottom-right"><li>Brain wave<li>Brain drain<li>Bear in the mind     </div>
+
+    </div>
+</div>
+
+<div class="dictionary-container">
+<div class="dictionary-box">
+    <div class="word"><font color="Red"> Speed and Time   </font></div> 
+    <div class="meaning">
+        <strong>
+<li>At snail's pace
+<li>Donkey's years
+<li>Drag one's feet/heels
+
+
+</strong>
+    </div>
+ <div class="sticky-note sticky-top-right"><li>By leaps and bounds   </div> 
+ 
+    </div>
+</div>
+
+<div class="dictionary-box">
+  <div class="word"><font color="Red"> Come to initial point </font></div>
+   <div class="meaning">
+     <strong>
+       <li>Back to the square one
+       <li>Back to the drawing board
+       <li>From scratch
+       <li>Come full circle
+
+
+     </strong>
+   </div>
+</div>
+
+
+<div class="dictionary-container">
+<div class="dictionary-box">
+    <div class="word"><font color="Red">Person's character    </font></div> 
+    <div class="meaning">
+        <strong>
+<li>Bad mouth
+<li>Bad egg
+<li>Good Samaritan
+<li>Every inch a gentleman 
+<li>Gentleman at large
+
+
+</strong>
+    </div>
+ <div class="sticky-note sticky-top-right"> <li>In the egg=<br> In problem </div> 
+ 
+  </div>
+</div>
+
+
+<div class="dictionary-container">
+  <div class="dictionary-box">
+     <div class="word"><font color="Red">To wind up/Finish    </font></div> 
+        <div class="meaning">
+          <strong>
+            <li>Be finished with
+            <li>Call it a day
+            <li>Cut short
+
+
+          </strong>
+        </div>
+      <div class="sticky-note sticky-top-right"> <li> Carry the day  </div> 
+  </div>
+</div>
+
+
+<div class="dictionary-container">
+  <div class="dictionary-box">
+     <div class="word"><font color="Red">Tears and Crying    </font></div> 
+        <div class="meaning">
+          <strong>
+            <li>Be moved to tears<li>Cry one's eyes out <li>Crocodile's tears
+
+
+          </strong>
+        </div>
+      <div class="sticky-note sticky-top-right"> <li>Eye wash  </div> 
+ 
+  </div>
+</div>
+
+
+<div class="dictionary-box">
+  <div class="word"><font color="Red">Amount and Quantity  </font></div>
+   <div class="meaning">
+     <strong>
+       <li>A drop in the bucket<li>A drop in the ocean
+
+
+     </strong>
+   </div>
+</div>
+
+
+<div class="dictionary-container">
+  <div class="dictionary-box">
+     <div class="word"><font color="Red"> Visits   </font></div> 
+        <div class="meaning">
+          <strong>
+            <li>A flying visit <li>Bird of passage
+
+
+          </strong>
+        </div>
+      <div class="sticky-note sticky-top-right"> <li>Sojourn(a short<br>halt during a journey)  </div> 
+
+  </div>
+</div>
+
+<div class="dictionary-container">
+  <div class="dictionary-box">
+     <div class="word"><font color="Red">Related to Horse    </font></div> 
+        <div class="meaning">
+          <strong>
+            <li>Back the wrong horse<li>Dark horse<li>Horse laugh<li>Flog a dead horse<li>Beat a dead horse
+
+
+          </strong>
+        </div>
+      <div class="sticky-note sticky-top-right"> <li>Barrel of laughs<li>Butt of a joke<li>Crack someone's up  </div> 
+ 
+
+      <div class="sticky-note sticky-bottom-right"><li>Beat the air       <li>A wild goose chase      </div>
+
+  </div>
+</div>
+
+
+
+<div class="dictionary-box">
+  <div class="word"><font color="Red">Life and Comfort  </font></div>
+   <div class="meaning">
+     <strong>
+       <li>Bed of roses <li>An arm chair job<li>Drink life to the lees<li>Cushy job<li>In clover<li>Have a blast<li> Bed of  thorn
+
+
+     </strong>
+   </div>
+</div>
+
+
+
+
+
+
+<div class="dictionary-box">
+  <div class="word"><font color="Red">Talking ans discussion  </font></div>
+   <div class="meaning">
+     <strong>
+       <li>Beat about the bush<li>Circumlocution<li>Cut to the chase  <li>Fly/Go off at a tangent<li>Cut the cackle
+
+
+     </strong>
+   </div>
+</div>
+
+<div class="dictionary-container">
+  <div class="dictionary-box">
+     <div class="word"><font color="Red">Complete detail    </font></div> 
+        <div class="meaning">
+          <strong>
+            <li>Ins and outs<li>Chapter and verse <li>Out and out <li> Through and through
+
+
+          </strong>
+        </div>
+      <div class="sticky-note sticky-top-right"><li>In toto <li>Thorough  </div> 
+ 
+  </div>
+</div>
+
+<div class="dictionary-container">
+  <div class="dictionary-box">
+     <div class="word"><font color="Red"> Black related   </font></div> 
+        <div class="meaning">
+          <strong>
+            <li>Black ox <li>Black sheep<li>Black and blue <li>Black and white
+
+
+          </strong>
+        </div>
+      <div class="sticky-note sticky-top-right"><li>Keept the wolf away <br>from the door <li>To cry wolf  </div> 
+  </div>
+</div>
+
+<div class="dictionary-container">
+  <div class="dictionary-box">
+     <div class="word"><font color="Red"> Bite related   </font></div> 
+        <div class="meaning">
+          <strong>
+            <li>Bite one's tongue<li>Bite one's lips<li>Bite the dust<li>Meet one's waterloo<li>Bite the bullet<li>Bite off more than you can chew
+
+
+          </strong>
+        </div>
+      <div class="sticky-note sticky-top-right"> <li>Cat got your tongue<li>Lick the dust<li>Take the bull <br>by its horns  </div> 
+  </div>
+</div>
+
+
+
+<div class="dictionary-container">
+  <div class="dictionary-box">
+     <div class="word"><font color="Red">To get angry    </font></div> 
+        <div class="meaning">
+          <strong>
+            <li>Blow one's top<li>Beside one self<li>Drive someone up the wall<li>Give a piece of one's mind<li>Red rag to a bull <li>Fly off the handle
+
+
+          </strong>
+        </div>
+      <div class="sticky-note sticky-top-right"> <li>Get a handle on   </div> 
+  </div>
+</div>
+
+
+
+
+<div class="dictionary-container">
+  <div class="dictionary-box">
+     <div class="word"><font color="Red">Anger related    </font></div> 
+        <div class="meaning">
+          <strong>
+            <li>Foam at the mouth<li>Get on one's nerves<li>Gnash one's teeth<li>Give vent to<li>Butterflies in the stomach
+
+
+          </strong>
+        </div>
+  </div>
+</div>
+
+<div class="dictionary-container">
+  <div class="dictionary-box">
+     <div class="word"><font color="Red">Affluent/Rich    </font></div> 
+        <div class="meaning">
+          <strong>
+            <li>Big bucks<li>Born with a silver spoon in one's mouth<li>Mint man<li>Down and out
+
+
+          </strong>
+        </div>
+      <div class="sticky-note sticky-top-right"><li>Well to do   </div> 
+   </div>
+</div>
+
+
+
+<div class="dictionary-container">
+  <div class="dictionary-box">
+     <div class="word"><font color="Red">Related to question    </font></div> 
+        <div class="meaning">
+          <strong>
+            <li>Beg the question<li>Call in question<li>Out of question<li>Out of the question
+
+
+          </strong>
+        </div>
+  </div>
+</div>
+
+
+
+<div class="dictionary-container">
+  <div class="dictionary-box">
+     <div class="word"><font color="Red">Related to Question    </font></div> 
+        <div class="meaning">
+          <strong>
+            <li>Better half<li>Curtain lecture<li>Pin money<li>Gross widow<li>Petticoat government
+
+
+          </strong>
+        </div>
+      <div class="sticky-note sticky-top-right"><li>Lion hearted   </div> 
+ 
+
+      <div class="sticky-note sticky-bottom-right">In the sense of<font color="Aqua"> Timid   </font>
+       <li>Chicken hearted<li>Faint hearted<li>Pusillanimous      </div>
+
+  </div>
+</div>
+
+
+<div class="dictionary-container">
+  <div class="dictionary-box">
+     <div class="word"><font color="Red">Related to praise    </font></div> 
+        <div class="meaning">
+          <strong>
+            <li>Blow one's own trumpet<li>Tall talk<li>Bring the house down
+
+
+          </strong>
+        </div>
+      <div class="sticky-note sticky-top-right"> <li>Steal the show <li>Cut a sorry figure   </div> 
+
+  </div>
+</div>
+<div class="dictionary-container">
+  <div class="dictionary-box">
+     <div class="word"><font color="Red">Arrest    </font></div> 
+        <div class="meaning">
+          <strong>
+            <li>Behind bars<li>Feel one's collar<li>Catch red handed<li>Get away scot free
+
+
+          </strong>
+        </div>
+  </div>
+</div>
+
+
+
+
+<div class="dictionary-container">
+  <div class="dictionary-box">
+     <div class="word"><font color="Red"> Secret and Public   </font></div> 
+        <div class="meaning">
+          <strong>
+            <li>Behind closed doors<li>Hole and corner policy<li>Have something up one's sleeves<li>Wash dirty linen in public
+
+
+          </strong>
+        </div>
+      <div class="sticky-note sticky-top-right"><li>Laugh up <br>one's sleeves   </div> 
+   </div>
+</div>
+
+
+<div class="dictionary-box">
+  <div class="word"><font color="Red">Quality and Value  </font></div>
+   <div class="meaning">
+     <strong>
+       <li>Best of both worlds<li>Man of world<li>Glovetrotters<li>Best thing since sliced bread<li>WHite elephant<li>Buy a lemon
+
+
+     </strong>
+   </div>
+</div>
+
+<div class="dictionary-container">
+
+<div class="dictionary-box">
+  <div class="word"><font color="Red">Related to Bird  </font></div>
+   <div class="meaning">
+     <strong>
+       <li>Bird of same feather<li>Bird brained<li>Bird of passage<li>Bird's eye view
+     </strong>
+  </div>
+      <div class="sticky-note sticky-top-right"><li>Pink Elephant<li>Drink like a fish   </div> 
+   </div>
+</div>
+
+
+
+
+
+
+<div class="dictionary-box">
+  <div class="word"><font color="Red">  </font></div>
+   <div class="meaning">
+     <strong>
+       <li>
+
+
+     </strong>
+   </div>
+</div>
+
+
+
+
+
+
+<div class="dictionary-box">
+  <div class="word"><font color="Red">  </font></div>
+   <div class="meaning">
+     <strong>
+       <li>
+
+
+     </strong>
+   </div>
+</div>
+
+
+
+
+
+
+<div class="dictionary-box">
+  <div class="word"><font color="Red">  </font></div>
+   <div class="meaning">
+     <strong>
+       <li>
+
+
+     </strong>
+   </div>
+</div>
+
+
+
+
+
+
+<div class="dictionary-box">
+  <div class="word"><font color="Red">  </font></div>
+   <div class="meaning">
+     <strong>
+       <li>
+
+
+     </strong>
+   </div>
+</div>
+
+
+
+
+
+
+<div class="dictionary-box">
+  <div class="word"><font color="Red">  </font></div>
+   <div class="meaning">
+     <strong>
+       <li>
+
+
+     </strong>
+   </div>
+</div>
+
+
+
+
+</body>
+</html>

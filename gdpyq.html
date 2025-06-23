@@ -1,0 +1,261 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dictionary Preview</title>
+    <style>
+ body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-wrap: wrap; /* Allows wrapping to new rows */
+    justify-content: center; /* Centers the boxes */
+    gap: 100px; /* Space between items */
+    background-color: #f4f4f4;;
+     
+}
+
+.dictionary-container {
+    display: flex;
+    flex-wrap: wrap; /* Ensures wrapping for multiple rows */
+    justify-content: center; /* Centers the boxes */
+    gap: 20px; /* Adds spacing between boxes */
+}
+
+.dictionary-box {
+    position: relative; /* Allows positioning of sticky note */
+    width: 350px;
+    min-height: 150px;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    display:none;
+    float: left;
+}
+
+.sticky-note {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    width: auto;
+    height: auto;
+    background-color: #ffeb3b;
+    font-weight: bold;
+    text-align: center;
+    padding: 10px;
+    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
+    transform: rotate(-5deg);
+    border-radius: 5px;
+}
+
+/* First Sticky Note - Top Right */
+.sticky-top-right {
+    top: -10px;
+    right: -10px;
+}
+
+/* Second Sticky Note - Directly Below the First */
+.sticky-bottom-right {
+    top: 80px; /* Adjust this value based on desired spacing */
+    right: -10px;
+}
+
+        
+        .word {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .phonetic {
+            font-size: 18px;
+            color: gray;
+        }
+        .meaning {
+            margin-top: 10px;
+            font-size: 16px;
+        }
+        .synonyms {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #0078D4;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .synonyms a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 80px;
+            height: 30px;
+            border-radius: 30%;
+            background-color: #0078D4;
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        .synonyms a:hover {
+            background-color: #005a9e;
+        }
+        .example {
+            margin-top: 10px;
+            font-style: italic;
+            color: #555;
+        }
+
+/* Position arrow in front of the grouped elements */
+.curly-arrow {
+    position: absolute;
+    left: 50%;
+    top: 30px;
+    transform: translateX(-50%);
+    text-align: center;
+}
+
+/* Style label */
+.arrow-label {
+    font-size: 18px;
+    font-weight: bold;
+    color: red;
+    margin-top: -15px;
+}
+
+.tooltip {
+    position: relative;
+    cursor: pointer;
+    padding: 5px;
+}
+
+/* Tooltip Bubble Box */
+.tooltip::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    background: #333;
+    color: white;
+    padding: 10px;
+    font-size: 14px;
+    width: 150px; /* Fixed width for more text */
+    border-radius: 10px; /* Rounded corners */
+    white-space: normal; /* Allows wrapping */
+    opacity: 0;
+    transition: opacity 0s ease-in-out;
+    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Position Right */
+.tooltip:hover::after {
+    opacity: 0.99;
+    left: 110%; /* Moves tooltip to the right */
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* Position Left */
+.tooltip[data-position="left"]:hover::after {
+    left: auto;
+    right: 110%; /* Moves tooltip to the left */
+}
+
+.show {
+  display: block;
+}
+
+.container {
+  margin-top: 20px;
+  overflow: hidden;
+}
+
+/* Style the buttons */
+.btn {
+  border: none;
+  outline: none;
+  padding: 12px 16px;
+  background-color: #f1f1f1;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background-color: #ddd;
+}
+
+.btn.active {
+  background-color: #666;
+  color: white;
+}
+    </style>
+</head>
+<body>
+<div id="myBtnContainer">
+  <button class="btn active" onclick="filterSelection('all')"> Show all</button>
+  <button class="btn" onclick="filterSelection('l1')">Lecture 1</button>
+  <button class="btn" onclick="filterSelection('l2')">Lecture 2</button>
+  <button class="btn" onclick="filterSelection('l3')">Lecture 3</button>
+   <button class="btn" onclick="filterSelection('rnd')">Lecture 4 </button>
+  <button class="btn" onclick="filterSelection('idm')">Lecture 5</button>
+    <button class="btn" onclick="filterSelection('cnf')">Lecture 6</button>
+
+<div class="container">
+<div class="dictionary-box l1 ">
+    <div class="word"><font color="Red">Constituent Assembly  </font></div>    
+    <div class="meaning">
+        <strong>
+<li><span class="tooltip" data-tooltip="July, 1946 " >First constituent assembly</span>   <br> <span class="tooltip" data-tooltip="<li>In 1934 </li>" >MN Roy first demanded
+
+
+</strong>
+    </div>
+    </div>
+
+</div>
+
+<script>
+filterSelection("all")
+function filterSelection(c) {
+  var x, i;
+  x = document.getElementsByClassName("dictionary-box");
+  if (c == "all") c = "";
+  for (i = 0; i < x.length; i++) {
+    w3RemoveClass(x[i], "show");
+    if (x[i].className.indexOf(c) > -1) w3AddClass(x[i], "show");
+  }
+}
+
+function w3AddClass(element, name) {
+  var i, arr1, arr2;
+  arr1 = element.className.split(" ");
+  arr2 = name.split(" ");
+  for (i = 0; i < arr2.length; i++) {
+    if (arr1.indexOf(arr2[i]) == -1) {element.className += " " + arr2[i];}
+  }
+}
+
+function w3RemoveClass(element, name) {
+  var i, arr1, arr2;
+  arr1 = element.className.split(" ");
+  arr2 = name.split(" ");
+  for (i = 0; i < arr2.length; i++) {
+    while (arr1.indexOf(arr2[i]) > -1) {
+      arr1.splice(arr1.indexOf(arr2[i]), 1);     
+    }
+  }
+  element.className = arr1.join(" ");
+}
+
+// Add active class to the current button (highlight it)
+var btnContainer = document.getElementById("myBtnContainer");
+var btns = btnContainer.getElementsByClassName("btn");
+for (var i = 0; i < btns.length; i++) {
+  btns[i].addEventListener("click", function(){
+    var current = document.getElementsByClassName("active");
+    current[0].className = current[0].className.replace(" active", "");
+    this.className += " active";
+  });
+}
+</script>
+
+
+</body>
+</html>
+

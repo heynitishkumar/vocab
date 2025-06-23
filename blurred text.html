@@ -1,0 +1,26 @@
+<html>
+<head>
+<style>
+.blurred-text {
+  filter: blur(5px);
+  cursor: pointer;
+  transition: filter 0.3s ease-in-out;
+}
+.blurred-text:hover {
+  filter: none;
+}
+
+
+</style>
+</head>
+<body>
+<span class="blurred-text">Click to reveal this text!</span>
+
+</body>
+<script>
+document.querySelector('.blurred-text').addEventListener('click', function() {
+  this.style.filter = 'none';
+});
+
+</script>
+</html>

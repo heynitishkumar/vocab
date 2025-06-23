@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Words</title>
+  <script>
+    function loadDefinition(word) {
+        window.parent.postMessage(word, "*"); // Sends the selected word to the parent page
+    }
+</script>
+
+
+</head>
+<body>
+
+<h3>Select a word:</h3>
+<ul>
+    <li><a href="#" onclick="loadDefinition('serene')">Serene</a></li>
+    <li><a href="#" onclick="loadDefinition('tranquil')">Tranquil</a></li>
+    <li><a href="#" onclick="loadDefinition('peaceful')">Peaceful</a></li>
+</ul>
+
+</body>
+</html>

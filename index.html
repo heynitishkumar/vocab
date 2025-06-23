@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word Dictionary</title>
+    <script>
+        function searchWord() {
+            var word = document.getElementById("searchInput").value.trim().toLowerCase();
+            var dictionaryFrame = document.getElementById("dictionaryFrame");
+            if (word) {
+                dictionaryFrame.src = word + ".html"; // Load definition in iframe
+            } else {
+                alert("Please enter a valid word!");
+            }
+        }
+    </script>
+</head>
+<body>
+
+<h2>Click on a word or search for one:</h2>
+
+<!-- Search Bar -->
+<input type="text" id="searchInput" placeholder="Enter a word..." />
+<button onclick="searchWord()">Search</button>
+
+
+<!-- Second iframe for dictionary definitions -->
+<iframe id="dictionaryFrame" name="dictionaryFrame" src="dictionary.html" width="55%" height="300px"></iframe>
+
+</body>
+</html>
