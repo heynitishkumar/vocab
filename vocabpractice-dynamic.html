@@ -72,7 +72,7 @@
 <script> 
 let allQuizzes = {};
 
-fetch('https://heynitishkumar.github.io/vocab/blob/main/words.json')
+fetch('words.json')
   .then(res => res.json())
   .then(data => {
     allQuizzes = data;
