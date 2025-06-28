@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Auto-Submit Quiz Hub</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body { margin: 0; font-family: Arial, sans-serif; display: flex; height: 100vh; }
+    .sidebar {
+      width: 200px; background: #2c3e50; color: white; padding: 20px;
+      overflow-y: auto; max-height: 100vh; position: sticky; top: 0;
+    }
+    .sidebar h2 { font-size: 18px; margin-bottom: 15px; }
+    .sidebar button {
+      width: 100%; margin-bottom: 10px; padding: 8px;
+      background: #34495e; color: white; border: none;
+      text-align: left; border-radius: 4px; cursor: pointer;
+    }
+    .sidebar button:hover { background: #1abc9c; }
+    .content {
+      flex-grow: 1; padding: 30px; background: #ecf0f1; overflow-y: auto;
+    }
+    .quiz-box {
+      background: white; padding: 20px; border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1); max-width: 650px; margin: auto;
+    }
+    .question { font-weight: bold; margin-bottom: 10px; }
+    .option { margin: 8px 0; }
+    .timer { font-size: 16px; color: #d9534f; font-weight: bold; margin: 10px 0; }
+    .feedback, .summary {
+      margin-top: 20px; padding: 15px; background: #e0f7e0;
+      border-left: 5px solid green; border-radius: 6px;
+    }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <h2>Vocabulary Sets</h2>
+    <div id="sidebarButtons">Loading sets...</div>
+  </div>
+
+  <div class="content">
+    <div class="quiz-box" id="quizArea">
+      <p>Select a category from the sidebar to start the quiz.</p>
+    </div>
+  </div>
+
+  <script>
+    let allQuizzes = {};
+    const state = {};
+    let currentSet = "";
+    let timer = null;
+    let startTime = 0;
+
+    function shuffleArray(array) {
+      return array
+        .map(value => ({ value, sort: Math.random() }))
+        .sort((a, b) => a.sort - b.sort)
+        .map(({ value }) => value);
+    }
+
+    fetch('words.json')
+      .then(res => res.json())
+      .then(data => {
+        allQuizzes = data;
+        const sidebar = document.getElementById("sidebarButtons");
+        sidebar.innerHTML = "";
+        Object.keys(allQuizzes).sort().forEach(letter => {
+          const btn = document.createElement("button");
+          btn.textContent = `Set ${letter} Words`;
+          btn.onclick = () => startQuiz(letter);
+          sidebar.appendChild(btn);
+        });
+      })
+      .catch(err => {
+        console.error("Failed to load quiz data:", err);
+        alert("Error loading quiz content. Please check your JSON file.");
+      });
+
+    function startQuiz(letter) {
+      currentSet = letter;
+      if (!state[letter]) {
+        state[letter] = {
+          questions: allQuizzes[letter],
+          index: 0,
+          score: 0,
+          times: [],
+          completed: false,
+          feedbacks: []
+        };
+      }
+      const quiz = state[letter];
+      if (quiz.completed) {
+        showSummary(letter);
+      } else {
+        loadQuestion(letter);
+      }
+    }
+
+    function loadQuestion(letter) {
+      clearInterval(timer);
+      const quiz = state[letter];
+      const q = quiz.questions[quiz.index];
+      const area = document.getElementById("quizArea");
+
+      area.innerHTML = `
+        <div class="question">Q${quiz.index + 1}: ${q.question}</div>
+        ${shuffleArray(q.options).map(opt =>
+          `<div class="option"><input type="radio" name="answer" value="${opt}" onchange="submitAnswer()" /> ${opt}</div>`
+        ).join("")}
+        <div class="timer" id="timer">Time left: 15s</div>
+      `;
+
+      startTimer();
+      startTime = Date.now();
+    }
+
+    function startTimer() {
+      clearInterval(timer);
+      let timeLeft = 15;
+      const display = document.getElementById("timer");
+      display.innerText = `Time left: ${timeLeft}s`;
+
+      timer = setInterval(() => {
+        timeLeft--;
+        if (timeLeft >= 0) display.innerText = `Time left: ${timeLeft}s`;
+        if (timeLeft === 0) {
+          clearInterval(timer);
+          submitAnswer(true);
+        }
+      }, 1000);
+    }
+
+    function submitAnswer(auto = false) {
+      clearInterval(timer);
+      const quiz = state[currentSet];
+      const q = quiz.questions[quiz.index];
+      const selected = document.querySelector('input[name="answer"]:checked');
+      const timeSpent = Math.round((Date.now() - startTime) / 1000);
+      quiz.times.push(timeSpent);
+
+      let message = "";
+      const choice = selected ? selected.value : null;
+
+      if (!choice) {
+        message = `⏰ Time's up!<br><strong>Correct:</strong> ${q.answer}<br>${q.explanation}`;
+      } else if (choice === q.answer) {
+        quiz.score++;
+        message = `✅ Correct! ${q.explanation}`;
+      } else {
+        message = `❌ Incorrect.<br><strong>Correct:</strong> ${q.answer}<br>${q.explanation}`;
+      }
+
+      quiz.feedbacks.push({
+        question: q.question,
+        feedback: message
+      });
+
+      const fb = document.createElement("div");
+      fb.className = "feedback";
+      fb.innerHTML = message;
+      document.getElementById("quizArea").appendChild(fb);
+
+      quiz.index++;
+      if (quiz.index < quiz.questions.length) {
+        setTimeout(() => loadQuestion(currentSet), 2000);
+      } else {
+        quiz.completed = true;
+        setTimeout(() => showSummary(currentSet), 2200);
+      }
+    }
+
+    function showSummary(letter) {
+      const quiz = state[letter];
+      const area = document.getElementById("quizArea");
+      let summary = `<div class="summary"><h3>📊 ${letter} Words – Quiz Summary</h3>`;
+      summary += `<p><strong>Score:</strong> ${quiz.score} / ${quiz.questions.length}</p>`;
+      summary += `<strong>⏱ Time per question:</strong><br>`;
+      quiz.times.forEach((t, i) => {
+        summary += `Q${i + 1}: ${t} seconds<br>`;
+      });
+      summary += `<br><strong>📝 Feedback:</strong><br>`;
+      quiz.feedbacks.forEach((f, i) => {
+        summary += `<p><strong>Q${i + 1}:</strong> ${f.question}<br>${f.feedback}</p>`;
+      });
+      summary += `<br><button onclick=\"reviewAnswers('${letter}')\">🔁 Review Questions</button>`;
+      summary += `</div>`;
+      area.innerHTML = summary;
+    }
+
+    function reviewAnswers(letter) {
+      const quiz = state[letter];
+      const area = document.getElementById("quizArea");
+
+      let reviewHTML = `<div class="summary"><h3>🔁 Review – ${letter} Words</h3>`;
+
+      quiz.questions.forEach((q, i) => {
+        const userFeedback = quiz.feedbacks[i];
+        let selected = "⏰ Unanswered";
+        if (userFeedback.feedback.includes("Correct!")) {
+          selected = q.answer;
+        } else if (userFeedback.feedback.includes("⏰ Time's up!")) {
+          selected = "⏰ Unanswered";
+        } else {
+          const match = userFeedback.feedback.match(/<br><strong>Correct:<\/strong> (.*?)<br>/);
+          if (match) selected = match[1];
+        }
+
+        reviewHTML += `
+          <div class="question"><strong>Q${i + 1}:</strong> ${q.question}</div>
+          <ul>
+            ${q.options.map(opt => {
+              const mark = opt === q.answer ? "✅" : (opt === selected ? "❌" : "");
+              return `<li>${mark} ${opt}</li>`;
+            }).join("")}
+          </ul>
+          <div class="feedback">${userFeedback.feedback}</div><hr>
+        `;
+      });
+
+              reviewHTML += `<button onclick="showSummary('${letter}')">⬅ Back to Summary</button>`;
+      reviewHTML += `</div>`;
+
+      area.innerHTML = reviewHTML;
+    }
+  </script>
+</body>
+</html>
