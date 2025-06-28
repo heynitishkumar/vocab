@@ -1,228 +1,648 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>Auto-Submit Quiz Hub</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <style>
-    body { margin: 0; font-family: Arial, sans-serif; display: flex; height: 100vh; }
-    .sidebar {
-      width: 200px; background: #2c3e50; color: white; padding: 20px;
-      overflow-y: auto; max-height: 100vh; position: sticky; top: 0;
+{
+A: [
+  {
+    question: "A statement or reference made indirectly or subtly",
+    options: ["Allusion", "Impression", "Critique", "Denotation"],
+    answer: "Allusion",
+    explanation: "<b><u>Allusion</u></b> is an indirect or subtle reference. 'Impression' means a general feeling or idea. 'Critique' is a detailed analysis or review. 'Denotation' is the literal meaning of a word."
+  },
+  {
+    question: "The act of expressing disapproval or declaring something wrong",
+    options: ["Condemnation", "Complaint", "Correction", "Criticism"],
+    answer: "Condemnation",
+    explanation: "Condemnation is strong disapproval. 'Complaint' is expressing dissatisfaction. 'Correction' is fixing something wrong. 'Criticism' is the evaluation of faults."
+  },
+  {
+    question: "The act of belittling or making someone seem less important",
+    options: ["Disparagement", "Discussion", "Disruption", "Deflection"],
+    answer: "Disparagement",
+    explanation: "Disparagement means to speak in a way that reduces respect. 'Discussion' is a talk or exchange of ideas. 'Disruption' is an interruption or disturbance. 'Deflection' is changing the direction or focus."
+  },
+  {
+    question: "A strong feeling of disrespect or scorn",
+    options: ["Disdain", "Despair", "Disgust", "Disbelief"],
+    answer: "Disdain",
+    explanation: "Disdain is a feeling of contempt. 'Despair' is complete loss of hope. 'Disgust' is revulsion or extreme dislike. 'Disbelief' is doubt or refusal to accept something as true."
+  },
+  {
+    question: "A quality that is naturally a part of something",
+    options: ["Immanent", "Essential", "Practical", "Learned"],
+    answer: "Immanent",
+    explanation: "Immanent means something inherent or existing within. 'Essential' means absolutely necessary. 'Practical' means useful. 'Learned' means acquired through experience or study."
+  },
+  {
+    question: "A trait that is an inseparable part of someone or something",
+    options: ["Inherent", "Acquired", "Refined", "Apparent"],
+    answer: "Inherent",
+    explanation: "Inherent means built-in or permanent. 'Acquired' means gained through effort. 'Refined' means made more elegant. 'Apparent' means obvious or visible."
+  },
+  {
+    question: "Existing in someone from birth; not learned",
+    options: ["Innate", "Taught", "Optional", "Imitated"],
+    answer: "Innate",
+    explanation: "Innate means natural from birth. 'Taught' means learned from others. 'Optional' means not required. 'Imitated' means copied."
+  },
+  {
+    question: "Belonging naturally and essential to something's nature",
+    options: ["Intrinsic", "External", "Voluntary", "Decorative"],
+    answer: "Intrinsic",
+    explanation: "Intrinsic means inherent to the core. 'External' means outside or surface. 'Voluntary' means done by choice. 'Decorative' means ornamental or non-essential."
+  },
+  {
+    question: "Prone to sudden anger or irritation",
+    options: ["Choleric", "Calm", "Easygoing", "Oblivious"],
+    answer: "Choleric",
+    explanation: "Choleric means irritable or hot-tempered. 'Calm' means peaceful. 'Easygoing' means relaxed and tolerant. 'Oblivious' means unaware."
+  },
+  {
+    question: "Causing division or conflict within a group",
+    options: ["Factious", "Cooperative", "United", "Loyal"],
+    answer: "Factious",
+    explanation: "Factious refers to causing disputes or factions. 'Cooperative' means working together. 'United' means joined. 'Loyal' means faithful."
+  },
+  {
+    question: "Bad-tempered and hard to get along with",
+    options: ["Cantankerous", "Pleasant", "Friendly", "Mild"],
+    answer: "Cantankerous",
+    explanation: "Cantankerous means grumpy and argumentative. 'Pleasant' means agreeable. 'Friendly' means kind. 'Mild' means gentle or not severe."
+  },
+  {
+    question: "Excessively prone to lawsuits or legal disputes",
+    options: ["Litigious", "Lawful", "Silent", "Carefree"],
+    answer: "Litigious",
+    explanation: "Litigious means inclined to sue or argue legal matters. 'Lawful' means legal. 'Silent' means quiet. 'Carefree' means without worry."
+  },
+  {
+    question: "Contemptuous ridicule or mockery",
+    options: ["Derision", "Admiration", "Agreement", "Politeness"],
+    answer: "Derision",
+    explanation: "Derision is harsh mockery. 'Admiration' means respect. 'Agreement' means consensus. 'Politeness' is courteous behavior."
+  },
+  {
+    question: "Speaking ill of someone to damage their reputation",
+    options: ["Denigration", "Support", "Flattery", "Applause"],
+    answer: "Denigration",
+    explanation: "Denigration is unjust criticism. 'Support' is helping. 'Flattery' is excessive praise. 'Applause' is approval or clapping."
+  },
+  {
+    question: "Slandering or speaking very negatively about someone",
+    options: ["Vilification", "Recognition", "Encouragement", "Introduction"],
+    answer: "Vilification",
+    explanation: "Vilification is strong negative speech. 'Recognition' means acknowledgment. 'Encouragement' means support. 'Introduction' is a beginning or presentation."
+  },
+  {
+    question: "Making rude, mocking remarks loudly",
+    options: ["Jeering", "Clapping", "Greeting", "Cheering"],
+    answer: "Jeering",
+    explanation: "Jeering is mocking loudly. 'Clapping' shows appreciation. 'Greeting' means welcoming. 'Cheering' means expressing joy or support."
+  },
+  {
+    question: "Inclined to argue or fight easily",
+    options: ["Pugnacious", "Passive", "Gentle", "Tolerant"],
+    answer: "Pugnacious",
+    explanation: "Pugnacious means combative. 'Passive' means non-confrontational. 'Gentle' means soft. 'Tolerant' means accepting."
+  },
+  {
+    question: "Naturally aggressive or eager to fight",
+    options: ["Bellicose", "Peaceful", "Cautious", "Quiet"],
+    answer: "Bellicose",
+    explanation: "Bellicose means warlike. 'Peaceful' means calm. 'Cautious' means careful. 'Quiet' means silent."
+  },
+  {
+    question: "Contemptuous laughter or ridicule",
+    options: ["Scoffing", "Smiling", "Thanking", "Listening"],
+    answer: "Scoffing",
+    explanation: "Scoffing is mocking laughter. 'Smiling' shows pleasure. 'Thanking' shows gratitude. 'Listening' means paying attention."
+  },
+  {
+    question: "A mocking facial expression showing contempt",
+    options: ["Sneers", "Blushes", "Winks", "Gasps"],
+    answer: "Sneers",
+    explanation: "Sneers are scornful smiles or expressions. 'Blushes' show embarrassment. 'Winks' are friendly gestures. 'Gasps' express surprise."
+  },
+  {
+    question: "Making someone look foolish or ridiculous through imitation",
+    options: ["Mockery", "Parody", "Impression", "Praise"],
+    answer: "Mockery",
+    explanation: "Mockery is insulting imitation. 'Parody' is humorous imitation. 'Impression' is mimicry. 'Praise' is positive feedback."
+  },
+  {
+    question: "Making fun of someone in a cruel or harsh way",
+    options: ["Ridicule", "Admire", "Help", "Console"],
+    answer: "Ridicule",
+    explanation: "Ridicule means to mock harshly. 'Admire' means to respect. 'Help' is to assist. 'Console' is to comfort."
+  },
+  {
+    question: "Easily provoked to anger or frustration",
+    options: ["Irascible", "Patient", "Mature", "Wise"],
+    answer: "Irascible",
+    explanation: "Irascible means short-tempered. 'Patient' means tolerant. 'Mature' is emotionally developed. 'Wise' is knowledgeable."
+  },
+  {
+    question: "In a state of open conflict or war",
+    options: ["Warring", "Tranquil", "Friendly", "Festive"],
+    answer: "Warring",
+    explanation: "Warring means fighting or in conflict. 'Tranquil' means calm. 'Friendly' means kind. 'Festive' means joyful."
+  },
+  {
+    question: "Always ready to argue or disagree",
+    options: ["Quarrelsome", "Humble", "Calm", "Playful"],
+    answer: "Quarrelsome",
+    explanation: "Quarrelsome means argumentative. 'Humble' means modest. 'Calm' means peaceful. 'Playful' means light-hearted."
+  },
+  {
+    question: "Aggressively defiant or hostile",
+    options: ["Truculent", "Tame", "Polite", "Respectful"],
+    answer: "Truculent",
+    explanation: "Truculent means savagely hostile. 'Tame' is gentle. 'Polite' is courteous. 'Respectful' shows regard."
+  }
+],
+
+
+B: [
+    {
+        "question": "A public condemnation that brings shame or disgrace",
+        "options": ["Obloquy", "Embarrassment", "Praise", "Approval"],
+        "answer": "Obloquy",
+        "explanation": "<b><u>Obloquy</u></b> is public criticism that causes disgrace. <b><u>Embarrassment</u></b> is a feeling of self-consciousness. <b><u>Praise</u></b> means approval or admiration. <b><u>Approval</u></b> is agreement or permission."
+    },
+    {
+        "question": "A feeling of shame, awkwardness, or discomfort",
+        "options": ["Embarrassment", "Obloquy", "Glory", "Excitement"],
+        "answer": "Embarrassment",
+        "explanation": "<b><u>Embarrassment</u></b> is a feeling of discomfort or shame. <b><u>Obloquy</u></b> is public condemnation. <b><u>Glory</u></b> is great honor or praise. <b><u>Excitement</u></b> is enthusiasm or eagerness."
+    },
+    {
+        "question": "Lacking originality; overused and dull",
+        "options": ["Trite", "Innovative", "Unique", "Rare"],
+        "answer": "Trite",
+        "explanation": "<b><u>Trite</u></b> means overused and lacking freshness. <b><u>Innovative</u></b> means new and creative. <b><u>Unique</u></b> means one of a kind. <b><u>Rare</u></b> means uncommon."
+    },
+    {
+        "question": "Lacking freshness due to overuse",
+        "options": ["Hackneyed", "Original", "Fresh", "Novel"],
+        "answer": "Hackneyed",
+        "explanation": "<b><u>Hackneyed</u></b> means cliché or stale from overuse. <b><u>Original</u></b> means new. <b><u>Fresh</u></b> means recently created or invigorating. <b><u>Novel</u></b> means new or unusual."
+    },
+    {
+        "question": "So lacking in originality as to be obvious or boring",
+        "options": ["Banal", "Creative", "Visionary", "Expressive"],
+        "answer": "Banal",
+        "explanation": "<b><u>Banal</u></b> means dull or unoriginal. <b><u>Creative</u></b> means using imagination. <b><u>Visionary</u></b> is someone with original ideas. <b><u>Expressive</u></b> conveys feelings clearly."
+    },
+    {
+        "question": "Boldly disrespectful or rude",
+        "options": ["Impudent", "Polite", "Humble", "Respectful"],
+        "answer": "Impudent",
+        "explanation": "<b><u>Impudent</u></b> means showing no respect. <b><u>Polite</u></b> means showing good manners. <b><u>Humble</u></b> means modest. <b><u>Respectful</u></b> means showing respect."
+    },
+    {
+        "question": "Improperly forward or bold; intrusive",
+        "options": ["Impertinent", "Curious", "Cautious", "Modest"],
+        "answer": "Impertinent",
+        "explanation": "<b><u>Impertinent</u></b> means rude or bold. <b><u>Curious</u></b> means eager to know. <b><u>Cautious</u></b> means careful. <b><u>Modest</u></b> means not boastful."
+    },
+    {
+        "question": "Showing arrogant lack of respect",
+        "options": ["Insolent", "Charming", "Kind", "Considerate"],
+        "answer": "Insolent",
+        "explanation": "<b><u>Insolent</u></b> means rude and disrespectful. <b><u>Charming</u></b> means pleasant. <b><u>Kind</u></b> means caring. <b><u>Considerate</u></b> means thoughtful of others."
+    },
+    {
+        "question": "Fearlessly bold or daring, often disrespectfully",
+        "options": ["Audacious", "Timid", "Careful", "Shy"],
+        "answer": "Audacious",
+        "explanation": "<b><u>Audacious</u></b> means boldly daring. <b><u>Timid</u></b> means lacking courage. <b><u>Careful</u></b> means cautious. <b><u>Shy</u></b> means reserved or hesitant."
+    },
+    {
+        "question": "Not showing proper seriousness; disrespectfully humorous",
+        "options": ["Flippant", "Serious", "Respectful", "Sincere"],
+        "answer": "Flippant",
+        "explanation": "<b><u>Flippant</u></b> means not showing respect. <b><u>Serious</u></b> means solemn or important. <b><u>Respectful</u></b> means courteous. <b><u>Sincere</u></b> means genuine."
+    },
+    {
+        "question": "Arrogantly rude and insulting in speech or behavior",
+        "options": ["Contumelious", "Civil", "Friendly", "Gracious"],
+        "answer": "Contumelious",
+        "explanation": "<b><u>Contumelious</u></b> means scornfully rude. <b><u>Civil</u></b> means polite. <b><u>Friendly</u></b> means kind. <b><u>Gracious</u></b> means courteous and pleasant."
+    },
+    {
+        "question": "To exclude someone from a group or society",
+        "options": ["Ostracise", "Welcome", "Invite", "Include"],
+        "answer": "Ostracise",
+        "explanation": "<b><u>Ostracise</u></b> means to exclude. <b><u>Welcome</u></b> means greet warmly. <b><u>Invite</u></b> means to request someone's presence. <b><u>Include</u></b> means to make part of a group."
+    },
+    {
+        "question": "To force someone to leave a place as punishment",
+        "options": ["Banish", "Recall", "Retain", "Reward"],
+        "answer": "Banish",
+        "explanation": "<b><u>Banish</u></b> means to exile. <b><u>Recall</u></b> means to bring back. <b><u>Retain</u></b> means to keep. <b><u>Reward</u></b> means to compensate positively."
+    },
+    {
+        "question": "A sudden and complete failure",
+        "options": ["Debacle", "Triumph", "Victory", "Success"],
+        "answer": "Debacle",
+        "explanation": "<b><u>Debacle</u></b> means a disaster. <b><u>Triumph</u></b> means a great win. <b><u>Victory</u></b> is success in battle. <b><u>Success</u></b> means achieving a goal."
+    },
+    {
+        "question": "A loss of power, status, or success",
+        "options": ["Downfall", "Ascension", "Rise", "Achievement"],
+        "answer": "Downfall",
+        "explanation": "<b><u>Downfall</u></b> is a decline. <b><u>Ascension</u></b> means rising up. <b><u>Rise</u></b> means moving upward. <b><u>Achievement</u></b> is success gained through effort."
+    },
+    {
+        "question": "Deserving or causing public disgrace or shame",
+        "options": ["Ignominious", "Honorable", "Respectable", "Valiant"],
+        "answer": "Ignominious",
+        "explanation": "<b><u>Ignominious</u></b> means disgraceful. <b><u>Honorable</u></b> means worthy of respect. <b><u>Respectable</u></b> means decent. <b><u>Valiant</u></b> means brave."
+    },
+    {
+        "question": "Causing shame or a loss of dignity",
+        "options": ["Humiliating", "Proud", "Glorious", "Inspiring"],
+        "answer": "Humiliating",
+        "explanation": "<b><u>Humiliating</u></b> means causing embarrassment. <b><u>Proud</u></b> means feeling pleased. <b><u>Glorious</u></b> means full of glory. <b><u>Inspiring</u></b> means motivating."
+    },
+    {
+        "question": "Morally low or dishonorable",
+        "options": ["Ignoble", "Noble", "Heroic", "Worthy"],
+        "answer": "Ignoble",
+        "explanation": "<b><u>Ignoble</u></b> means shameful. <b><u>Noble</u></b> means of high moral character. <b><u>Heroic</u></b> means brave. <b><u>Worthy</u></b> means deserving."
+    },
+    {
+        "question": "Extremely bad, miserable, or degrading",
+        "options": ["Abject", "Joyous", "Hopeful", "Cheerful"],
+        "answer": "Abject",
+        "explanation": "<b><u>Abject</u></b> means of the most severe kind. <b><u>Joyous</u></b> means full of joy. <b><u>Hopeful</u></b> means optimistic. <b><u>Cheerful</u></b> means noticeably happy."
+    },
+    {
+        "question": "Behaving in a way that demeans oneself",
+        "options": ["Self-abasing", "Proud", "Confident", "Assertive"],
+        "answer": "Self-abasing",
+        "explanation": "<b><u>Self-abasing</u></b> means putting oneself down. <b><u>Proud</u></b> means having self-respect. <b><u>Confident</u></b> means self-assured. <b><u>Assertive</u></b> means standing up for oneself."
+    },
+    {
+        "question": "Making someone or something seem less impressive",
+        "options": ["Belittling", "Admiring", "Celebrating", "Appreciating"],
+        "answer": "Belittling",
+        "explanation": "<b><u>Belittling</u></b> means making something seem less. <b><u>Admiring</u></b> means showing respect. <b><u>Celebrating</u></b> means expressing joy. <b><u>Appreciating</u></b> means valuing something."
+    },
+    {
+        "question": "A feeling of confusion and embarrassment",
+        "options": ["Discomfiture", "Comfort", "Relief", "Assurance"],
+        "answer": "Discomfiture",
+        "explanation": "<b><u>Discomfiture</u></b> means awkwardness or embarrassment. <b><u>Comfort</u></b> means ease or relief. <b><u>Relief</u></b> means alleviation. <b><u>Assurance</u></b> means confidence."
+    },
+    {
+        "question": "A state of being ashamed or embarrassed",
+        "options": ["Abashment", "Confidence", "Pride", "Certainty"],
+        "answer": "Abashment",
+        "explanation": "<b><u>Abashment</u></b> is self-conscious embarrassment. <b><u>Confidence</u></b> means self-assurance. <b><u>Pride</u></b> is self-respect. <b><u>Certainty</u></b> is being sure."
+    },
+    {
+        "question": "Something used to prevent disease or infection",
+        "options": ["Prophylactic", "Antidote", "Vaccine", "Painkiller"],
+        "answer": "Prophylactic",
+        "explanation": "<b><u>Prophylactic</u></b> means preventive medicine. <b><u>Antidote</u></b> counteracts poison. <b><u>Vaccine</u></b> prevents infection. <b><u>Painkiller</u></b> reduces pain."
+    },
+    {
+        "question": "A protective covering, often for a blade or tool",
+        "options": ["Sheath", "Shield", "Cover", "Case"],
+        "answer": "Sheath",
+        "explanation": "<b><u>Sheath</u></b> is a close-fitting cover. <b><u>Shield</u></b> protects broadly. <b><u>Cover</u></b> means something laid over. <b><u>Case</u></b> is a container."
     }
-    .sidebar h2 { font-size: 18px; margin-bottom: 15px; }
-    .sidebar button {
-      width: 100%; margin-bottom: 10px; padding: 8px;
-      background: #34495e; color: white; border: none;
-      text-align: left; border-radius: 4px; cursor: pointer;
-    }
-    .sidebar button:hover { background: #1abc9c; }
-    .content {
-      flex-grow: 1; padding: 30px; background: #ecf0f1; overflow-y: auto;
-    }
-    .quiz-box {
-      background: white; padding: 20px; border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1); max-width: 650px; margin: auto;
-    }
-    .question { font-weight: bold; margin-bottom: 10px; }
-    .option { margin: 8px 0; }
-    .timer { font-size: 16px; color: #d9534f; font-weight: bold; margin: 10px 0; }
-    .feedback, .summary {
-      margin-top: 20px; padding: 15px; background: #e0f7e0;
-      border-left: 5px solid green; border-radius: 6px;
-    }
-  </style>
-</head>
-<body>
-  <div class="sidebar">
-    <h2>Vocabulary Sets</h2>
-    <div id="sidebarButtons">Loading sets...</div>
-  </div>
+      ],
+C: [
+  {
+    "question": "A belief or idea that is fundamentally true or real",
+    "options": ["Verity", "Opinion", "Rumor", "Fantasy"],
+    "answer": "Verity",
+    "explanation": "<b><u>Verity</u></b> is a true principle or fact. <b><u>Opinion</u></b> is a personal belief. <b><u>Rumor</u></b> is unverified information. <b><u>Fantasy</u></b> is imagination-based fiction."
+  },
+  {
+    "question": "A deeply respectful feeling toward something sacred",
+    "options": ["Reverence", "Admiration", "Curiosity", "Tolerance"],
+    "answer": "Reverence",
+    "explanation": "<b><u>Reverence</u></b> is profound respect. <b><u>Admiration</u></b> is respect with liking. <b><u>Curiosity</u></b> is desire to know. <b><u>Tolerance</u></b> is acceptance of differences."
+  },
+  {
+    "question": "A richly elaborate or excessively decorative style",
+    "options": ["Florid", "Simple", "Plain", "Harsh"],
+    "answer": "Florid",
+    "explanation": "<b><u>Florid</u></b> means very elaborate or flowery. <b><u>Simple</u></b> means not complicated. <b><u>Plain</u></b> means undecorated. <b><u>Harsh</u></b> means rough or unpleasant."
+  },
+  {
+    "question": "A strong feeling of enthusiasm or devotion",
+    "options": ["Fervent", "Casual", "Polite", "Cool"],
+    "answer": "Fervent",
+    "explanation": "<b><u>Fervent</u></b> means passionate or intense. <b><u>Casual</u></b> means relaxed or informal. <b><u>Polite</u></b> is showing good manners. <b><u>Cool</u></b> means calm or mildly interested."
+  },
+  {
+    "question": "Acting quickly without thinking things through",
+    "options": ["Impetuous", "Thoughtful", "Gradual", "Cautious"],
+    "answer": "Impetuous",
+    "explanation": "<b><u>Impetuous</u></b> means impulsively acting. <b><u>Thoughtful</u></b> means considerate. <b><u>Gradual</u></b> means slow or step-by-step. <b><u>Cautious</u></b> means careful."
+  },
+  {
+    "question": "An injury involving a deep cut or tear in the skin",
+    "options": ["Laceration", "Bruise", "Fracture", "Rash"],
+    "answer": "Laceration",
+    "explanation": "<b><u>Laceration</u></b> is a deep cut or tear. <b><u>Bruise</u></b> is bleeding under the skin. <b><u>Fracture</u></b> is a broken bone. <b><u>Rash</u></b> is a skin irritation."
+  },
+  {
+    "question": "Adding extra decoration or detail to something",
+    "options": ["Embellished", "Reduced", "Simplified", "Obscured"],
+    "answer": "Embellished",
+    "explanation": "<b><u>Embellished</u></b> means decorated or exaggerated. <b><u>Reduced</u></b> means made smaller. <b><u>Simplified</u></b> means made easier or more basic. <b><u>Obscured</u></b> means hidden or unclear."
+  },
+  {
+    "question": "Being formally accused of wrongdoing",
+    "options": ["Incriminate", "Absolve", "Release", "Praise"],
+    "answer": "Incriminate",
+    "explanation": "<b><u>Incriminate</u></b> means to suggest guilt. <b><u>Absolve</u></b> means to clear of blame. <b><u>Release</u></b> means to free. <b><u>Praise</u></b> means to compliment."
+  },
+  {
+    "question": "Causing someone to be caught in a trap or problematic situation",
+    "options": ["Ensnare", "Free", "Help", "Assist"],
+    "answer": "Ensnare",
+    "explanation": "<b><u>Ensnare</u></b> means trap or entangle. <b><u>Free</u></b> means release. <b><u>Help</u></b> means assist positively. <b><u>Assist</u></b> is to aid or help."
+  },
+  {
+    "question": "Causing someone to become involved in a conflict",
+    "options": ["Embroil", "Calm", "Ignore", "Support"],
+    "answer": "Embroil",
+    "explanation": "<b><u>Embroil</u></b> means involve in conflict. <b><u>Calm</u></b> means soothe. <b><u>Ignore</u></b> means pay no attention. <b><u>Support</u></b> means help or agree with."
+  },
+  {
+    "question": "Charged with wrongdoing or blame",
+    "options": ["Inculpate", "Release", "Honor", "Dismiss"],
+    "answer": "Inculpate",
+    "explanation": "<b><u>Inculpate</u></b> means to blame or accuse. <b><u>Release</u></b> means to free. <b><u>Honor</u></b> means to respect. <b><u>Dismiss</u></b> means to reject or let go."
+  },
+  {
+    "question": "Clarity and ease in understanding or expression",
+    "options": ["Perspicuity", "Vagueness", "Precision", "Insight"],
+    "answer": "Perspicuity",
+    "explanation": "<b><u>Perspicuity</u></b> means clarity. <b><u>Vagueness</u></b> means being unclear. <b><u>Precision</u></b> means exactness. <b><u>Insight</u></b> means deep understanding."
+  },
+  {
+    "question": "Disrespectful speech or action against something sacred",
+    "options": ["Blasphemy", "Worship", "Praise", "Devotion"],
+    "answer": "Blasphemy",
+    "explanation": "<b><u>Blasphemy</u></b> insults sacred beliefs. <b><u>Worship</u></b> means reverence. <b><u>Praise</u></b> means approval. <b><u>Devotion</u></b> means loyalty or reverence."
+  },
+  {
+    "question": "Filled with strong or deep feeling",
+    "options": ["Impassioned", "Cheerful", "Tense", "Indifferent"],
+    "answer": "Impassioned",
+    "explanation": "<b><u>Impassioned</u></b> means intense emotion. <b><u>Cheerful</u></b> means joyful. <b><u>Tense</u></b> means anxious. <b><u>Indifferent</u></b> means unconcerned."
+  },
+  {
+    "question": "Formally charging someone with involvement in a crime",
+    "options": ["Inculpate", "Release", "Honor", "Dismiss"],
+    "answer": "Inculpate",
+    "explanation": "<b><u>Inculpate</u></b> means to blame or accuse. <b><u>Release</u></b> means to free. <b><u>Honor</u></b> means to respect. <b><u>Dismiss</u></b> means to reject or let go."
+  },
+  {
+    "question": "Gaining entrance by eating or absorbing",
+    "options": ["Ingest", "Inject", "Swallow", "Consume"],
+    "answer": "Ingest",
+    "explanation": "<b><u>Ingest</u></b> means to take into the body. <b><u>Inject</u></b> means to force into. <b><u>Swallow</u></b> means to send down the throat. <b><u>Consume</u></b> means to use or eat."
+  },
+  {
+    "question": "Held or expressed opinions that go against official religious teachings",
+    "options": ["Heretical", "Faithful", "Devout", "Traditional"],
+    "answer": "Heretical",
+    "explanation": "<b><u>Heretical</u></b> means unorthodox beliefs. <b><u>Faithful</u></b> means loyal. <b><u>Devout</u></b> means deeply religious. <b><u>Traditional</u></b> means following custom."
+  },
+  {
+    "question": "Not clearly expressed or lacking detail",
+    "options": ["Vagueness", "Ambiguity", "Silence", "Indifference"],
+    "answer": "Vagueness",
+    "explanation": "<b><u>Vagueness</u></b> means being unclear. <b><u>Ambiguity</u></b> means multiple meanings. <b><u>Silence</u></b> means absence of sound. <b><u>Indifference</u></b> means lack of concern."
+  },
+  {
+    "question": "Relating to something sacred or holy",
+    "options": ["Sanctity", "Impurity", "Profanity", "Secularity"],
+    "answer": "Sanctity",
+    "explanation": "<b><u>Sanctity</u></b> means holiness. <b><u>Impurity</u></b> means unclean. <b><u>Profanity</u></b> means disrespect. <b><u>Secularity</u></b> means worldly, not religious."
+  },
+  {
+    "question": "Richly adorned or elaborately detailed",
+    "options": ["Ornate", "Basic", "Rough", "Dull"],
+    "answer": "Ornate",
+    "explanation": "<b><u>Ornate</u></b> means heavily decorated. <b><u>Basic</u></b> means simple. <b><u>Rough</u></b> means coarse. <b><u>Dull</u></b> means boring or not bright."
+  },
+  {
+    "question": "Soft, faint, or barely visible light",
+    "options": ["Glimmering", "Shining", "Flickering", "Beaming"],
+    "answer": "Glimmering",
+    "explanation": "<b><u>Glimmering</u></b> means a faint light. <b><u>Shining</u></b> is bright light. <b><u>Flickering</u></b> is unsteady light. <b><u>Beaming</u></b> means steady and bright."
+  },
+  {
+    "question": "Very heavy or intense rainfall",
+    "options": ["Torrential", "Dry", "Cloudy", "Scattered"],
+    "answer": "Torrential",
+    "explanation": "<b><u>Torrential</u></b> means pouring heavily. <b><u>Dry</u></b> means without rain. <b><u>Cloudy</u></b> means overcast. <b><u>Scattered</u></b> means irregular or dispersed."
+  },
+  {
+    "question": "Winding or indirect in path or thought",
+    "options": ["Meandering", "Straight", "Direct", "Rapid"],
+    "answer": "Meandering",
+    "explanation": "<b><u>Meandering</u></b> means wandering or not straight. <b><u>Straight</u></b> means linear. <b><u>Direct</u></b> means to the point. <b><u>Rapid</u></b> means fast."
+  },
+  {
+    "question": "Highly emotional or intense in expression",
+    "options": ["Passionate", "Logical", "Reserved", "Calm"],
+    "answer": "Passionate",
+    "explanation": "<b><u>Passionate</u></b> means full of strong feeling. <b><u>Logical</u></b> means based on reason. <b><u>Reserved</u></b> means emotionally restrained. <b><u>Calm</u></b> means peaceful."
+  },
+  {
+    "question": "Strongly expressed emotion, often anger or force",
+    "options": ["Vehement", "Gentle", "Relaxed", "Mild"],
+    "answer": "Vehement",
+    "explanation": "<b><u>Vehement</u></b> means intense or forceful. <b><u>Gentle</u></b> means soft. <b><u>Relaxed</u></b> means at ease. <b><u>Mild</u></b> means not intense."
+  },
+  {
+    "question": "Something that is deceptive or not real",
+    "options": ["Illusory", "Imaginary", "Delusional", "Visual"],
+    "answer": "Illusory",
+    "explanation": "<b><u>Illusory</u></b> means not real or misleading. <b><u>Imaginary</u></b> means made up in the mind. <b><u>Delusional</u></b> means false belief. <b><u>Visual</u></b> means related to sight."
+  }
+],
 
-  <div class="content">
-    <div class="quiz-box" id="quizArea">
-      <p>Select a category from the sidebar to start the quiz.</p>
-    </div>
-  </div>
+D: [
+    
+  {
+    "question": "A person who is indifferent to art or intellectual values",
+    "options": ["Philistine", "Scholar", "Aesthete", "Critic"],
+    "answer": "Philistine",
+    "explanation": "<b><u>Philistine</u></b> means someone uninterested in culture or art. <b><u>Scholar</u></b> is someone highly educated. <b><u>Aesthete</u></b> appreciates beauty. <b><u>Critic</u></b> evaluates art or literature."
+  },
+  {
+    "question": "A person who behaves without moral restraint, especially in sexual matters",
+    "options": ["Libertine", "Monk", "Gentleman", "Idealist"],
+    "answer": "Libertine",
+    "explanation": "<b><u>Libertine</u></b> is morally unrestrained. <b><u>Monk</u></b> lives a life of discipline and celibacy. <b><u>Gentleman</u></b> behaves with courtesy. <b><u>Idealist</u></b> values high moral principles."
+  },
+  {
+    "question": "A man who engages in love affairs lightly or insincerely",
+    "options": ["Philanderer", "Lover", "Romantic", "Suitor"],
+    "answer": "Philanderer",
+    "explanation": "<b><u>Philanderer</u></b> has casual romantic relationships. <b><u>Lover</u></b> has sincere affection. <b><u>Romantic</u></b> expresses love genuinely. <b><u>Suitor</u></b> seeks someone’s affection seriously."
+  },
+  {
+    "question": "A man who lives a life of pleasure and indulgence, especially involving women",
+    "options": ["Playboy", "Philanthropist", "Patriot", "Philosopher"],
+    "answer": "Playboy",
+    "explanation": "<b><u>Playboy</u></b> seeks luxury and romantic affairs. <b><u>Philanthropist</u></b> donates to good causes. <b><u>Patriot</u></b> supports their country. <b><u>Philosopher</u></b> reflects on ideas and ethics."
+  },
+  {
+    "question": "Openly showing sexual desire or behavior considered morally offensive",
+    "options": ["Licentious", "Chaste", "Decent", "Restrained"],
+    "answer": "Licentious",
+    "explanation": "<b><u>Licentious</u></b> means lacking sexual morals. <b><u>Chaste</u></b> means pure or modest. <b><u>Decent</u></b> is proper in behavior. <b><u>Restrained</u></b> means controlled or moderate."
+  },
+  {
+    "question": "Having strong sexual drive or lustful thoughts",
+    "options": ["Libidinous", "Neutral", "Asexual", "Cold"],
+    "answer": "Libidinous",
+    "explanation": "<b><u>Libidinous</u></b> means strongly driven by sexual desire. <b><u>Neutral</u></b> is not taking sides or showing emotion. <b><u>Asexual</u></b> means lacking sexual attraction. <b><u>Cold</u></b> means emotionally distant."
+  },
+  {
+    "question": "Overly interested in sexual matters; lewd",
+    "options": ["Lecherous", "Innocent", "Pure", "Respectful"],
+    "answer": "Lecherous",
+    "explanation": "<b><u>Lecherous</u></b> means excessively lustful. <b><u>Innocent</u></b> is naive or morally clean. <b><u>Pure</u></b> means clean or unspoiled. <b><u>Respectful</u></b> means showing regard."
+  },
+  {
+    "question": "Behaving in a way that is overtly and offensively sexual",
+    "options": ["Lascivious", "Courteous", "Mild", "Subtle"],
+    "answer": "Lascivious",
+    "explanation": "<b><u>Lascivious</u></b> means showing sexual desire in an inappropriate way. <b><u>Courteous</u></b> means polite and respectful. <b><u>Mild</u></b> means gentle. <b><u>Subtle</u></b> means not obvious or direct."
+  },
+  {
+    "question": "A sexually immoral or lewd behavior; slippery in nature or conduct",
+    "options": ["Lubricious", "Innocuous", "Sincere", "Sturdy"],
+    "answer": "Lubricious",
+    "explanation": "<b><u>Lubricious</u></b> means offensively sexual or slippery. <b><u>Innocuous</u></b> means harmless. <b><u>Sincere</u></b> means genuine. <b><u>Sturdy</u></b> means strong or firm."
+  },
+  {
+    "question": "Engaging in many casual sexual relationships",
+    "options": ["Promiscuous", "Faithful", "Monogamous", "Shy"],
+    "answer": "Promiscuous",
+    "explanation": "<b><u>Promiscuous</u></b> means having multiple sexual partners indiscriminately. <b><u>Faithful</u></b> means loyal. <b><u>Monogamous</u></b> means having one partner. <b><u>Shy</u></b> means reserved or timid."
+  },
+  {
+    "question": "Choosing not to drink alcohol, often as a lifestyle decision",
+    "options": ["On the wagon", "Tipsy", "Addicted", "Buzzed"],
+    "answer": "On the wagon",
+    "explanation": "<b><u>On the wagon</u></b> means abstaining from alcohol. <b><u>Tipsy</u></b> means slightly drunk. <b><u>Addicted</u></b> means dependent. <b><u>Buzzed</u></b> means mildly drunk."
+  },
+  {
+    "question": "Not affected by alcohol; clear-headed",
+    "options": ["Sober", "Drunk", "High", "Stoned"],
+    "answer": "Sober",
+    "explanation": "<b><u>Sober</u></b> means not drunk or intoxicated. <b><u>Drunk</u></b> means affected by alcohol. <b><u>High</u></b> refers to drug intoxication. <b><u>Stoned</u></b> also refers to being high, especially from cannabis."
+  },
+  {
+    "question": "Avoiding indulgence, especially in food or drink",
+    "options": ["Abstemious", "Greedy", "Gluttonous", "Extravagant"],
+    "answer": "Abstemious",
+    "explanation": "<b><u>Abstemious</u></b> means self-disciplined or moderate. <b><u>Greedy</u></b> means wanting more than needed. <b><u>Gluttonous</u></b> means excessively indulging. <b><u>Extravagant</u></b> means overly luxurious or wasteful."
+  },
+  {
+    "question": "To throw or drop something from an aircraft or ship",
+    "options": ["Jettison", "Keep", "Secure", "Salvage"],
+    "answer": "Jettison",
+    "explanation": "<b><u>Jettison</u></b> means to throw off to lighten load. <b><u>Keep</u></b> means to retain. <b><u>Secure</u></b> means to fasten safely. <b><u>Salvage</u></b> means to recover or save."
+  },
+  {
+    "question": "Distorted or unnatural in shape or appearance",
+    "options": ["Grotesque", "Beautiful", "Symmetrical", "Graceful"],
+    "answer": "Grotesque",
+    "explanation": "<b><u>Grotesque</u></b> means comically or repulsively ugly. <b><u>Beautiful</u></b> means pleasing to look at. <b><u>Symmetrical</u></b> means balanced on both sides. <b><u>Graceful</u></b> means elegant in movement."
+  },
+  {
+    "question": "Strange or bizarre in appearance or behavior",
+    "options": ["Outlandish", "Ordinary", "Familiar", "Expected"],
+    "answer": "Outlandish",
+    "explanation": "<b><u>Outlandish</u></b> means very unusual or strange. <b><u>Ordinary</u></b> means common. <b><u>Familiar</u></b> means well-known. <b><u>Expected</u></b> means anticipated or likely."
+  },
+  {
+    "question": "Charming or old-fashioned in an attractive way",
+    "options": ["Quaint", "Ugly", "Modern", "Noisy"],
+    "answer": "Quaint",
+    "explanation": "<b><u>Quaint</u></b> means attractively old-fashioned. <b><u>Ugly</u></b> means unpleasant in appearance. <b><u>Modern</u></b> means current or up-to-date. <b><u>Noisy</u></b> means loud or disruptive."
+  },
+  {
+    "question": "Not honest or straightforward; tricky or sneaky",
+    "options": ["Devious", "Genuine", "Naive", "Honest"],
+    "answer": "Devious",
+    "explanation": "<b><u>Devious</u></b> means deceitful or underhanded. <b><u>Genuine</u></b> means real or sincere. <b><u>Naive</u></b> means inexperienced or too trusting. <b><u>Honest</u></b> means truthful and fair."
+  },
+  {
+    "question": "Secretive or done in a sneaky way to deceive",
+    "options": ["Underhand", "Open", "Frank", "Transparent"],
+    "answer": "Underhand",
+    "explanation": "<b><u>Underhand</u></b> means dishonest or covert. <b><u>Open</u></b> means transparent. <b><u>Frank</u></b> means direct and honest. <b><u>Transparent</u></b> means easy to perceive or open."
+  },
+  {
+    "question": "Fading away quickly like a passing moment",
+    "options": ["Evanescent", "Enduring", "Permanent", "Timeless"],
+    "answer": "Evanescent",
+    "explanation": "<b><u>Evanescent</u></b> means lasting a short time. <b><u>Enduring</u></b> means lasting. <b><u>Permanent</u></b> means unchanging. <b><u>Timeless</u></b> means eternal."
+  },
+  {
+    "question": "Passing away quickly; short-lived",
+    "options": ["Fugacious", "Constant", "Eternal", "Lingering"],
+    "answer": "Fugacious",
+    "explanation": "<b><u>Fugacious</u></b> means fleeting or brief. <b><u>Constant</u></b> means steady. <b><u>Eternal</u></b> means everlasting. <b><u>Lingering</u></b> means lasting longer than expected."
+  },
+  {
+    "question": "Lasting for a very short time",
+    "options": ["Ephemeral", "Endless", "Lasting", "Perpetual"],
+    "answer": "Ephemeral",
+    "explanation": "<b><u>Ephemeral</u></b> means very brief. <b><u>Endless</u></b> means without end. <b><u>Lasting</u></b> means durable. <b><u>Perpetual</u></b> means continuing forever."
+  },
+  {
+    "question": "Lasting for a brief time before disappearing",
+    "options": ["Fleeting", "Fixed", "Lasting", "Permanent"],
+    "answer": "Fleeting",
+    "explanation": "<b><u>Fleeting</u></b> means quickly passing. <b><u>Fixed</u></b> means permanent. <b><u>Lasting</u></b> means enduring. <b><u>Permanent</u></b> means unchanging."
+  },
+  {
+    "question": "Temporary or short-lived; not lasting",
+    "options": ["Transient", "Stable", "Enduring", "Persistent"],
+    "answer": "Transient",
+    "explanation": "<b><u>Transient</u></b> means lasting for a short time. <b><u>Stable</u></b> means steady or unchanging. <b><u>Enduring</u></b> means lasting long. <b><u>Persistent</u></b> means continuing firmly."
+  },
+  {
+    "question": "About to happen; approaching soon",
+    "options": ["Imminent", "Distant", "Avoidable", "Past"],
+    "answer": "Imminent",
+    "explanation": "<b><u>Imminent</u></b> means likely to happen soon. <b><u>Distant</u></b> means far away. <b><u>Avoidable</u></b> means preventable. <b><u>Past</u></b> means already occurred."
+  },
+  {
+    "question": "About to occur; likely to happen soon",
+    "options": ["Impending", "Unlikely", "Delayed", "Cancelled"],
+    "answer": "Impending",
+    "explanation": "<b><u>Impending</u></b> means approaching or near. <b><u>Unlikely</u></b> means improbable. <b><u>Delayed</u></b> means postponed. <b><u>Cancelled</u></b> means called off."
+  },
+  {
+    "question": "Happening very soon or close to occurring",
+    "options": ["At hand", "Far off", "Never", "Irrelevant"],
+    "answer": "At hand",
+    "explanation": "<b><u>At hand</u></b> means very near or soon. <b><u>Far off</u></b> means distant. <b><u>Never</u></b> means not at all. <b><u>Irrelevant</u></b> means unrelated."
+  },
+  {
+    "question": "Threatening or suggesting danger is coming",
+    "options": ["Menacing", "Comforting", "Safe", "Friendly"],
+    "answer": "Menacing",
+    "explanation": "<b><u>Menacing</u></b> means threatening or alarming. <b><u>Comforting</u></b> means soothing. <b><u>Safe</u></b> means secure. <b><u>Friendly</u></b> means kind and welcoming."
+  }
+],
 
-  <script>
-    let allQuizzes = {};
-    const state = {};
-    let currentSet = "";
-    let timer = null;
-    let startTime = 0;
 
-    function shuffleArray(array) {
-      return array
-        .map(value => ({ value, sort: Math.random() }))
-        .sort((a, b) => a.sort - b.sort)
-        .map(({ value }) => value);
-    }
 
-    fetch('words.json')
-      .then(res => res.json())
-      .then(data => {
-        allQuizzes = data;
-        const sidebar = document.getElementById("sidebarButtons");
-        sidebar.innerHTML = "";
-        Object.keys(allQuizzes).sort().forEach(letter => {
-          const btn = document.createElement("button");
-          btn.textContent = `Set ${letter} Words`;
-          btn.onclick = () => startQuiz(letter);
-          sidebar.appendChild(btn);
-        });
-      })
-      .catch(err => {
-        console.error("Failed to load quiz data:", err);
-        alert("Error loading quiz content. Please check your JSON file.");
-      });
 
-    function startQuiz(letter) {
-      currentSet = letter;
-      if (!state[letter]) {
-        state[letter] = {
-          questions: allQuizzes[letter],
-          index: 0,
-          score: 0,
-          times: [],
-          completed: false,
-          feedbacks: []
-        };
-      }
-      const quiz = state[letter];
-      if (quiz.completed) {
-        showSummary(letter);
-      } else {
-        loadQuestion(letter);
-      }
-    }
-
-    function loadQuestion(letter) {
-      clearInterval(timer);
-      const quiz = state[letter];
-      const q = quiz.questions[quiz.index];
-      const area = document.getElementById("quizArea");
-
-      area.innerHTML = `
-        <div class="question">Q${quiz.index + 1}: ${q.question}</div>
-        ${shuffleArray(q.options).map(opt =>
-          `<div class="option"><input type="radio" name="answer" value="${opt}" onchange="submitAnswer()" /> ${opt}</div>`
-        ).join("")}
-        <div class="timer" id="timer">Time left: 15s</div>
-      `;
-
-      startTimer();
-      startTime = Date.now();
-    }
-
-    function startTimer() {
-      clearInterval(timer);
-      let timeLeft = 15;
-      const display = document.getElementById("timer");
-      display.innerText = `Time left: ${timeLeft}s`;
-
-      timer = setInterval(() => {
-        timeLeft--;
-        if (timeLeft >= 0) display.innerText = `Time left: ${timeLeft}s`;
-        if (timeLeft === 0) {
-          clearInterval(timer);
-          submitAnswer(true);
-        }
-      }, 1000);
-    }
-
-    function submitAnswer(auto = false) {
-      clearInterval(timer);
-      const quiz = state[currentSet];
-      const q = quiz.questions[quiz.index];
-      const selected = document.querySelector('input[name="answer"]:checked');
-      const timeSpent = Math.round((Date.now() - startTime) / 1000);
-      quiz.times.push(timeSpent);
-
-      let message = "";
-      const choice = selected ? selected.value : null;
-
-      if (!choice) {
-        message = `⏰ Time's up!<br><strong>Correct:</strong> ${q.answer}<br>${q.explanation}`;
-      } else if (choice === q.answer) {
-        quiz.score++;
-        message = `✅ Correct! ${q.explanation}`;
-      } else {
-        message = `❌ Incorrect.<br><strong>Correct:</strong> ${q.answer}<br>${q.explanation}`;
-      }
-
-      quiz.feedbacks.push({
-        question: q.question,
-        feedback: message
-      });
-
-      const fb = document.createElement("div");
-      fb.className = "feedback";
-      fb.innerHTML = message;
-      document.getElementById("quizArea").appendChild(fb);
-
-      quiz.index++;
-      if (quiz.index < quiz.questions.length) {
-        setTimeout(() => loadQuestion(currentSet), 2000);
-      } else {
-        quiz.completed = true;
-        setTimeout(() => showSummary(currentSet), 2200);
-      }
-    }
-
-    function showSummary(letter) {
-      const quiz = state[letter];
-      const area = document.getElementById("quizArea");
-      let summary = `<div class="summary"><h3>📊 ${letter} Words – Quiz Summary</h3>`;
-      summary += `<p><strong>Score:</strong> ${quiz.score} / ${quiz.questions.length}</p>`;
-      summary += `<strong>⏱ Time per question:</strong><br>`;
-      quiz.times.forEach((t, i) => {
-        summary += `Q${i + 1}: ${t} seconds<br>`;
-      });
-      summary += `<br><strong>📝 Feedback:</strong><br>`;
-      quiz.feedbacks.forEach((f, i) => {
-        summary += `<p><strong>Q${i + 1}:</strong> ${f.question}<br>${f.feedback}</p>`;
-      });
-      summary += `<br><button onclick=\"reviewAnswers('${letter}')\">🔁 Review Questions</button>`;
-      summary += `</div>`;
-      area.innerHTML = summary;
-    }
-
-    function reviewAnswers(letter) {
-      const quiz = state[letter];
-      const area = document.getElementById("quizArea");
-
-      let reviewHTML = `<div class="summary"><h3>🔁 Review – ${letter} Words</h3>`;
-
-      quiz.questions.forEach((q, i) => {
-        const userFeedback = quiz.feedbacks[i];
-        let selected = "⏰ Unanswered";
-        if (userFeedback.feedback.includes("Correct!")) {
-          selected = q.answer;
-        } else if (userFeedback.feedback.includes("⏰ Time's up!")) {
-          selected = "⏰ Unanswered";
-        } else {
-          const match = userFeedback.feedback.match(/<br><strong>Correct:<\/strong> (.*?)<br>/);
-          if (match) selected = match[1];
-        }
-
-        reviewHTML += `
-          <div class="question"><strong>Q${i + 1}:</strong> ${q.question}</div>
-          <ul>
-            ${q.options.map(opt => {
-              const mark = opt === q.answer ? "✅" : (opt === selected ? "❌" : "");
-              return `<li>${mark} ${opt}</li>`;
-            }).join("")}
-          </ul>
-          <div class="feedback">${userFeedback.feedback}</div><hr>
-        `;
-      });
-
-              reviewHTML += `<button onclick="showSummary('${letter}')">⬅ Back to Summary</button>`;
-      reviewHTML += `</div>`;
-
-      area.innerHTML = reviewHTML;
-    }
-  </script>
-</body>
-</html>
+}
