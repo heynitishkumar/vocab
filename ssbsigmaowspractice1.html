@@ -1,3 +1,4 @@
+
 <!-- Filename: auto-submit-quiz-hub.html -->
 <!DOCTYPE html>
 <html lang="en">
@@ -6,6 +7,7 @@
   <title>Auto-Submit Quiz Hub</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <style>
+   
     body { margin: 0; font-family: Arial, sans-serif; display: flex; height: 100vh; }
     .sidebar {
       width: 200px; background: #2c3e50; color: white; padding: 20px;
@@ -32,20 +34,41 @@
       margin-top: 20px; padding: 15px; background: #e0f7e0;
       border-left: 5px solid green; border-radius: 6px;
     }
+
+    .container {
+  display: flex;
+  height: 100vh;
+}
+.hide-sidebar .sidebar {
+  display: none;
+}
+.hide-sidebar .content {
+  width: 100%;
+  padding-left: 20px;
+}
+
   </style>
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 </head>
 <body>
+<div class="container">
   <div class="sidebar">
     <h2>Vocabulary Sets</h2>
     <button onclick="startQuiz('A')">Set A Words</button>
   </div>
 
   <div class="content">
+   <button onclick="toggleSidebar()" style="
+  position: absolute; top: 10px; left: 10px;
+  z-index: 1000; padding: 6px 12px;
+  background: #2980b9; color: white; border: none; border-radius: 4px;
+">
+  ☰ Toggle Menu
+</button>
     <div class="quiz-box" id="quizArea">
       <p>Select a category from the sidebar to start the quiz.</p>
     </div>
-  </div>
+  </div></div>
 
 <script>
 const allQuizzes = {
@@ -431,6 +454,11 @@ function reviewAnswers(letter) {
   reviewHTML += `</div>`;
   area.innerHTML = reviewHTML;
 }
+ 
+function toggleSidebar() {
+  document.body.classList.toggle("hide-sidebar");
+}
+
 </script>
 
 </body>
