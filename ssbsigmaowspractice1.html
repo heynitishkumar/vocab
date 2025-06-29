@@ -49,6 +49,9 @@
 
   </style>
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
 </head>
 <body>
 <div class="container">
@@ -63,7 +66,7 @@
   z-index: 1000; padding: 6px 12px;
   background: #2980b9; color: white; border: none; border-radius: 4px;
 ">
-  ☰ Toggle Menu
+  ☰ Hide Menu
 </button>
     <div class="quiz-box" id="quizArea">
       <p>Select a category from the sidebar to start the quiz.</p>
@@ -421,6 +424,7 @@ function showSummary(letter) {
     summary += `<p><strong>Q${i + 1}:</strong> ${f.question}<br>${f.feedback}</p>`;
   });
   summary += `<br><button onclick="reviewAnswers('${letter}')">🔁 Review Questions</button>`;
+  summary += `<button onclick="exportFullSummary('${letter}')">📥 Export Full PDF</button>`;
   summary += `</div>`;
   area.innerHTML = summary;
 }
@@ -457,6 +461,45 @@ function reviewAnswers(letter) {
  
 function toggleSidebar() {
   document.body.classList.toggle("hide-sidebar");
+}
+async function exportFullSummary(letter) {
+  const { jsPDF } = window.jspdf;
+  const quizArea = document.getElementById("quizArea");
+  const originalHTML = quizArea.innerHTML;
+
+  // Switch to review mode to show all questions and feedbacks
+  reviewAnswers(letter);
+
+  // Allow a short delay for rendering
+  await new Promise(resolve => setTimeout(resolve, 300));
+
+  html2canvas(quizArea, { scale: 2 }).then(canvas => {
+    const imgData = canvas.toDataURL("image/png");
+    const pdf = new jsPDF("p", "mm", "a4");
+    const pageWidth = 210;
+    const pageHeight = 297;
+    const imgProps = pdf.getImageProperties(imgData);
+    const pdfWidth = pageWidth;
+    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+    let heightLeft = pdfHeight;
+    let position = 0;
+
+    pdf.addImage(imgData, "PNG", 0, position, pdfWidth, pdfHeight);
+    heightLeft -= pageHeight;
+
+    while (heightLeft > 0) {
+      position = heightLeft - pdfHeight;
+      pdf.addPage();
+      pdf.addImage(imgData, "PNG", 0, position, pdfWidth, pdfHeight);
+      heightLeft -= pageHeight;
+    }
+
+    pdf.save(`vocab-review-${letter}.pdf`);
+
+    // Restore original summary view
+    showSummary(letter);
+  });
 }
 
 </script>
