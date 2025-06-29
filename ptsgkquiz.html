@@ -1,0 +1,88 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Auto-Submit Quiz Hub</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <style>
+   
+    body { margin: 0; font-family: Arial, sans-serif; display: flex; height: 100vh; }
+    .sidebar {
+      width: 200px; background: #2c3e50; color: white; padding: 20px;
+      overflow-y: auto; max-height: 100vh; position: sticky; top: 0;
+    }
+    .sidebar h2 { font-size: 18px; margin-bottom: 15px; }
+    .sidebar button {
+      width: 100%; margin-bottom: 10px; padding: 8px;
+      background: #34495e; color: white; border: none;
+      text-align: left; border-radius: 4px; cursor: pointer;
+    }
+    .sidebar button:hover { background: #1abc9c; }
+    .content {
+      flex-grow: 1; padding: 30px; background: #ecf0f1; overflow-y: auto;
+    }
+    .quiz-box {
+      background: white; padding: 20px; border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1); max-width: 650px; margin: auto;
+    }
+    .question { font-weight: bold; margin-bottom: 10px; }
+    .option { margin: 8px 0; }
+    .timer { font-size: 16px; color: #d9534f; font-weight: bold; margin: 10px 0; }
+    .feedback, .summary {
+      margin-top: 20px; padding: 15px; background: #e0f7e0;
+      border-left: 5px solid green; border-radius: 6px;
+    }
+
+    .container {
+  display: flex;
+  height: 100vh;
+}
+.hide-sidebar .sidebar {
+  display: none;
+}
+.hide-sidebar .content {
+  width: 100%;
+  padding-left: 20px;
+}
+
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+</head>
+<body>
+<div class="container">
+  <div class="sidebar">
+    <h2>GS Quiz Sets</h2>
+    <button onclick="startQuiz('A')">Set A </button>
+    <button onclick="startQuiz('B')">Set B </button>
+    <button onclick="startQuiz('C')">Set C  </button>
+    <button onclick="startQuiz('D')">Set D  </button>
+    <button onclick="startQuiz('E')">Set E  </button>
+
+
+  </div>
+
+  <div class="content">
+   <button onclick="toggleSidebar()" style="
+  position: absolute; top: 10px; left: 10px;
+  z-index: 1000; padding: 6px 12px;
+  background: #2980b9; color: white; border: none; border-radius: 4px;
+">
+  ☰ Hide Menu
+</button>
+    <div class="quiz-box" id="quizArea">
+      <p>Select a category from the sidebar to start the quiz.</p>
+    </div>
+  </div></div>
+
+
+<script src="temp1.json">
+</script>
+<script src="temp2.json">
+</script>
+
+<script src="temp.json">
+</script>
+</body>
+</html>

@@ -1,0 +1,190 @@
+const allQuizzes = {
+B:[
+ {
+    "question": "Which term was removed by the 44th Amendment Act and replaced with 'armed rebellion' under Article 352?",
+    "options": ["Internal disturbance", "Civil war", "Insurgency", "Martial law"],
+    "answer": "Internal disturbance",
+    "explanation": "<b><u>'Internal disturbance'</u></b> was too vague and was replaced with <b>'armed rebellion'</b> by the <b>44th Amendment Act, 1978</b> to prevent misuse of National Emergency."
+  },
+  {
+    "question": "Which of the following is <b>not</b> a ground for declaring National Emergency under Article 352?",
+    "options": ["Internal disturbance", "War", "External aggression", "Armed rebellion"],
+    "answer": "Internal disturbance",
+    "explanation": "Since the <b>44th Amendment</b>, <b>internal disturbance</b> is <b>no longer a valid ground</b>. Valid grounds include <b>war, external aggression, and armed rebellion</b>."
+  },
+  {
+    "question": "How many times has National Emergency been declared in India so far?",
+    "options": ["3 times", "5 times", "1 time", "Never"],
+    "answer": "3 times",
+    "explanation": "National Emergency has been declared <b>3 times</b>: <br>1) 1962 - China war <br>2) 1971 - Pakistan war <br>3) 1975 - Internal disturbances (later criticized and corrected via 44th Amendment)."
+  },
+  {
+    "question": "Which article deals with State Emergency, also known as President's Rule?",
+    "options": ["Article 356", "Article 352", "Article 360", "Article 368"],
+    "answer": "Article 356",
+    "explanation": "<b><u>Article 356</u></b> deals with <b>President's Rule</b> or <b>State Emergency</b> when a state government fails to function according to constitutional provisions."
+  },
+  {
+    "question": "Which article provides for Financial Emergency in India?",
+    "options": ["Article 360", "Article 352", "Article 356", "Article 365"],
+    "answer": "Article 360",
+    "explanation": "<b><u>Article 360</u></b> enables the President to declare a <b>Financial Emergency</b> if India’s financial stability is threatened. It has <b>never been used</b> so far."
+  },
+  {
+    "question": "June 25, the day Emergency was imposed in 1975, is remembered as:",
+    "options": ["Samvidhaan Hatya Diwas", "Constitution Day", "Republic Day", "Democracy Day"],
+    "answer": "Samvidhaan Hatya Diwas",
+    "explanation": "Emergency was declared on <b>June 25, 1975</b>, and is often remembered as <b>'Samvidhaan Hatya Diwas'</b> or the day the Constitution was attacked."
+  },
+ {
+    "question": "In which year was the first Wimbledon tournament held?",
+    "options": ["1877", "1900", "1896", "1924"],
+    "answer": "1877",
+    "explanation": "The <b>first Wimbledon tournament</b> was held in <b>1877</b>, making it the <b>oldest tennis tournament</b> in the world."
+  },
+  {
+    "question": "Which of the following statements about Wimbledon is true?",
+    "options": [
+      "It is the oldest tennis tournament in the world",
+      "It is played on a clay court",
+      "It began in 1920",
+      "It is held in January"
+    ],
+    "answer": "It is the oldest tennis tournament in the world",
+    "explanation": "<b><u>Wimbledon</u></b> began in <b>1877</b> and is played on <b>grass courts</b> in June–July, making it the <b>oldest tennis tournament</b>."
+  },
+  {
+    "question": "Which surface is the Wimbledon Grand Slam tournament played on?",
+    "options": ["Grass", "Clay", "Hard", "Synthetic"],
+    "answer": "Grass",
+    "explanation": "Wimbledon is the only Grand Slam played on <b><u>grass courts</u></b>, maintaining its traditional surface since inception."
+  },
+  {
+    "question": "Match the Grand Slam with its surface: Australian Open – ?, French Open – ?, Wimbledon – ?, US Open – ?",
+    "options": [
+      "Hard, Clay, Grass, Hard",
+      "Clay, Grass, Hard, Clay",
+      "Hard, Grass, Clay, Hard",
+      "Grass, Clay, Hard, Synthetic"
+    ],
+    "answer": "Hard, Clay, Grass, Hard",
+    "explanation": "<b>Australian Open</b> – Hard Court<br><b>French Open</b> – Clay Court<br><b>Wimbledon</b> – Grass Court<br><b>US Open</b> – Hard Court"
+  },
+  {
+    "question": "Which tennis tournament is exclusively for men’s national teams?",
+    "options": ["Davis Cup", "Billie Jean King Cup", "Wimbledon", "ATP Finals"],
+    "answer": "Davis Cup",
+    "explanation": "<b><u>Davis Cup</u></b> is the premier international team event in men’s tennis. <b>Billie Jean King Cup</b> is the women's equivalent."
+  },
+  {
+    "question": "Which tennis tournament is held for women’s national teams?",
+    "options": ["Billie Jean King Cup", "Davis Cup", "WTA Finals", "Wimbledon"],
+    "answer": "Billie Jean King Cup",
+    "explanation": "<b><u>Billie Jean King Cup</u></b> is the <b>women’s team tournament</b> in international tennis. It was earlier known as the Fed Cup."
+  },
+  {
+    "question": "Which of the following are top-tier annual tournaments on the ATP and WTA tours respectively?",
+    "options": ["Masters 1000 (Men), WTA 1000 (Women)", "ATP 500, WTA 500", "Davis Cup, Billie Jean King Cup", "Grand Slams only"],
+    "answer": "Masters 1000 (Men), WTA 1000 (Women)",
+    "explanation": "<b><u>Masters 1000</u></b> for men and <b><u>WTA 1000</u></b> for women are among the most prestigious tournaments after the Grand Slams."
+  },
+{
+    "question": "Which country has become the first in the world to lose all of its glaciers due to climate change?",
+    "options": ["Venezuela", "Nepal", "Greenland", "Bhutan"],
+    "answer": "Venezuela",
+    "explanation": "<b><u>Venezuela</u></b> is the <b>first country</b> to lose all its glaciers due to the impact of <b>climate change</b> and global warming."
+  },
+  {
+    "question": "Which 1985 agreement was adopted for the protection of the ozone layer?",
+    "options": ["Vienna Convention", "Montreal Protocol", "Kyoto Protocol", "Paris Agreement"],
+    "answer": "Vienna Convention",
+    "explanation": "The <b><u>Vienna Convention (1985)</u></b> was adopted to protect the <b>ozone layer</b>, and led to the <b>Montreal Protocol</b> later."
+  },
+  {
+    "question": "The Minamata Convention is associated with which environmental issue?",
+    "options": ["Mercury poisoning", "Oil spills", "Plastic pollution", "Carbon emissions"],
+    "answer": "Mercury poisoning",
+    "explanation": "The <b><u>Minamata Convention</u></b> is named after a city in Japan and addresses <b>mercury poisoning</b> caused by industrial discharge."
+  },
+  {
+    "question": "Which convention was signed in 2001 to control Persistent Organic Pollutants (POPs)?",
+    "options": ["Stockholm Convention", "Basel Convention", "Vienna Convention", "Rio Declaration"],
+    "answer": "Stockholm Convention",
+    "explanation": "The <b><u>Stockholm Convention (2001)</u></b> aims to eliminate or restrict the production and use of <b>Persistent Organic Pollutants</b> (POPs)."
+  },
+  {
+    "question": "What is the Montreal Protocol primarily aimed at phasing out?",
+    "options": ["CFCs", "Carbon dioxide", "Lead", "Plastics"],
+    "answer": "CFCs",
+    "explanation": "<b><u>Montreal Protocol</u></b> focuses on phasing out <b>Chlorofluorocarbons (CFCs)</b> and other ozone-depleting substances. Later extended to <b>HFCs</b> via the <b>Kigali Amendment</b>."
+  },
+  {
+    "question": "The Basel Convention, signed in 1989, is related to:",
+    "options": ["Transboundary movement of hazardous waste", "Clean water access", "Air pollution monitoring", "Deforestation control"],
+    "answer": "Transboundary movement of hazardous waste",
+    "explanation": "The <b><u>Basel Convention</u></b> controls the <b>transboundary movement of hazardous waste</b> and prevents dumping in less developed countries."
+  },
+  {
+    "question": "What was the focus of the 1992 Earth Summit held in Rio de Janeiro?",
+    "options": ["Agenda 21 and sustainable development", "Renewable energy targets", "Carbon trading", "Marine conservation"],
+    "answer": "Agenda 21 and sustainable development",
+    "explanation": "The <b><u>Earth Summit (1992)</u></b> in Rio led to the creation of <b>Agenda 21</b>, a comprehensive plan for <b>sustainable development</b>."
+  },
+{
+    "question": "Who is credited with building the Grand Trunk Road and the Purana Quila in Delhi?",
+    "options": ["Sher Shah Suri", "Akbar", "Babur", "Aurangzeb"],
+    "answer": "Sher Shah Suri",
+    "explanation": "<b><u>Sher Shah Suri</u></b> built the <b>Grand Trunk Road</b> and the <b>Purana Quila</b> in Delhi. He was known for administrative and infrastructure reforms."
+  },
+  {
+    "question": "Who built the Moti Masjid in Lahore?",
+    "options": ["Jahangir", "Shah Jahan", "Aurangzeb", "Akbar"],
+    "answer": "Jahangir",
+    "explanation": "<b><u>Jahangir</u></b> is credited with building the <b>Moti Masjid in Lahore</b>, showcasing Mughal architecture."
+  },
+  {
+    "question": "The Moti Masjid in Agra was built by which Mughal emperor?",
+    "options": ["Shah Jahan", "Jahangir", "Aurangzeb", "Babur"],
+    "answer": "Shah Jahan",
+    "explanation": "<b><u>Shah Jahan</u></b>, known for his grand architectural contributions, built the <b>Moti Masjid in Agra</b>."
+  },
+  {
+    "question": "Which Mughal emperor built the Moti Masjid in Delhi?",
+    "options": ["Aurangzeb", "Shah Jahan", "Akbar", "Jahangir"],
+    "answer": "Aurangzeb",
+    "explanation": "<b><u>Aurangzeb</u></b> constructed the <b>Moti Masjid in Delhi</b>, known for its simplicity and elegance."
+  },
+  {
+    "question": "Who commissioned the construction of Humayun's Tomb in Delhi?",
+    "options": ["Bega Begum", "Akbar", "Babur", "Nur Jahan"],
+    "answer": "Bega Begum",
+    "explanation": "<b><u>Bega Begum</u></b>, the wife of <b>Humayun</b>, commissioned the <b>Humayun’s Tomb</b> in <b>1570</b> in Delhi. It was the first garden tomb in India."
+  },
+  {
+    "question": "Gol Gumbaz, the largest dome in India, is located in which state?",
+    "options": ["Karnataka", "Maharashtra", "Andhra Pradesh", "Madhya Pradesh"],
+    "answer": "Karnataka",
+    "explanation": "The <b><u>Gol Gumbaz</u></b>, located in <b>Karnataka</b>, is famous for having the <b>largest dome in India</b> and was completed in <b>1656</b>."
+  },
+{
+    "question": "What is the process called in which humus is formed from decomposed plant and animal remains in the soil?",
+    "options": ["Humification", "Oxidation", "Mineralization", "Nitrification"],
+    "answer": "Humification",
+    "explanation": "<b><u>Humification</u></b> is the process of forming <b>humus</b> from decomposed organic matter. It improves <b>soil fertility</b> and <b>water retention</b>."
+  },
+  {
+    "question": "Which process involves the breakdown of organic matter through reaction with oxygen, releasing CO₂ and nutrients?",
+    "options": ["Oxidation", "Humification", "Photosynthesis", "Fermentation"],
+    "answer": "Oxidation",
+    "explanation": "<b><u>Oxidation</u></b> breaks down organic matter by combining it with oxygen, releasing <b>carbon dioxide</b> and other <b>nutrients</b> back into the soil."
+  },
+  {
+    "question": "Which bacteria form a symbiotic relationship with leguminous plants and help in nitrogen fixation?",
+    "options": ["Rhizobium", "Azotobacter", "Nitrosomonas", "Pseudomonas"],
+    "answer": "Rhizobium",
+    "explanation": "<b><u>Rhizobium</u></b> lives in the root nodules of <b>leguminous plants</b> and fixes atmospheric nitrogen into a usable form for plants. Other bacteria like <b>Azotobacter</b> are free-living."
+  },
+]
+
+
+};

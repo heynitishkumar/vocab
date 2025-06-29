@@ -1,0 +1,876 @@
+const allQuizzes = {
+A:[
+  {
+    "question": "Which disorder is characterized by self-starvation and weight loss resulting in low weight for height and age?",
+    "options": ["Anorexia Nervosa", "Bulimia Nervosa", "Kwashiorkor", "Marasmus"],
+    "answer": "Anorexia Nervosa",
+    "explanation": "<b><u>Anorexia Nervosa</u></b> is an eating disorder where individuals starve themselves, leading to significantly low weight. <b><u>Bulimia Nervosa</u></b> involves binge eating. <b><u>Kwashiorkor</u></b> is due to severe protein deficiency. <b><u>Marasmus</u></b> is a deficiency of all macronutrients."
+  },
+  {
+    "question": "Which eating disorder involves consuming large amounts of food at one time?",
+    "options": ["Bulimia Nervosa", "Anorexia Nervosa", "Kwashiorkor", "Marasmus"],
+    "answer": "Bulimia Nervosa",
+    "explanation": "<b><u>Bulimia Nervosa</u></b> is characterized by binge eating episodes. <b><u>Anorexia Nervosa</u></b> involves self-starvation. <b><u>Kwashiorkor</u></b> and <b><u>Marasmus</u></b> are types of malnutrition in children."
+  },
+  {
+    "question": "Which condition results from a deficiency of all macronutrients and commonly affects infants aged 3–9 months?",
+    "options": ["Marasmus", "Kwashiorkor", "Bulimia Nervosa", "Anorexia Nervosa"],
+    "answer": "Marasmus",
+    "explanation": "<b><u>Marasmus</u></b> is a severe deficiency of protein, carbs, and fats, often in children aged 3–9 months. <b><u>Kwashiorkor</u></b> involves mainly protein deficiency. <b><u>Bulimia</u></b> and <b><u>Anorexia</u></b> are eating disorders."
+  },
+  {
+    "question": "Which disease is caused by severe protein deficiency and leads to swelling in the limbs, especially in children aged 3–5 years?",
+    "options": ["Kwashiorkor", "Marasmus", "Bulimia Nervosa", "Anorexia Nervosa"],
+    "answer": "Kwashiorkor",
+    "explanation": "<b><u>Kwashiorkor</u></b> is a protein deficiency disorder with symptoms like swelling, especially in children aged 3–5. <b><u>Marasmus</u></b> lacks all macronutrients. <b><u>Bulimia</u></b> and <b><u>Anorexia</u></b> are psychological eating disorders."
+  },
+  {
+    "question": "Which trade strategy, also known as import substitution, was adopted by India during the first seven Five-Year Plans?",
+    "options": ["Inward-looking strategy", "Outward-looking strategy", "Export-oriented strategy", "Balanced trade strategy"],
+    "answer": "Inward-looking strategy",
+    "explanation": "<b><u>Inward-looking strategy</u></b>, or import substitution, was adopted to reduce foreign dependency by promoting domestic production. <b><u>Outward-looking</u></b> promotes exports. <b><u>Export-oriented</u></b> focuses on international markets. <b><u>Balanced trade</u></b> involves maintaining trade equilibrium."
+  },
+  {
+    "question": "What is the long-term plan, extending over 20 years, associated with India’s Five-Year Plans called?",
+    "options": ["Perspective plan", "Mission plan", "Decadal plan", "Development agenda"],
+    "answer": "Perspective plan",
+    "explanation": "<b><u>Perspective plan</u></b> outlines long-term development goals beyond the Five-Year period. The others are not officially related to India's planning terminology."
+  },
+  {
+    "question": "Which institution was responsible for preparing India's Five-Year Plans?",
+    "options": ["Planning Commission", "NITI Aayog", "Finance Commission", "Constitutional Assembly"],
+    "answer": "Planning Commission",
+    "explanation": "<b><u>Planning Commission</u></b> was established in 1950 and drafted the Five-Year Plans. <b><u>NITI Aayog</u></b> replaced it in 2015. The <b><u>Finance Commission</u></b> deals with financial distribution. <b><u>Constitutional Assembly</u></b> drafted the Constitution."
+  },
+  {
+    "question": "What was the main focus of the First Five-Year Plan (1951–1956)?",
+    "options": ["Agriculture and irrigation", "Heavy industry", "Infrastructure and transport", "Technology and IT"],
+    "answer": "Agriculture and irrigation",
+    "explanation": "<b><u>First Five-Year Plan</u></b> focused on agriculture, dams, and irrigation. Later plans emphasized industry and services."
+  },
+  {
+    "question": "Which major model was the First Five-Year Plan based on?",
+    "options": ["Harrod-Domar Model", "Mahalanobis Model", "Solow Model", "Leontief Model"],
+    "answer": "Harrod-Domar Model",
+    "explanation": "<b><u>Harrod-Domar Model</u></b> emphasizes savings and investment to drive growth. <b><u>Mahalanobis</u></b> came in the 2nd Plan. Others are unrelated to early Indian planning."
+  },
+  {
+    "question": "Which of the following dams was NOT included in the First Five-Year Plan?",
+    "options": ["Tehri Dam", "Bhakra Nangal Dam", "Hirakud Dam", "Nagarjuna Sagar Dam"],
+    "answer": "Tehri Dam",
+    "explanation": "<b><u>Bhakra Nangal</u></b>, <b><u>Hirakud</u></b>, and <b><u>Nagarjuna Sagar</u></b> were part of the first plan. <b><u>Tehri Dam</u></b> was built much later."
+  },
+  {
+    "question": "How many IITs and University Grants Commission (UGC) were set up during the First Five-Year Plan?",
+    "options": ["5 IITs and 1 UGC", "3 IITs and 2 UGCs", "1 IIT and 5 UGCs", "None"],
+    "answer": "5 IITs and 1 UGC",
+    "explanation": "<b><u>First Plan</u></b> saw the establishment of <b>5 IITs</b> and <b>1 University Grants Commission</b> to promote higher education."
+  },
+  {
+    "question": "Which Five-Year Plan emphasized heavy industrial development and used the Mahalanobis Model?",
+    "options": ["Second Plan", "First Plan", "Third Plan", "Fourth Plan"],
+    "answer": "Second Plan",
+    "explanation": "<b><u>Second Five-Year Plan</u></b> prioritized heavy industry using the <b>Mahalanobis Model</b> to promote capital goods sectors."
+  },
+  {
+    "question": "Which countries helped India establish steel plants during the Second Five-Year Plan?",
+    "options": ["Russia, Germany, UK", "USA, France, Japan", "China, UK, USA", "Germany, Canada, Russia"],
+    "answer": "Russia, Germany, UK",
+    "explanation": "Bhilai (Russia), Rourkela (Germany), Durgapur (UK) were part of the Second Plan's industrial initiative."
+  },
+  {
+    "question": "What was the main objective of the Third Five-Year Plan (1961–1966)?",
+    "options": ["Self-reliance and self-generating economy", "Export promotion", "Infrastructure development", "Privatization"],
+    "answer": "Self-reliance and self-generating economy",
+    "explanation": "<b><u>Third Plan</u></b> aimed at economic self-reliance and internal generation of growth, focusing on agriculture and industrialization."
+  },
+  {
+    "question": "Which agricultural movement began during the Third Five-Year Plan?",
+    "options": ["Green Revolution", "White Revolution", "Operation Flood", "Blue Revolution"],
+    "answer": "Green Revolution",
+    "explanation": "<b><u>Green Revolution</u></b> began during the <b>Third Plan</b>, introducing high-yield crops and modern techniques."
+  },
+  {
+    "question": "Which wars and events disrupted the performance of the Third Five-Year Plan?",
+    "options": ["Indo-China war, famine, Indo-Pak war", "Kargil war, tsunami, COVID-19", "Partition, drought, earthquake", "None of the above"],
+    "answer": "Indo-China war, famine, Indo-Pak war",
+    "explanation": "The <b>Indo-China war (1962)</b>, <b>famine (1965)</b>, and <b>Indo-Pak war (1965)</b> severely affected the <b>Third Plan</b>."
+  },
+  {
+    "question": "Which institutions were established during the Third Five-Year Plan?",
+    "options": ["CACP, IDBI, UTI, FCI", "SEBI, RBI, NITI Aayog, NABARD", "BHEL, HAL, DRDO, CSIR", "ISRO, TRAI, IRDAI, NCLT"],
+    "answer": "CACP, IDBI, UTI, FCI",
+    "explanation": "Institutions such as <b>CACP (1965)</b>, <b>IDBI (1964)</b>, <b>UTI (1963)</b>, and <b>FCI (1965)</b> were formed during the Third Plan."
+  },
+  {
+    "question": "What term is used to describe the gap years (1966–1969) when no formal Five-Year Plan was implemented?",
+    "options": ["Plan Holidays", "Mid-Term Review", "Economic Hiatus", "Interim Budget Period"],
+    "answer": "Plan Holidays",
+    "explanation": "<b><u>Plan Holidays</u></b> (1966–1969) occurred due to the failure of the Third Plan and economic crises. No formal plan was launched."
+  },
+  {
+    "question": "When was the Pradhan Mantri Fasal Bima Yojana launched?",
+    "options": ["13 February 2016", "26 January 2015", "1 April 2017", "5 June 2014"],
+    "answer": "13 February 2016",
+    "explanation": "<b><u>Pradhan Mantri Fasal Bima Yojana</u></b> was launched on <b>13 February 2016</b> by PM Modi to provide crop insurance and reduce farmers' losses."
+  },
+  {
+    "question": "What is the main objective of the Pradhan Mantri Jan Dhan Yojana (PMJDY)?",
+    "options": ["Financial inclusion through bank accounts, insurance, and pension", "Subsidized loans to farmers", "Direct benefit transfer to women", "Urban housing development"],
+    "answer": "Financial inclusion through bank accounts, insurance, and pension",
+    "explanation": "<b><u>PMJDY</u></b>, launched in <b>2014</b>, aims to bring all households under the formal banking system by providing access to bank accounts, insurance, and pension."
+  },
+  {
+    "question": "Which scheme launched in 2015 provides pensions to unorganized sector workers?",
+    "options": ["Atal Pension Yojana", "PMJDY", "PMAY", "PMFBY"],
+    "answer": "Atal Pension Yojana",
+    "explanation": "<b><u>Atal Pension Yojana (APY)</u></b> was launched in <b>2015</b> to provide pension benefits to workers in the unorganized sector."
+  },
+  {
+    "question": "Which scheme launched in 2016 provides LPG connections to Below Poverty Line (BPL) households?",
+    "options": ["Pradhan Mantri Ujjwala Yojana", "PMAY", "Swachh Bharat Abhiyan", "PDS Scheme"],
+    "answer": "Pradhan Mantri Ujjwala Yojana",
+    "explanation": "<b><u>PMUY</u></b>, launched in <b>2016</b>, provides free LPG connections to BPL families to reduce dependence on traditional cooking fuels."
+  },
+  {
+    "question": "What is the focus of the Pradhan Mantri Awas Yojana (PMAY) launched in 2015?",
+    "options": ["Affordable housing for urban and rural poor", "Smart city development", "Slum clearance projects", "Heritage site renovation"],
+    "answer": "Affordable housing for urban and rural poor",
+    "explanation": "<b><u>PMAY</u></b> aims to provide <b>affordable housing</b> to the <b>urban and rural poor</b> by 2022. It was launched in <b>2015</b>."
+  },
+  {
+    "question": "In which year was the Pradhan Mantri Kisan Samman Nidhi (PM-KISAN) scheme launched?",
+    "options": ["February 2019", "January 2018", "April 2020", "March 2017"],
+    "answer": "February 2019",
+    "explanation": "<b><u>PM-KISAN</u></b> was launched in <b>February 2019</b> to provide income support to farmers by transferring ₹6000 annually in three installments."
+  },
+  {
+    "question": "Which scheme was launched on 1st October 2020 to boost employment in the formal sector after the COVID-19 pandemic?",
+    "options": ["Atmanirbhar Bharat Rozgar Yojana", "Pradhan Mantri Rojgar Protsahan Yojana", "Mahatma Gandhi Employment Guarantee Act", "Make in India"],
+    "answer": "Atmanirbhar Bharat Rozgar Yojana",
+    "explanation": "<b><u>Atmanirbhar Bharat Rozgar Yojana</u></b> was launched on <b>1st October 2020</b> to incentivize employers for hiring new workers post COVID-19."
+  },
+  {
+    "question": "What is the main objective of the Pradhan Mantri Rojgar Protsahan Yojana (PMRPY)?",
+    "options": ["To encourage employers to create new jobs by covering EPF contributions", "To provide direct cash to unemployed youth", "To fund skill development programs", "To offer tax rebates to corporate employees"],
+    "answer": "To encourage employers to create new jobs by covering EPF contributions",
+    "explanation": "<b><u>PMRPY</u></b> aims to promote job creation by helping employers through <b>EPF contribution support</b> for new workers."
+  },
+  {
+    "question": "Under PMRPY, what portion of the EPF is paid by the government for new employees?",
+    "options": ["8.33%", "12%", "10%", "6%"],
+    "answer": "8.33%",
+    "explanation": "The government pays <b>8.33%</b> of EPF contributions for new employees under <b>PMRPY</b> for a period of 3 years."
+  },
+  {
+    "question": "What is the income eligibility criteria for workers to benefit under the PMRPY scheme?",
+    "options": ["Earning less than ₹15,000 per month", "Unemployed graduates only", "Daily wage earners only", "Salaried employees earning over ₹25,000"],
+    "answer": "Earning less than ₹15,000 per month",
+    "explanation": "<b><u>PMRPY</u></b> targets workers earning <b>below ₹15,000/month</b> to generate employment among lower-income groups."
+  },
+{
+    "question": "Which of the following statements about the State Emblem of India is correct?",
+    "options": [
+      "Only three lions are visible in the State Emblem",
+      "The emblem omits the bell-shaped lotus base",
+      "The emblem shows all four lions clearly",
+      "The emblem includes only animals, not the wheel"
+    ],
+    "answer": "Only three lions are visible in the State Emblem",
+    "explanation": "<b><u>Only three lions are visible</u></b> in the State Emblem; the fourth lion is hidden from view. <b>The bell-shaped lotus base is not omitted</b>; it supports the abacus. <b>The wheel (chakra)</b> and animals are all part of the design."
+  },
+  {
+    "question": "What date was the State Emblem of India officially adopted?",
+    "options": ["26 January 1950", "15 August 1947", "2 October 1950", "26 November 1949"],
+    "answer": "26 January 1950",
+    "explanation": "<b><u>The State Emblem of India</u></b> was adopted on <b>26 January 1950</b>, the day India became a Republic."
+  },
+  {
+    "question": "How many lions are seated back-to-back on the capital of the State Emblem of India?",
+    "options": ["Four", "Three", "Two", "Five"],
+    "answer": "Four",
+    "explanation": "The capital has <b>four Asiatic lions</b> seated back-to-back, symbolizing power, courage, pride, and confidence. Only three are visible in the 2D representation."
+  },
+  {
+    "question": "What elements are depicted between the four chakras on the abacus of the State Emblem?",
+    "options": ["Bull, horse, elephant, and lion", "Cow, peacock, tiger, and deer", "Horse, camel, elephant, and lion", "Lion, eagle, monkey, and bull"],
+    "answer": "Bull, horse, elephant, and lion",
+    "explanation": "The abacus features a <b>bull, horse, elephant, and lion</b> in between the <b>four chakras</b>, which represent motion and righteousness."
+  },
+  {
+    "question": "Each chakra on the State Emblem of India has how many spokes?",
+    "options": ["24", "12", "16", "32"],
+    "answer": "24",
+    "explanation": "Each chakra in the emblem has <b>24 spokes</b>, symbolizing the 24 hours of the day and the path of righteousness (Dharma)."
+  },
+ {
+    "question": "If the Marginal Propensity to Consume (MPC) is 0.60, what is the Marginal Propensity to Save (MPS)?",
+    "options": ["0.40", "0.60", "1.60", "0.20"],
+    "answer": "0.40",
+    "explanation": "Since <b>MPC + MPS = 1</b>, we calculate MPS as <b>1 - MPC</b>. So, MPS = 1 - 0.60 = <b>0.40</b>."
+  },
+  {
+    "question": "Which of the following equations correctly represents the relationship between MPC and MPS?",
+    "options": ["MPC + MPS = 1", "MPC × MPS = 1", "MPC - MPS = 1", "MPC = MPS"],
+    "answer": "MPC + MPS = 1",
+    "explanation": "By definition, the sum of the <b>Marginal Propensity to Consume (MPC)</b> and <b>Marginal Propensity to Save (MPS)</b> is always equal to <b>1</b>."
+  },
+ {
+    "question": "According to the 44th Amendment Act, Article 19 can be suspended only during a National Emergency declared on which of the following grounds?",
+    "options": ["War or external aggression", "Armed rebellion", "Internal disturbance", "Financial crisis"],
+    "answer": "War or external aggression",
+    "explanation": "<b><u>Article 19</u></b> can be suspended only during a National Emergency declared due to <b>war or external aggression</b>. The 44th Amendment removed 'internal disturbance' and included 'armed rebellion' as a ground, but it does <b>not allow suspension of Article 19</b> in that case."
+  },
+ ],
+B:[
+ {
+    "question": "Which term was removed by the 44th Amendment Act and replaced with 'armed rebellion' under Article 352?",
+    "options": ["Internal disturbance", "Civil war", "Insurgency", "Martial law"],
+    "answer": "Internal disturbance",
+    "explanation": "<b><u>'Internal disturbance'</u></b> was too vague and was replaced with <b>'armed rebellion'</b> by the <b>44th Amendment Act, 1978</b> to prevent misuse of National Emergency."
+  },
+  {
+    "question": "Which of the following is <b>not</b> a ground for declaring National Emergency under Article 352?",
+    "options": ["Internal disturbance", "War", "External aggression", "Armed rebellion"],
+    "answer": "Internal disturbance",
+    "explanation": "Since the <b>44th Amendment</b>, <b>internal disturbance</b> is <b>no longer a valid ground</b>. Valid grounds include <b>war, external aggression, and armed rebellion</b>."
+  },
+  {
+    "question": "How many times has National Emergency been declared in India so far?",
+    "options": ["3 times", "5 times", "1 time", "Never"],
+    "answer": "3 times",
+    "explanation": "National Emergency has been declared <b>3 times</b>: <br>1) 1962 - China war <br>2) 1971 - Pakistan war <br>3) 1975 - Internal disturbances (later criticized and corrected via 44th Amendment)."
+  },
+  {
+    "question": "Which article deals with State Emergency, also known as President's Rule?",
+    "options": ["Article 356", "Article 352", "Article 360", "Article 368"],
+    "answer": "Article 356",
+    "explanation": "<b><u>Article 356</u></b> deals with <b>President's Rule</b> or <b>State Emergency</b> when a state government fails to function according to constitutional provisions."
+  },
+  {
+    "question": "Which article provides for Financial Emergency in India?",
+    "options": ["Article 360", "Article 352", "Article 356", "Article 365"],
+    "answer": "Article 360",
+    "explanation": "<b><u>Article 360</u></b> enables the President to declare a <b>Financial Emergency</b> if India’s financial stability is threatened. It has <b>never been used</b> so far."
+  },
+  {
+    "question": "June 25, the day Emergency was imposed in 1975, is remembered as:",
+    "options": ["Samvidhaan Hatya Diwas", "Constitution Day", "Republic Day", "Democracy Day"],
+    "answer": "Samvidhaan Hatya Diwas",
+    "explanation": "Emergency was declared on <b>June 25, 1975</b>, and is often remembered as <b>'Samvidhaan Hatya Diwas'</b> or the day the Constitution was attacked."
+  },
+ {
+    "question": "In which year was the first Wimbledon tournament held?",
+    "options": ["1877", "1900", "1896", "1924"],
+    "answer": "1877",
+    "explanation": "The <b>first Wimbledon tournament</b> was held in <b>1877</b>, making it the <b>oldest tennis tournament</b> in the world."
+  },
+  {
+    "question": "Which of the following statements about Wimbledon is true?",
+    "options": [
+      "It is the oldest tennis tournament in the world",
+      "It is played on a clay court",
+      "It began in 1920",
+      "It is held in January"
+    ],
+    "answer": "It is the oldest tennis tournament in the world",
+    "explanation": "<b><u>Wimbledon</u></b> began in <b>1877</b> and is played on <b>grass courts</b> in June–July, making it the <b>oldest tennis tournament</b>."
+  },
+  {
+    "question": "Which surface is the Wimbledon Grand Slam tournament played on?",
+    "options": ["Grass", "Clay", "Hard", "Synthetic"],
+    "answer": "Grass",
+    "explanation": "Wimbledon is the only Grand Slam played on <b><u>grass courts</u></b>, maintaining its traditional surface since inception."
+  },
+  {
+    "question": "Match the Grand Slam with its surface: Australian Open – ?, French Open – ?, Wimbledon – ?, US Open – ?",
+    "options": [
+      "Hard, Clay, Grass, Hard",
+      "Clay, Grass, Hard, Clay",
+      "Hard, Grass, Clay, Hard",
+      "Grass, Clay, Hard, Synthetic"
+    ],
+    "answer": "Hard, Clay, Grass, Hard",
+    "explanation": "<b>Australian Open</b> – Hard Court<br><b>French Open</b> – Clay Court<br><b>Wimbledon</b> – Grass Court<br><b>US Open</b> – Hard Court"
+  },
+  {
+    "question": "Which tennis tournament is exclusively for men’s national teams?",
+    "options": ["Davis Cup", "Billie Jean King Cup", "Wimbledon", "ATP Finals"],
+    "answer": "Davis Cup",
+    "explanation": "<b><u>Davis Cup</u></b> is the premier international team event in men’s tennis. <b>Billie Jean King Cup</b> is the women's equivalent."
+  },
+  {
+    "question": "Which tennis tournament is held for women’s national teams?",
+    "options": ["Billie Jean King Cup", "Davis Cup", "WTA Finals", "Wimbledon"],
+    "answer": "Billie Jean King Cup",
+    "explanation": "<b><u>Billie Jean King Cup</u></b> is the <b>women’s team tournament</b> in international tennis. It was earlier known as the Fed Cup."
+  },
+  {
+    "question": "Which of the following are top-tier annual tournaments on the ATP and WTA tours respectively?",
+    "options": ["Masters 1000 (Men), WTA 1000 (Women)", "ATP 500, WTA 500", "Davis Cup, Billie Jean King Cup", "Grand Slams only"],
+    "answer": "Masters 1000 (Men), WTA 1000 (Women)",
+    "explanation": "<b><u>Masters 1000</u></b> for men and <b><u>WTA 1000</u></b> for women are among the most prestigious tournaments after the Grand Slams."
+  },
+{
+    "question": "Which country has become the first in the world to lose all of its glaciers due to climate change?",
+    "options": ["Venezuela", "Nepal", "Greenland", "Bhutan"],
+    "answer": "Venezuela",
+    "explanation": "<b><u>Venezuela</u></b> is the <b>first country</b> to lose all its glaciers due to the impact of <b>climate change</b> and global warming."
+  },
+  {
+    "question": "Which 1985 agreement was adopted for the protection of the ozone layer?",
+    "options": ["Vienna Convention", "Montreal Protocol", "Kyoto Protocol", "Paris Agreement"],
+    "answer": "Vienna Convention",
+    "explanation": "The <b><u>Vienna Convention (1985)</u></b> was adopted to protect the <b>ozone layer</b>, and led to the <b>Montreal Protocol</b> later."
+  },
+  {
+    "question": "The Minamata Convention is associated with which environmental issue?",
+    "options": ["Mercury poisoning", "Oil spills", "Plastic pollution", "Carbon emissions"],
+    "answer": "Mercury poisoning",
+    "explanation": "The <b><u>Minamata Convention</u></b> is named after a city in Japan and addresses <b>mercury poisoning</b> caused by industrial discharge."
+  },
+  {
+    "question": "Which convention was signed in 2001 to control Persistent Organic Pollutants (POPs)?",
+    "options": ["Stockholm Convention", "Basel Convention", "Vienna Convention", "Rio Declaration"],
+    "answer": "Stockholm Convention",
+    "explanation": "The <b><u>Stockholm Convention (2001)</u></b> aims to eliminate or restrict the production and use of <b>Persistent Organic Pollutants</b> (POPs)."
+  },
+  {
+    "question": "What is the Montreal Protocol primarily aimed at phasing out?",
+    "options": ["CFCs", "Carbon dioxide", "Lead", "Plastics"],
+    "answer": "CFCs",
+    "explanation": "<b><u>Montreal Protocol</u></b> focuses on phasing out <b>Chlorofluorocarbons (CFCs)</b> and other ozone-depleting substances. Later extended to <b>HFCs</b> via the <b>Kigali Amendment</b>."
+  },
+  {
+    "question": "The Basel Convention, signed in 1989, is related to:",
+    "options": ["Transboundary movement of hazardous waste", "Clean water access", "Air pollution monitoring", "Deforestation control"],
+    "answer": "Transboundary movement of hazardous waste",
+    "explanation": "The <b><u>Basel Convention</u></b> controls the <b>transboundary movement of hazardous waste</b> and prevents dumping in less developed countries."
+  },
+  {
+    "question": "What was the focus of the 1992 Earth Summit held in Rio de Janeiro?",
+    "options": ["Agenda 21 and sustainable development", "Renewable energy targets", "Carbon trading", "Marine conservation"],
+    "answer": "Agenda 21 and sustainable development",
+    "explanation": "The <b><u>Earth Summit (1992)</u></b> in Rio led to the creation of <b>Agenda 21</b>, a comprehensive plan for <b>sustainable development</b>."
+  },
+{
+    "question": "Who is credited with building the Grand Trunk Road and the Purana Quila in Delhi?",
+    "options": ["Sher Shah Suri", "Akbar", "Babur", "Aurangzeb"],
+    "answer": "Sher Shah Suri",
+    "explanation": "<b><u>Sher Shah Suri</u></b> built the <b>Grand Trunk Road</b> and the <b>Purana Quila</b> in Delhi. He was known for administrative and infrastructure reforms."
+  },
+  {
+    "question": "Who built the Moti Masjid in Lahore?",
+    "options": ["Jahangir", "Shah Jahan", "Aurangzeb", "Akbar"],
+    "answer": "Jahangir",
+    "explanation": "<b><u>Jahangir</u></b> is credited with building the <b>Moti Masjid in Lahore</b>, showcasing Mughal architecture."
+  },
+  {
+    "question": "The Moti Masjid in Agra was built by which Mughal emperor?",
+    "options": ["Shah Jahan", "Jahangir", "Aurangzeb", "Babur"],
+    "answer": "Shah Jahan",
+    "explanation": "<b><u>Shah Jahan</u></b>, known for his grand architectural contributions, built the <b>Moti Masjid in Agra</b>."
+  },
+  {
+    "question": "Which Mughal emperor built the Moti Masjid in Delhi?",
+    "options": ["Aurangzeb", "Shah Jahan", "Akbar", "Jahangir"],
+    "answer": "Aurangzeb",
+    "explanation": "<b><u>Aurangzeb</u></b> constructed the <b>Moti Masjid in Delhi</b>, known for its simplicity and elegance."
+  },
+  {
+    "question": "Who commissioned the construction of Humayun's Tomb in Delhi?",
+    "options": ["Bega Begum", "Akbar", "Babur", "Nur Jahan"],
+    "answer": "Bega Begum",
+    "explanation": "<b><u>Bega Begum</u></b>, the wife of <b>Humayun</b>, commissioned the <b>Humayun’s Tomb</b> in <b>1570</b> in Delhi. It was the first garden tomb in India."
+  },
+  {
+    "question": "Gol Gumbaz, the largest dome in India, is located in which state?",
+    "options": ["Karnataka", "Maharashtra", "Andhra Pradesh", "Madhya Pradesh"],
+    "answer": "Karnataka",
+    "explanation": "The <b><u>Gol Gumbaz</u></b>, located in <b>Karnataka</b>, is famous for having the <b>largest dome in India</b> and was completed in <b>1656</b>."
+  },
+{
+    "question": "What is the process called in which humus is formed from decomposed plant and animal remains in the soil?",
+    "options": ["Humification", "Oxidation", "Mineralization", "Nitrification"],
+    "answer": "Humification",
+    "explanation": "<b><u>Humification</u></b> is the process of forming <b>humus</b> from decomposed organic matter. It improves <b>soil fertility</b> and <b>water retention</b>."
+  },
+  {
+    "question": "Which process involves the breakdown of organic matter through reaction with oxygen, releasing CO₂ and nutrients?",
+    "options": ["Oxidation", "Humification", "Photosynthesis", "Fermentation"],
+    "answer": "Oxidation",
+    "explanation": "<b><u>Oxidation</u></b> breaks down organic matter by combining it with oxygen, releasing <b>carbon dioxide</b> and other <b>nutrients</b> back into the soil."
+  },
+  {
+    "question": "Which bacteria form a symbiotic relationship with leguminous plants and help in nitrogen fixation?",
+    "options": ["Rhizobium", "Azotobacter", "Nitrosomonas", "Pseudomonas"],
+    "answer": "Rhizobium",
+    "explanation": "<b><u>Rhizobium</u></b> lives in the root nodules of <b>leguminous plants</b> and fixes atmospheric nitrogen into a usable form for plants. Other bacteria like <b>Azotobacter</b> are free-living."
+  },
+],
+ C:[
+{
+    "question": "Cheti Chand is celebrated as the birth anniversary of which deity and marks the New Year of which community?",
+    "options": ["Lord Jhulelal, Sindhi", "Lord Krishna, Marwari", "Guru Nanak, Punjabi", "Lord Vishnu, Bihari"],
+    "answer": "Lord Jhulelal, Sindhi",
+    "explanation": "<b><u>Cheti Chand</u></b> is the <b>birth anniversary of Lord Jhulelal</b> and marks the <b>New Year for Sindhis</b>. It falls on <b>Chaitra Shukla Dwitiya</b> (March–April)."
+  },
+  {
+    "question": "Which festival is celebrated as the Persian New Year by the Parsi community?",
+    "options": ["Jamshedi Navroz", "Cheti Chand", "Nowruz", "Baisakhi"],
+    "answer": "Jamshedi Navroz",
+    "explanation": "<b><u>Jamshedi Navroz</u></b> is the <b>Persian New Year</b> celebrated by the <b>Parsis</b>, marking the beginning of the spring equinox."
+  },
+  {
+    "question": "Which Sindhi festival involves 40 days of fasting and devotion to Lord Jhulelal?",
+    "options": ["Chaliho Sahib", "Cheti Chand", "Navratri", "Guru Gaddee"],
+    "answer": "Chaliho Sahib",
+    "explanation": "<b><u>Chaliho Sahib</u></b> is a <b>40-day Sindhi fasting festival</b> dedicated to <b>Lord Jhulelal</b>, observed with devotion and rituals."
+  },
+  {
+    "question": "Ulambana is a festival in which religion, and what is it associated with?",
+    "options": ["Buddhism, Ancestor worship", "Hinduism, Rain God", "Jainism, Enlightenment", "Sikhism, Harvest"],
+    "answer": "Buddhism, Ancestor worship",
+    "explanation": "<b><u>Ulambana</u></b> is a <b>Buddhist festival</b> related to <b>ancestor worship</b>, where offerings are made to relieve ancestral spirits."
+  },
+  {
+    "question": "Which is the oldest port in India, established in 1870 and also known as Shyama Prasad Mukherjee Port?",
+    "options": ["Kolkata Port", "Kandla Port", "Mumbai Port", "Chennai Port"],
+    "answer": "Kolkata Port",
+    "explanation": "<b><u>Kolkata Port</u></b>, officially known as <b>Shyama Prasad Mukherjee Port</b>, is the <b>oldest port in India</b>, established in <b>1870</b>."
+  },
+  {
+    "question": "Which Indian port is a tidal port and was renamed as Deen Dayal Upadhyay Port?",
+    "options": ["Kandla Port", "Paradip Port", "Cochin Port", "Ennore Port"],
+    "answer": "Kandla Port",
+    "explanation": "<b><u>Kandla Port</u></b> in Gujarat is a <b>tidal port</b> and is officially renamed as <b>Deen Dayal Upadhyay Port</b>."
+  },
+  {
+    "question": "Which of the following is a riverine port located in West Bengal?",
+    "options": ["Haldia Port", "Vishakapatnam Port", "Tuticorin Port", "Kochi Port"],
+    "answer": "Haldia Port",
+    "explanation": "<b><u>Haldia Port</u></b> is a <b>riverine port</b> located in <b>West Bengal</b>, used as an extension of Kolkata Port for bulk cargo."
+  },
+  {
+    "question": "Which is the deepest landlocked port in India?",
+    "options": ["Vishakapatnam Port", "Kandla Port", "Haldia Port", "Mumbai Port"],
+    "answer": "Vishakapatnam Port",
+    "explanation": "<b><u>Vishakapatnam Port</u></b>, located in Andhra Pradesh, is the <b>deepest landlocked port</b> in India and handles large cargo vessels."
+  },
+  {
+    "question": "Tuticorin Port is also known by what official name?",
+    "options": ["VO Chidambaranar Port", "Rajiv Gandhi Port", "Jawaharlal Nehru Port", "Netaji Subhash Port"],
+    "answer": "VO Chidambaranar Port",
+    "explanation": "<b><u>Tuticorin Port</u></b> in Tamil Nadu is officially called <b>VO Chidambaranar Port</b>, named after a freedom fighter and port reformer."
+  },
+  {
+    "question": "Which Indian state has the maximum number of ports?",
+    "options": ["Tamil Nadu", "Gujarat", "Maharashtra", "Andhra Pradesh"],
+    "answer": "Tamil Nadu",
+    "explanation": "<b><u>Tamil Nadu</u></b> has the <b>maximum number of ports</b> in India, including both major and minor ports along its long coastline."
+  },
+   {
+    "question": "Where is the Great Stupa of Amaravati located, and which dynasty built it in the 2nd century BCE?",
+    "options": ["Andhra Pradesh, Satavahana Dynasty", "Madhya Pradesh, Maurya Dynasty", "Uttar Pradesh, Gupta Dynasty", "Bihar, Nanda Dynasty"],
+    "answer": "Andhra Pradesh, Satavahana Dynasty",
+    "explanation": "The <b><u>Great Stupa of Amaravati</u></b>, located in <b>Andhra Pradesh</b>, was constructed in the <b>2nd century BCE</b> during the <b>Satavahana Dynasty</b>. It features intricate <b>bas relief sculptures</b>."
+  },
+  {
+    "question": "Which part of a stupa refers to the hemispherical dome?",
+    "options": ["Anda", "Torana", "Medhi", "Vedika"],
+    "answer": "Anda",
+    "explanation": "<b><u>Anda</u></b> is the <b>hemispherical dome</b> of the stupa that represents the mound of dirt used to cover the Buddha’s remains."
+  },
+  {
+    "question": "What is the term for the railing that surrounds a stupa?",
+    "options": ["Vedika", "Torana", "Medhi", "Anda"],
+    "answer": "Vedika",
+    "explanation": "<b><u>Vedika</u></b> refers to the <b>railing</b> around the stupa, used for protection and separation of the sacred area."
+  },
+  {
+    "question": "Which is the largest stupa in India, located in Bihar?",
+    "options": ["Kesariya", "Sanchi", "Dhamek", "Ramabhar"],
+    "answer": "Kesariya",
+    "explanation": "<b><u>Kesariya Stupa</u></b>, located in <b>Bihar</b>, is the <b>largest stupa in India</b> in terms of volume and size."
+  },
+  {
+    "question": "Which stupa in Sarnath marks Buddha’s first sermon?",
+    "options": ["Dhamek Stupa", "Ramabhar Stupa", "Sanchi Stupa", "Kesariya Stupa"],
+    "answer": "Dhamek Stupa",
+    "explanation": "<b><u>Dhamek Stupa</u></b> in <b>Sarnath, Uttar Pradesh</b> marks the site of <b>Buddha’s first sermon</b> after attaining enlightenment."
+  },
+  {
+    "question": "Which stupa in Madhya Pradesh was built by Emperor Ashoka?",
+    "options": ["Sanchi", "Ramabhar", "Dhamek", "Amaravati"],
+    "answer": "Sanchi",
+    "explanation": "<b><u>Sanchi Stupa</u></b> in <b>Madhya Pradesh</b> was built by <b>Ashoka</b> and is one of the oldest stone structures in India."
+  },
+  {
+    "question": "The Bodhi tree in Buddhist symbolism represents:",
+    "options": ["Enlightenment (Nirvana)", "Birth", "Death", "Renunciation"],
+    "answer": "Enlightenment (Nirvana)",
+    "explanation": "The <b><u>Bodhi Tree</u></b> symbolizes <b>Enlightenment</b>, as Siddhartha attained Nirvana under this tree in Bodh Gaya."
+  },
+  {
+    "question": "In Buddhist symbolism, what does the Wheel represent?",
+    "options": ["First Sermon", "Birth", "Death", "Compassion"],
+    "answer": "First Sermon",
+    "explanation": "The <b><u>Wheel (Dharmachakra)</u></b> represents the <b>First Sermon</b> of the Buddha, also called <b>Dharmachakrapravartana</b>."
+  },
+  {
+    "question": "The symbol of a horse in Buddhism signifies which major event in Buddha’s life?",
+    "options": ["Renunciation (Mahabhinishkramana)", "Birth", "Death", "Enlightenment"],
+    "answer": "Renunciation (Mahabhinishkramana)",
+    "explanation": "The <b><u>Horse</u></b> symbolizes <b>Mahabhinishkramana</b>, the act of <b>renunciation</b> when Siddhartha left his palace in search of truth."
+  },
+  {
+    "question": "Which Buddhist symbol represents Buddha’s death or Mahaparinirvana?",
+    "options": ["Stupa", "Bodhi Tree", "Wheel", "Lotus"],
+    "answer": "Stupa",
+    "explanation": "The <b><u>Stupa</u></b> symbolizes <b>Mahaparinirvana</b>, or the <b>death</b> of Buddha, and houses relics or ashes."
+  }
+],
+
+
+D: [
+   
+  {
+    "question": "What is the name of India's planned space station to be established by 2035?",
+    "options": ["Bharatiya Antariksh Station", "Gaganyaan Station", "ISRO Space Habitat", "Shakti Orbiter"],
+    "answer": "Bharatiya Antariksh Station",
+    "explanation": "<b><u>Bharatiya Antariksh Station (BAS)</u></b> is the name of India's planned <b>space station</b>, targeted to be completed by <b>2035</b>."
+  },
+  {
+    "question": "By which year is the first module of the Bharatiya Antariksh Station expected to be launched?",
+    "options": ["2028", "2030", "2025", "2040"],
+    "answer": "2028",
+    "explanation": "The <b>first module</b> of the <b>Bharatiya Antariksh Station</b> is planned for launch by <b>2028</b> as part of India’s step-by-step space station program."
+  },
+  {
+    "question": "What is the aim of India’s Gaganyaan mission scheduled for 2025?",
+    "options": ["First human spaceflight mission", "Lunar exploration", "Solar observation", "Satellite launching"],
+    "answer": "First human spaceflight mission",
+    "explanation": "<b><u>Gaganyaan</u></b>, planned for <b>2025</b>, is India’s <b>first human spaceflight mission</b> to send Indian astronauts (Gagannauts) into space."
+  },
+  {
+    "question": "Which of the following missions marked India’s successful soft landing on the Moon’s south pole?",
+    "options": ["Chandrayaan-3", "Chandrayaan-2", "Gaganyaan", "Shukrayaan-1"],
+    "answer": "Chandrayaan-3",
+    "explanation": "<b><u>Chandrayaan-3</u></b> achieved a <b>successful soft landing on the Moon’s south pole</b> in <b>2023</b>. The landing site was named <b>Shiv Shakti Point</b>."
+  },
+  {
+    "question": "What is the name of India’s first solar observation mission launched in 2023?",
+    "options": ["Aditya-L1", "Surya-L1", "Solaris-1", "Helios-India"],
+    "answer": "Aditya-L1",
+    "explanation": "<b><u>Aditya-L1</u></b> is India’s <b>first solar mission</b> launched in <b>2023</b>, aimed at studying the Sun from the Lagrange Point-1."
+  },
+  {
+    "question": "Which upcoming Indian mission aims to explore Venus?",
+    "options": ["Shukrayaan-1", "Chandrayaan-4", "Mangalyaan-2", "Venera-India"],
+    "answer": "Shukrayaan-1",
+    "explanation": "<b><u>Shukrayaan-1</u></b> is India’s <b>planned mission to Venus</b>, aiming to study its atmosphere, geology, and solar interactions."
+  },
+  {
+    "question": "What is Tiangong, often referenced in the context of international space stations?",
+    "options": ["China’s permanent space station", "Russia’s lunar rover", "India’s moon orbiter", "NASA’s Mars base"],
+    "answer": "China’s permanent space station",
+    "explanation": "<b><u>Tiangong</u></b> is <b>China’s permanent space station</b>, showcasing its growing space capabilities alongside missions from India, USA, and Russia."
+  },
+{
+    "question": "Which is the largest lake in Turkey and has a very high salinity of around 330 parts per thousand?",
+    "options": ["Lake Van", "Lake Tuz", "Lake Urmia", "Lake Balkhash"],
+    "answer": "Lake Van",
+    "explanation": "<b><u>Lake Van</u></b> is the <b>largest lake in Turkey</b> and has a <b>salinity of 330 ppt</b>, making it highly alkaline and saline."
+  },
+  {
+    "question": "What is the average salinity of the Red Sea?",
+    "options": ["40 parts per thousand", "20 parts per thousand", "330 parts per thousand", "100 parts per thousand"],
+    "answer": "40 parts per thousand",
+    "explanation": "The <b><u>Red Sea</u></b> has an <b>average salinity of 40 ppt</b>, one of the highest among the major seas due to high evaporation and low freshwater input."
+  },
+  {
+    "question": "Which sea, also known as the Salt Sea, lies between Jordan and Israel and has a salinity of about 238 parts per thousand?",
+    "options": ["Dead Sea", "Caspian Sea", "Red Sea", "Mediterranean Sea"],
+    "answer": "Dead Sea",
+    "explanation": "<b><u>The Dead Sea</u></b>, also called the <b>Salt Sea</b>, is bordered by <b>Jordan, Palestine, and Israel</b>, and has a salinity of about <b>238 ppt</b>."
+  },
+  {
+    "question": "The Great Salt Lake, located in the USA, has a salinity range of:",
+    "options": ["50–270 parts per thousand", "10–30 parts per thousand", "300–350 parts per thousand", "40 parts per thousand"],
+    "answer": "50–270 parts per thousand",
+    "explanation": "<b><u>Great Salt Lake</u></b> is located in <b>Utah, USA</b> and has a variable salinity range from <b>50 to 270 ppt</b>, depending on water level and inflow."
+  },
+   {
+    "question": "Which jet stream blows over peninsular India during summer around 14°N latitude?",
+    "options": ["Sub-Tropical Easterly Jet Stream", "Polar Jet Stream", "Sub-Tropical Westerly Jet", "Equatorial Jet Stream"],
+    "answer": "Sub-Tropical Easterly Jet Stream",
+    "explanation": "<b><u>Sub-Tropical Easterly Jet Stream</u></b> blows over <b>Peninsular India</b> around <b>14°N</b> during summer, and plays a key role in the Indian monsoon system."
+  },
+  {
+    "question": "During summer, where do the subtropical westerly jet streams shift?",
+    "options": ["North of the Himalayas", "Over the Equator", "Over the Indian Ocean", "South of the Tropic of Cancer"],
+    "answer": "North of the Himalayas",
+    "explanation": "In summer, the <b><u>Subtropical Westerly Jet Streams</u></b> shift <b>north of the Himalayas</b> due to the apparent movement of the sun, making way for monsoon winds."
+  },
+  {
+    "question": "Jet streams blow in which part of the atmosphere?",
+    "options": ["Upper Troposphere", "Stratosphere", "Lower Troposphere", "Mesosphere"],
+    "answer": "Upper Troposphere",
+    "explanation": "<b><u>Jet Streams</u></b> are <b>high-speed winds</b> that blow in the <b>upper troposphere</b> at altitudes of about <b>9–13 km</b> and influence climate patterns, including monsoons and western disturbances."
+  },
+  {
+    "question": "What is the name of winter rainfall in Rajasthan caused by Western Disturbances?",
+    "options": ["Mahawat", "Kalbaisakhi", "Loo", "Chinook"],
+    "answer": "Mahawat",
+    "explanation": "<b><u>Mahawat</u></b> refers to <b>winter rainfall</b> caused by <b>Western Disturbances</b> in <b>Rajasthan</b> and parts of northwestern India."
+  },
+  {
+    "question": "From which regions do Western Cyclonic Disturbances originate that cause winter rainfall in India?",
+    "options": ["Mediterranean and Caspian Sea", "Arabian Sea and Bay of Bengal", "Atlantic Ocean and Sahara", "Indian Ocean and Java Sea"],
+    "answer": "Mediterranean and Caspian Sea",
+    "explanation": "<b><u>Western Disturbances</u></b> originate from the <b>Mediterranean and Caspian Seas</b> and bring winter rainfall to northwestern India."
+  },
+  {
+    "question": "The term 'Monsoon' is derived from which language and what does it mean?",
+    "options": ["Arabic, 'Mausim' meaning season", "Sanskrit, 'Mausam' meaning air", "Hindi, 'Ritu' meaning rain", "Greek, 'Mouson' meaning cloud"],
+    "answer": "Arabic, 'Mausim' meaning season",
+    "explanation": "The term <b><u>Monsoon</u></b> comes from the <b>Arabic word 'Mausim'</b> meaning <b>season</b>, reflecting the <b>seasonal reversal of winds</b>."
+  },
+  {
+    "question": "What is the Inter-Tropical Convergence Zone (ITCZ)?",
+    "options": [
+      "A low-pressure zone where trade winds converge near the equator",
+      "A high-pressure belt at the poles",
+      "A zone of tropical cyclones",
+      "A temperate wind belt in mid-latitudes"
+    ],
+    "answer": "A low-pressure zone where trade winds converge near the equator",
+    "explanation": "<b><u>ITCZ</u></b> is a <b>low-pressure zone</b> at the <b>equator</b> where <b>trade winds converge</b>, causing ascending air and heavy rainfall."
+  },
+  {
+    "question": "During July, the ITCZ shifts over which region in India?",
+    "options": ["Gangetic Plains (20°N–25°N)", "Western Ghats", "Thar Desert", "Southern Peninsula"],
+    "answer": "Gangetic Plains (20°N–25°N)",
+    "explanation": "In July, the <b><u>ITCZ</u></b> shifts northwards and is located over the <b>Gangetic Plains (20°N–25°N)</b>, where it is also referred to as the <b>monsoon trough</b>."
+  }
+],
+E:[
+  {
+    "question": "In ancient Tamil society, who were known as the large landowners?",
+    "options": ["Vellalar", "Arasar", "Vaishiyar", "Uzhavar"],
+    "answer": "Vellalar",
+    "explanation": "<b><u>Vellalar</u></b> were the <b>large landowners</b> in ancient Tamil society, controlling vast areas of agricultural land and wielding influence."
+  },
+  {
+    "question": "Which term referred to the ruling class in the Tamil region?",
+    "options": ["Arasar", "Vellalar", "Uzhavar", "Kadaisiyar"],
+    "answer": "Arasar",
+    "explanation": "<b><u>Arasar</u></b> was the term used for the <b>ruling or chieftain class</b> in the Tamil region."
+  },
+  {
+    "question": "In ancient Tamil society, which group represented the traders or merchant class?",
+    "options": ["Vaishiyar", "Kadaisiyar", "Arasar", "Adimai"],
+    "answer": "Vaishiyar",
+    "explanation": "<b><u>Vaishiyar</u></b> were the <b>traders or merchants</b> who played a key role in commerce and market life in Tamil society."
+  },
+  {
+    "question": "What were ordinary ploughmen called in ancient Tamil society?",
+    "options": ["Uzhavar", "Adimai", "Kadaisiyar", "Vellalar"],
+    "answer": "Uzhavar",
+    "explanation": "<b><u>Uzhavar</u></b> were the <b>ordinary ploughmen</b>, typically cultivating small plots of land in Tamil society."
+  },
+  {
+    "question": "Who were referred to as landless laborers, including slaves, in Tamil society?",
+    "options": ["Kadaisiyar", "Arasar", "Vaishiyar", "Uzhavar"],
+    "answer": "Kadaisiyar",
+    "explanation": "<b><u>Kadaisiyar</u></b> were the <b>landless laborers</b>, including <b>servants and slaves</b> who worked for others in the Tamil social structure."
+  },
+  {
+    "question": "What is the term used for slaves or bonded laborers in Tamil society?",
+    "options": ["Adimai", "Kadaisiyar", "Uzhavar", "Vaishiyar"],
+    "answer": "Adimai",
+    "explanation": "<b><u>Adimai</u></b> were <b>slaves or bonded laborers</b> who had no personal freedom and were often tied to service or labor contracts."
+  },
+   {
+    "question": "Which Sultan of Delhi is known for building the largest network of canals in India?",
+    "options": ["Firoz Shah Tughlaq", "Muhammad Bin Tughlaq", "Alauddin Khilji", "Balban"],
+    "answer": "Firoz Shah Tughlaq",
+    "explanation": "<b><u>Firoz Shah Tughlaq</u></b> is credited with building the <b>largest canal network</b> in medieval India to improve agriculture and water supply, especially to support <b>Hissar-i-Firoza</b>."
+  },
+  {
+    "question": "Which Delhi Sultan built a double canal system from Yamuna to Sutlej in 1355?",
+    "options": ["Firoz Shah Tughlaq", "Iltutmish", "Ghiyasuddin Tughlaq", "Sikandar Lodi"],
+    "answer": "Firoz Shah Tughlaq",
+    "explanation": "In <b>1355</b>, <b><u>Firoz Shah Tughlaq</u></b> built a <b>double canal system</b> connecting the <b>Yamuna and Sutlej</b> rivers."
+  },
+  {
+    "question": "Who was the first Delhi Sultan to visit the shrine of Khwaja Moinuddin Chishti at Ajmer?",
+    "options": ["Muhammad Bin Tughlaq", "Firoz Shah Tughlaq", "Iltutmish", "Balban"],
+    "answer": "Muhammad Bin Tughlaq",
+    "explanation": "<b><u>Muhammad Bin Tughlaq</u></b> was the <b>first Sultan</b> of Delhi to pay a visit to the revered <b>shrine of Khwaja Moinuddin Chishti</b> in Ajmer."
+  },
+  {
+    "question": "Who built the tomb of Salim Chishti at Fatehpur Sikri?",
+    "options": ["Akbar", "Jahangir", "Aurangzeb", "Humayun"],
+    "answer": "Akbar",
+    "explanation": "<b><u>Akbar</u></b> built the <b>Tomb of Salim Chishti</b> in <b>Fatehpur Sikri</b> to honor the Sufi saint who had blessed him with a son."
+  },
+  {
+    "question": "Which Mughal emperor built Bibi Ka Maqbara in Aurangabad?",
+    "options": ["Aurangzeb", "Shah Jahan", "Akbar", "Babur"],
+    "answer": "Aurangzeb",
+    "explanation": "<b><u>Bibi Ka Maqbara</u></b> was built by <b>Aurangzeb</b> in memory of his wife, and it resembles the <b>Taj Mahal</b>."
+  },
+  {
+    "question": "Which Mughal emperor built the Red Fort and Jama Masjid in Delhi?",
+    "options": ["Shah Jahan", "Akbar", "Aurangzeb", "Jahangir"],
+    "answer": "Shah Jahan",
+    "explanation": "<b><u>Shah Jahan</u></b> built both the <b>Red Fort</b> and the <b>Jama Masjid</b> in Delhi, showcasing Mughal architectural grandeur."
+  },
+  {
+    "question": "Who started the construction of Qutub Minar, and who completed it?",
+    "options": ["Started by Qutb-ud-din Aibak, completed by Iltutmish", "Started by Iltutmish, completed by Balban", "Built entirely by Alauddin Khilji", "Started by Firoz Shah, completed by Sikandar Lodi"],
+    "answer": "Started by Qutb-ud-din Aibak, completed by Iltutmish",
+    "explanation": "<b><u>Qutub Minar</u></b> was <b>started by Qutb-ud-din Aibak</b> and <b>completed by Iltutmish</b>. It is one of the earliest Islamic structures in India."
+  },
+{
+    "question": "What is the Graded Response Action Plan (GRAP) designed for?",
+    "options": ["Controlling air pollution in Delhi-NCR", "Regulating forest clearance", "Water purification in Ganga", "Managing noise pollution in cities"],
+    "answer": "Controlling air pollution in Delhi-NCR",
+    "explanation": "<b><u>GRAP</u></b> is a set of emergency measures aimed at <b>controlling air pollution</b> in the <b>Delhi-NCR region</b> based on rising levels of air pollutants."
+  },
+  {
+    "question": "Which body is responsible for implementing the GRAP in Delhi-NCR?",
+    "options": ["Commission for Air Quality Management (CAQM)", "Central Pollution Control Board", "Delhi Government", "National Green Tribunal"],
+    "answer": "Commission for Air Quality Management (CAQM)",
+    "explanation": "The <b><u>Commission for Air Quality Management (CAQM)</u></b> is the <b>implementing authority</b> for <b>GRAP</b> in the Delhi-NCR region."
+  },
+  {
+    "question": "When was the GRAP approved by the Supreme Court?",
+    "options": ["2016", "2014", "2018", "2020"],
+    "answer": "2016",
+    "explanation": "<b><u>GRAP</u></b> was <b>approved by the Supreme Court</b> of India in <b>2016</b> as a structured response to escalating air pollution."
+  },
+  {
+    "question": "On what basis is the Graded Response Action Plan (GRAP) implemented?",
+    "options": ["Air Quality Index (AQI)", "Annual Rainfall", "Vehicle Density", "Temperature Levels"],
+    "answer": "Air Quality Index (AQI)",
+    "explanation": "The <b><u>implementation of GRAP</u></b> is based on the <b>Air Quality Index (AQI)</b> levels, which determine the severity of pollution and the corresponding measures."
+  },
+  {
+    "question": "What defines a statutory body in India?",
+    "options": [
+      "It is created by an Act of Parliament or State Legislature",
+      "It is mentioned in the Constitution",
+      "It is created by executive order",
+      "It functions under the Supreme Court"
+    ],
+    "answer": "It is created by an Act of Parliament or State Legislature",
+    "explanation": "<b><u>Statutory bodies</u></b> are created through specific legislation passed by <b>Parliament or State Legislatures</b>. They are not mentioned directly in the Constitution."
+  },
+  {
+    "question": "Which Act created the Reserve Bank of India (RBI)?",
+    "options": ["RBI Act, 1934", "Banking Regulation Act, 1949", "SEBI Act, 1992", "Finance Act, 2001"],
+    "answer": "RBI Act, 1934",
+    "explanation": "<b><u>Reserve Bank of India</u></b> was established under the <b>RBI Act, 1934</b> and is the central banking institution of India."
+  },
+  {
+    "question": "The Securities and Exchange Board of India (SEBI) was established under which Act?",
+    "options": ["SEBI Act, 1992", "Companies Act, 1956", "Banking Act, 1949", "Financial Services Act, 1991"],
+    "answer": "SEBI Act, 1992",
+    "explanation": "<b><u>SEBI</u></b> is the regulator of the securities market in India and was established under the <b>SEBI Act, 1992</b>."
+  },
+  {
+    "question": "Which statutory body was established under the Protection of Human Rights Act, 1993?",
+    "options": ["National Human Rights Commission (NHRC)", "National Commission for Women", "Election Commission", "Law Commission"],
+    "answer": "National Human Rights Commission (NHRC)",
+    "explanation": "The <b><u>NHRC</u></b> was established under the <b>Protection of Human Rights Act, 1993</b> to protect and promote human rights in India."
+  },
+  {
+    "question": "The Competition Commission of India (CCI) was formed under which law?",
+    "options": ["Competition Act, 2002", "SEBI Act, 1992", "MRTP Act, 1969", "Companies Act, 2013"],
+    "answer": "Competition Act, 2002",
+    "explanation": "<b><u>CCI</u></b> was established to prevent unfair business practices and promote competition under the <b>Competition Act, 2002</b>."
+  },
+  {
+    "question": "Which Act led to the creation of the National Green Tribunal (NGT)?",
+    "options": ["NGT Act, 2010", "Environment Protection Act, 1986", "Forest Conservation Act, 1980", "Water Act, 1974"],
+    "answer": "NGT Act, 2010",
+    "explanation": "<b><u>National Green Tribunal</u></b> was established under the <b>NGT Act, 2010</b> to handle environmental disputes and ensure fast-track judgments."
+  },
+  {
+    "question": "Bharatnatyam is a classical dance form that originated in which Indian state?",
+    "options": ["Tamil Nadu", "Kerala", "Andhra Pradesh", "Karnataka"],
+    "answer": "Tamil Nadu",
+    "explanation": "<b><u>Bharatnatyam</u></b> is one of the oldest classical dance forms of India, originating from the temples of <b>Tamil Nadu</b>."
+  },
+  {
+    "question": "Which of the following dancers is known for her contribution to Bharatnatyam and established Kalakshetra?",
+    "options": ["Rukmini Devi Arundale", "Kanak Rele", "Yamini Krishnamurthy", "Shovana Narayan"],
+    "answer": "Rukmini Devi Arundale",
+    "explanation": "<b><u>Rukmini Devi Arundale</u></b> was a pioneer of Bharatnatyam and founder of <b>Kalakshetra</b>, a premier institution for classical arts."
+  },
+  {
+    "question": "Birju Maharaj is best known for which classical dance form?",
+    "options": ["Kathak", "Bharatnatyam", "Kuchipudi", "Odissi"],
+    "answer": "Kathak",
+    "explanation": "<b><u>Birju Maharaj</u></b> was a legendary exponent of <b>Kathak</b>, a classical dance from <b>Uttar Pradesh</b>."
+  },
+  {
+    "question": "Which dancer was popularly known as the 'Queen of Kathak'?",
+    "options": ["Sitara Devi", "Padma Subrahmanyam", "Rukmini Devi", "Sonal Mansingh"],
+    "answer": "Sitara Devi",
+    "explanation": "<b><u>Sitara Devi</u></b> earned the title <b>'Queen of Kathak'</b> for her outstanding contributions and energetic performances."
+  },
+  {
+    "question": "Kuchipudi is a classical dance form from which Indian state?",
+    "options": ["Andhra Pradesh", "Kerala", "Odisha", "Tamil Nadu"],
+    "answer": "Andhra Pradesh",
+    "explanation": "<b><u>Kuchipudi</u></b> is a dance-drama performance tradition that originated in <b>Andhra Pradesh</b>."
+  },
+  {
+    "question": "Which of the following is known for expertise in both Bharatnatyam and Kuchipudi?",
+    "options": ["Yamini Krishnamurthy", "Kanak Rele", "Sonal Mansingh", "Shovana Narayan"],
+    "answer": "Yamini Krishnamurthy",
+    "explanation": "<b><u>Yamini Krishnamurthy</u></b> is a renowned dancer proficient in both <b>Bharatnatyam</b> and <b>Kuchipudi</b>."
+  },
+  {
+    "question": "Who is known as the 'Mother of Mohiniyattam'?",
+    "options": ["Kalamandalam Kalyanikutty Amma", "Kanak Rele", "Padma Subrahmanyam", "Alarmel Valli"],
+    "answer": "Kalamandalam Kalyanikutty Amma",
+    "explanation": "<b><u>Kalamandalam Kalyanikutty Amma</u></b> is hailed as the <b>'Mother of Mohiniyattam'</b> for her efforts in reviving and formalizing this Kerala-based dance form."
+  },
+  {
+    "question": "Which classical dancer is associated with Mohiniyattam and also founded the Nalanda Dance Research Centre?",
+    "options": ["Kanak Rele", "Rukmini Devi", "Yamini Krishnamurthy", "Shovana Narayan"],
+    "answer": "Kanak Rele",
+    "explanation": "<b><u>Kanak Rele</u></b> was a leading exponent of <b>Mohiniyattam</b> and founder of the <b>Nalanda Dance Research Centre</b> in Mumbai."
+  },
+   {
+    "question": "The Moatsu Festival is celebrated by which Naga tribe after the sowing of seeds?",
+    "options": ["Ao Tribe", "Konyak Tribe", "Angami Tribe", "Lotha Tribe"],
+    "answer": "Ao Tribe",
+    "explanation": "<b><u>Moatsu Festival</u></b> is celebrated by the <b>Ao Tribe</b> of Nagaland after the completion of sowing. It involves <b>dance, music, and bonfires</b> as a form of thanksgiving and relaxation."
+  },
+  {
+    "question": "Which Naga festival, celebrated from December 1 to 10, is a cultural showcase involving all Naga tribes?",
+    "options": ["Hornbill Festival", "Moatsu Festival", "Sekrenyi Festival", "Aoleang Festival"],
+    "answer": "Hornbill Festival",
+    "explanation": "The <b><u>Hornbill Festival</u></b>, held from <b>1st to 10th December</b>, is a <b>pan-Naga cultural celebration</b> showcasing the diverse traditions of all Naga tribes."
+  },
+  {
+    "question": "The Sekrenyi Festival, celebrated in February, is associated with which Naga tribe?",
+    "options": ["Angami Tribe", "Ao Tribe", "Konyak Tribe", "Chang Tribe"],
+    "answer": "Angami Tribe",
+    "explanation": "<b><u>Sekrenyi Festival</u></b> is celebrated by the <b>Angami Tribe</b> as a <b>purification and rejuvenation</b> festival in the month of February."
+  },
+  {
+    "question": "Which festival marks the New Year and end of sowing for the Konyak Naga tribe?",
+    "options": ["Aoleang Festival", "Moatsu Festival", "Sekrenyi Festival", "Hornbill Festival"],
+    "answer": "Aoleang Festival",
+    "explanation": "<b><u>Aoleang Festival</u></b> is celebrated by the <b>Konyak Tribe</b> in <b>April</b> to mark the <b>New Year</b> and the <b>completion of sowing</b>."
+  }
+]
+
+
+};
