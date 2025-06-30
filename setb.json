@@ -1,0 +1,16 @@
+{
+"B": [
+  {
+    "question": "Which disorder is characterized by self-starvation and weight loss resulting in low weight for height and age?",
+    "options": ["Anorexia Nervosa", "Bulimia Nervosa", "Kwashiorkor", "Marasmus"],
+    "answer": "Anorexia Nervosa",
+    "explanation": "<b><u>Anorexia Nervosa</u></b> is an eating disorder where individuals starve themselves, leading to significantly low weight. <b><u>Bulimia Nervosa</u></b> involves binge eating. <b><u>Kwashiorkor</u></b> is due to severe protein deficiency. <b><u>Marasmus</u></b> is a deficiency of all macronutrients."
+  },
+  {
+    "question": "Which eating disorder involves consuming large amounts of food at one time?",
+    "options": ["Bulimia Nervosa", "Anorexia Nervosa", "Kwashiorkor", "Marasmus"],
+    "answer": "Bulimia Nervosa",
+    "explanation": "<b><u>Bulimia Nervosa</u></b> is characterized by binge eating episodes. <b><u>Anorexia Nervosa</u></b> involves self-starvation. <b><u>Kwashiorkor</u></b> and <b><u>Marasmus</u></b> are types of malnutrition in children."
+  },
+]
+}

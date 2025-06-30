@@ -1,0 +1,16 @@
+{
+  "A": [
+    {
+      "question": "What is Anorexia Nervosa?",
+      "options": ["Anorexia Nervosa", "Bulimia Nervosa", "Kwashiorkor", "Marasmus"],
+      "answer": "Anorexia Nervosa",
+      "explanation": "Anorexia Nervosa is an eating disorder..."
+    },
+    {
+      "question": "Which eating disorder involves binge eating?",
+      "options": ["Bulimia Nervosa", "Anorexia Nervosa", "Kwashiorkor", "Marasmus"],
+      "answer": "Bulimia Nervosa",
+      "explanation": "Bulimia Nervosa involves binge eating episodes..."
+    }
+  ]
+}
