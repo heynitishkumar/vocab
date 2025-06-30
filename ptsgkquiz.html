@@ -50,15 +50,17 @@
   </style>
 </head>
 <body>
+  <div id="loginForm" style="max-width: 300px; margin: 50px auto; padding: 20px; background: white; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+  <h3 style="text-align:center;">Login to Continue</h3>
+  <input type="email" id="email" placeholder="Email" style="width: 100%; padding: 10px; margin: 8px 0;" />
+  <input type="password" id="password" placeholder="Password" style="width: 100%; padding: 10px; margin: 8px 0;" />
+  <button onclick="login()" style="width: 100%; padding: 10px; margin: 6px 0;">🔐 Login</button>
+  <button onclick="signup()" style="width: 100%; padding: 10px;">🆕 Signup</button>
+</div>
+
 <div class="container">
-   <div id="authButtons">
-      <input type="email" id="email" placeholder="Email" style="width:100%; margin-bottom:5px;" />
-      <input type="password" id="password" placeholder="Password" style="width:100%; margin-bottom:5px;" />
-      <button onclick="login()">🔐 Login</button>
-      <button onclick="signup()">🆕 Signup</button>
-      <button onclick="logout()">🚪 Logout</button>
-      <p id="userDisplay"></p>
-    </div>
+    <div class="sidebar" id="sidebar">
+    <h2>GS Quiz Sets</h2>
     <button onclick="startQuiz('A')">Set A</button>
     <button onclick="startQuiz('B')">Set B</button>
     <button onclick="startQuiz('C')">Set C</button>
@@ -91,17 +93,21 @@
   const db = firebase.firestore();
   const auth = firebase.auth();
 
-  auth.onAuthStateChanged(user => {
-    const userDisplay = document.getElementById('userDisplay');
-    const sidebar = document.getElementById('sidebar');
-    if (user) {
-      userDisplay.textContent = `Logged in as: ${user.email}`;
-      sidebar.style.display = 'block';
-    } else {
-      userDisplay.textContent = '';
-      sidebar.style.display = 'none';
-    }
-  });
+auth.onAuthStateChanged(user => {
+  const userDisplay = document.getElementById('userDisplay');
+  const sidebar = document.getElementById('sidebar');
+  const loginForm = document.getElementById('loginForm');
+  if (user) {
+    sidebar.style.display = 'block';
+    loginForm.style.display = 'none';
+    userDisplay.textContent = `Logged in as: ${user.email}`;
+  } else {
+    sidebar.style.display = 'none';
+    loginForm.style.display = 'block';
+    userDisplay.textContent = '';
+  }
+});
+
 
   function login() {
     const email = document.getElementById("email").value;
