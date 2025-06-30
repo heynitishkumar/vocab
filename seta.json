@@ -1,16 +1,143 @@
 {
-  "A": [
-    {
-      "question": "What is Anorexia Nervosa?",
-      "options": ["Anorexia Nervosa", "Bulimia Nervosa", "Kwashiorkor", "Marasmus"],
-      "answer": "Anorexia Nervosa",
-      "explanation": "Anorexia Nervosa is an eating disorder..."
-    },
-    {
-      "question": "Which eating disorder involves binge eating?",
-      "options": ["Bulimia Nervosa", "Anorexia Nervosa", "Kwashiorkor", "Marasmus"],
-      "answer": "Bulimia Nervosa",
-      "explanation": "Bulimia Nervosa involves binge eating episodes..."
-    }
-  ]
+"A": [
+  {
+    "question": "When is DRDO Foundation Day celebrated?",
+    "options": ["1st January", "15th January", "25th January", "26th January"],
+    "answer": "1st January",
+    "explanation": "<b><u>DRDO Foundation Day</u></b> is celebrated on <b>1st January</b> each year to mark the establishment of the <b>Defence Research and Development Organisation</b>."
+  },
+  {
+    "question": "Which day is observed globally as Global Family Day?",
+    "options": ["1st January", "2nd January", "10th January", "15th January"],
+    "answer": "1st January",
+    "explanation": "<b><u>Global Family Day</u></b> on <b>1st January</b> promotes <b>peace and unity</b> through strong familial and community bonds."
+  },
+  {
+    "question": "International Mind-Body Wellness Day is celebrated on:",
+    "options": ["3rd January", "5th January", "10th January", "15th January"],
+    "answer": "3rd January",
+    "explanation": "<b><u>International Mind-Body Wellness Day</u></b> is observed on <b>3rd January</b> to raise awareness about the importance of <b>mental and physical harmony</b>."
+  },
+  {
+    "question": "When is the National Sports Awards 2024 ceremony scheduled to be held?",
+    "options": ["17th January", "26th January", "1st February", "15th January"],
+    "answer": "17th January",
+    "explanation": "The <b><u>National Sports Awards 2024</u></b> ceremony is scheduled for <b>17th January</b> at the <b>Rashtrapati Bhavan</b>."
+  },
+  {
+    "question": "Who became the first Indian woman to win an Olympic medal in shooting?",
+    "options": ["Manu Bhaker", "Heena Sidhu", "Anjali Bhagwat", "Apurvi Chandela"],
+    "answer": "Manu Bhaker",
+    "explanation": "<b><u>Manu Bhaker</u></b> made history at the <b>Paris 2024 Olympics</b> by becoming the <b>first Indian woman</b> to win an Olympic medal in shooting."
+  },
+  {
+    "question": "Which Indian athlete became the youngest world chess champion in 2024?",
+    "options": ["Gukesh D", "Praggnanandhaa", "Nihal Sarin", "Viswanathan Anand"],
+    "answer": "Gukesh D",
+    "explanation": "<b><u>Gukesh D</u></b> won the <b>2024 World Chess Championship</b> in Singapore, becoming the <b>youngest world chess champion</b> and the second Indian after <b>Viswanathan Anand</b> to win the title."
+  },
+  {
+    "question": "Praveen Kumar set a new Asian record in which event at the 2024 Paralympics?",
+    "options": ["Men’s High Jump T64", "100m Sprint T64", "Long Jump T64", "Shot Put F64"],
+    "answer": "Men’s High Jump T64",
+    "explanation": "<b><u>Praveen Kumar</u></b> won <b>gold</b> in the <b>men’s high jump T64</b> category at the <b>Paris 2024 Paralympics</b> with a record jump of <b>2.08 meters</b>."
+  },
+  {
+    "question": "Who was the first recipient of the Khel Ratna Award?",
+    "options": ["Viswanathan Anand", "Leander Paes", "Abhinav Bindra", "Karnam Malleswari"],
+    "answer": "Viswanathan Anand",
+    "explanation": "<b><u>Viswanathan Anand</u></b> received the <b>first Khel Ratna Award</b> in <b>1991–92</b> for his achievements in chess."
+  },
+  {
+    "question": "What was the former name of the Major Dhyan Chand Khel Ratna Award?",
+    "options": ["Rajiv Gandhi Khel Ratna", "Bharat Khel Ratna", "National Sports Honour", "Arjuna Ratna"],
+    "answer": "Rajiv Gandhi Khel Ratna",
+    "explanation": "The <b><u>Major Dhyan Chand Khel Ratna</u></b> was earlier known as the <b>Rajiv Gandhi Khel Ratna Award</b> and was renamed in <b>2021</b>."
+  },
+  {
+    "question": "What is the cash prize associated with the Khel Ratna Award?",
+    "options": ["Rs 25 lakh", "Rs 10 lakh", "Rs 50 lakh", "Rs 15 lakh"],
+    "answer": "Rs 25 lakh",
+    "explanation": "The <b><u>Khel Ratna Award</u></b> includes a <b>cash prize of Rs 25 lakh</b>, a <b>medal</b>, and a <b>certificate of honour</b>."
+  },
+  {
+    "question": "Who was the first woman recipient of the Khel Ratna Award?",
+    "options": ["Karnam Malleswari", "Mary Kom", "P.T. Usha", "Saina Nehwal"],
+    "answer": "Karnam Malleswari",
+    "explanation": "<b><u>Karnam Malleswari</u></b>, an Olympic bronze-winning weightlifter, was the <b>first woman recipient</b> of the Khel Ratna Award in <b>1994–95</b>."
+  },
+  {
+    "question": "Which of the following is India’s second-highest sporting honour?",
+    "options": ["Arjuna Award", "Khel Ratna Award", "Dronacharya Award", "Rashtriya Khel Protsahan Puraskar"],
+    "answer": "Arjuna Award",
+    "explanation": "The <b><u>Arjuna Award</u></b>, instituted in <b>1961</b>, is India's <b>second-highest sporting honour</b> recognizing consistent performance and sportsmanship."
+  },
+  {
+    "question": "What does the Arjuna Award include?",
+    "options": ["Rs 15 lakh, a bronze statue of Arjuna, and a certificate", "Rs 25 lakh and a trophy", "Rs 10 lakh and a medal", "Gold medal and certificate"],
+    "answer": "Rs 15 lakh, a bronze statue of Arjuna, and a certificate",
+    "explanation": "The <b>Arjuna Award</b> includes a <b>cash prize of Rs 15 lakh</b>, a <b>bronze statue of Arjuna</b>, and a <b>certificate of appreciation</b>."
+  },
+  {
+    "question": "Which athlete is an Arjuna Awardee 2024 in Athletics?",
+    "options": ["Jyothi Yarraji", "Vantika Agarwal", "Sajan Prakash", "Aman Sehrawat"],
+    "answer": "Jyothi Yarraji",
+    "explanation": "<b><u>Jyothi Yarraji</u></b> was awarded the <b>Arjuna Award 2024</b> in <b>Athletics</b> for her outstanding performances in hurdles."
+  },
+  {
+    "question": "Who among the following won the Arjuna Award 2024 in Chess?",
+    "options": ["Vantika Agarwal", "Gukesh D", "Vidit Gujrathi", "R Praggnanandhaa"],
+    "answer": "Vantika Agarwal",
+    "explanation": "<b><u>Vantika Agarwal</u></b> received the <b>Arjuna Award</b> in 2024 for her achievements in <b>Chess</b>."
+  },
+  {
+    "question": "Which of these athletes was honored in 2024 for Swimming with the Arjuna Award?",
+    "options": ["Sajan Prakash", "Abhay Singh", "Sarabjot Singh", "Jarmanpreet Singh"],
+    "answer": "Sajan Prakash",
+    "explanation": "<b><u>Sajan Prakash</u></b>, India's top swimmer, received the <b>Arjuna Award 2024</b> in <b>Swimming</b>."
+  },
+  {
+    "question": "Which para-athlete received the Arjuna Award 2024 in Para-Archery?",
+    "options": ["Rakesh Kumar", "Kapil Parmar", "Preeti Pal", "Rubina Francis"],
+    "answer": "Rakesh Kumar",
+    "explanation": "<b><u>Rakesh Kumar</u></b> was honored with the <b>Arjuna Award 2024</b> for his performance in <b>Para-Archery</b>."
+  },
+  {
+    "question": "Who among these is a recipient of the Arjuna Award 2024 in Squash?",
+    "options": ["Abhay Singh", "Sajan Prakash", "Aman Sehrawat", "Sarabjot Singh"],
+    "answer": "Abhay Singh",
+    "explanation": "<b><u>Abhay Singh</u></b> was awarded the <b>Arjuna Award</b> in <b>Squash</b> in 2024 for his notable achievements."
+  },
+  {
+    "question": "Which wrestler received the Arjuna Award in 2024?",
+    "options": ["Aman Sehrawat", "Ravi Dahiya", "Bajrang Punia", "Deepak Punia"],
+    "answer": "Aman Sehrawat",
+    "explanation": "<b><u>Aman Sehrawat</u></b> was honored with the <b>Arjuna Award 2024</b> for his performance in <b>Wrestling</b>."
+  },
+  {
+    "question": "Which coach was awarded the Dronacharya Award 2024 for Para-Shooting?",
+    "options": ["Subhash Rana", "Deepali Deshpande", "S Muralidharan", "Sandeep Sangwan"],
+    "answer": "Subhash Rana",
+    "explanation": "<b><u>Subhash Rana</u></b> received the <b>Dronacharya Award 2024</b> for his excellence in coaching <b>Para-Shooting</b> athletes."
+  },
+  {
+    "question": "Deepali Deshpande was awarded the Dronacharya Award 2024 in which discipline?",
+    "options": ["Shooting", "Boxing", "Athletics", "Hockey"],
+    "answer": "Shooting",
+    "explanation": "<b><u>Deepali Deshpande</u></b> was honored with the <b>Dronacharya Award</b> for her contributions to <b>Shooting</b> coaching."
+  },
+  {
+    "question": "Who was awarded the Dronacharya Award 2024 for coaching in Hockey?",
+    "options": ["Sandeep Sangwan", "Armando Colaco", "S Muralidharan", "Subhash Rana"],
+    "answer": "Sandeep Sangwan",
+    "explanation": "<b><u>Sandeep Sangwan</u></b> was recognized with the <b>Dronacharya Award 2024</b> for his <b>coaching in Hockey</b>."
+  },
+  {
+    "question": "Which coach received the Dronacharya Award for Football in 2024?",
+    "options": ["Armando Agnelo Colaco", "S Muralidharan", "Stephen Constantine", "Igor Stimac"],
+    "answer": "Armando Agnelo Colaco",
+    "explanation": "<b><u>Armando Agnelo Colaco</u></b> was honored with the <b>Dronacharya Award</b> in 2024 for his coaching achievements in <b>Football</b>."
+  }
+]
+
 }
