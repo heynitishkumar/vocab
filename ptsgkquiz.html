@@ -298,10 +298,7 @@
   const db = firebase.firestore();
   const auth = firebase.auth();
 
-  let currentSet = "A";
-  let quizStartTime;
-  let currentScore = 0;
-  let totalQuestions = 0;
+
 
   auth.onAuthStateChanged(user => {
     const sidebar = document.getElementById('sidebar');
