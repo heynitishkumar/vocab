@@ -2,413 +2,202 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Quiz App</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz App with Leaderboard</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #ecf0f1; }
-    .container { display: flex; height: 100vh; }
-    .sidebar {
-      width: 200px; background: #2c3e50; color: white; padding: 20px;
-      overflow-y: auto; max-height: 100vh; position: sticky; top: 0;
-      display: none;
-    }
-    .sidebar h2 { font-size: 18px; margin-bottom: 15px; }
-    .sidebar button {
-      width: 100%; margin-bottom: 10px; padding: 8px;
-      background: #34495e; color: white; border: none;
-      text-align: left; border-radius: 4px; cursor: pointer;
-    }
-    .sidebar button:hover { background: #1abc9c; }
-    .content {
-      flex-grow: 1; padding: 20px;
-      overflow-y: auto; position: relative;
-    }
-    .quiz-box {
-      background: white; padding: 20px; border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1); max-width: 700px; margin: auto;
-    }
-    .question { font-weight: bold; margin-bottom: 10px; }
-    .option { margin: 8px 0; }
-    .timer { font-size: 16px; color: #d9534f; font-weight: bold; margin: 10px 0; }
-    .feedback, .summary {
-      margin-top: 20px; padding: 15px; background: #e0f7e0;
-      border-left: 5px solid green; border-radius: 6px;
-    }
-    .nav-button {
-      position: fixed; top: 50%; transform: translateY(-50%);
-      background: #34495e; color: white; border: none;
-      padding: 12px 16px; font-size: 18px; cursor: pointer;
-      z-index: 1000; border-radius: 4px;
-    }
-    #nextBtn { right: 10px; }
-    #submitNowBtn {
-      position: fixed; top: 10px; right: 20px; z-index: 1000;
-      background: #d9534f; color: white; border: none;
-      padding: 8px 14px; border-radius: 4px; cursor: pointer; font-weight: bold;
-    }
-    #authOverlay {
-      position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.5); display: flex; align-items: center;
-      justify-content: center; z-index: 9999;
-    }
-    #authBox {
-      background: white; padding: 20px; border-radius: 8px;
-      width: 300px; box-shadow: 0 0 10px rgba(0,0,0,0.2);
-    }
-    #authBox input { width: 100%; padding: 8px; margin-bottom: 10px; }
-    #authBox button { width: 100%; padding: 10px; margin-bottom: 5px; }
+    body { font-family: Arial; padding: 20px; }
+    .question { font-weight: bold; margin: 10px 0; }
+    .option { margin: 5px 0; }
+    .feedback { margin-top: 10px; background: #f9f9f9; padding: 10px; border-left: 4px solid #ccc; }
+    .summary { margin-top: 20px; }
+    .timer { font-weight: bold; color: darkred; margin: 10px 0; }
   </style>
 </head>
 <body>
-<div id="authOverlay">
-  <div id="authBox">
-    <h3 style="text-align:center;">Login to Continue</h3>
-    <input type="email" id="email" placeholder="Email" />
-    <input type="password" id="password" placeholder="Password" />
-    <button onclick="login()">🔐 Login</button>
-    <button onclick="signup()">🆕 Signup</button>
-  </div>
-</div>
+  <h2>📘 Set A Quiz</h2>
+  <button onclick="startQuiz('A')">Start Quiz</button>
+  <div id="quizArea"></div>
 
-<div class="container">
-  <div class="sidebar" id="sidebar">
-    <h2>GS Quiz Sets</h2>
-    <button onclick="startQuiz('A')">Set A</button>
-    <button onclick="startQuiz('B')">Set B</button>
-    <button onclick="startQuiz('C')">Set C</button>
-    <button onclick="startQuiz('D')">Set D</button>
-    <button onclick="startQuiz('E')">Set E</button>
-    <button onclick="viewLeaderboard('A')">🏆 Leaderboard A</button>
-    <button onclick="viewLeaderboard('B')">🏆 Leaderboard B</button>
-    <button onclick="logout()">🚪 Logout</button>
-    <p id="userDisplay" style="margin-top: 10px; font-size: 14px;"></p>
-  </div>
-  <div class="content" id="main-content">
-    <button id="nextBtn" class="nav-button" onclick="navigateNext()">➡</button>
-    <button id="submitNowBtn" onclick="submitQuizNow()">🚨 Submit</button>
-    <div class="quiz-box" id="quizArea">
-      <p>Select a category from the sidebar to start the quiz.</p>
-    </div>
-  </div>
-</div>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
-<script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyCGiOMRZHI_PdbuzIkQK8Kk4YcFXHBWtpc",
-    authDomain: "mathsquiz-5a3b7.firebaseapp.com",
-    projectId: "mathsquiz-5a3b7",
-    storageBucket: "mathsquiz-5a3b7.appspot.com",
-    messagingSenderId: "127657807004",
-    appId: "1:127657807004:web:ef17beddcbb04c5de0f159"
-  };
-  const app = firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
-  const auth = firebase.auth();
+  <!-- Firebase & Tools -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
-  auth.onAuthStateChanged(user => {
-    const sidebar = document.getElementById('sidebar');
-    const authOverlay = document.getElementById('authOverlay');
-    const userDisplay = document.getElementById('userDisplay');
-    if (user) {
-      sidebar.style.display = 'block';
-      authOverlay.style.display = 'none';
-      userDisplay.textContent = `Logged in as: ${user.email}`;
-    } else {
-      sidebar.style.display = 'none';
-      authOverlay.style.display = 'flex';
-      userDisplay.textContent = '';
+  <script>
+    // Firebase config
+    const firebaseConfig = {apiKey: "AIzaSyCGiOMRZHI_PdbuzIkQK8Kk4YcFXHBWtpc",authDomain: "mathsquiz-5a3b7.firebaseapp.com",projectId: "mathsquiz-5a3b7",storageBucket: "mathsquiz-5a3b7.appspot.com",messagingSenderId: "127657807004",appId: "1:127657807004:web:ef17beddcbb04c5de0f159"};
+
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const auth = firebase.auth();
+
+    // Temp Quiz Data (Shortened)
+    const allQuizzes = {
+      A: [
+        {
+          question: "What is the capital of India?",
+          options: ["Delhi", "Mumbai", "Kolkata", "Chennai"],
+          answer: "Delhi",
+          explanation: "Delhi is the capital city of India."
+        },
+        {
+          question: "Which river is longest in India?",
+          options: ["Ganga", "Yamuna", "Brahmaputra", "Godavari"],
+          answer: "Ganga",
+          explanation: "The Ganga is the longest river in India."
+        }
+      ]
+    };
+
+    const state = {};
+    let currentSet = "";
+    let timer = null;
+    let startTime = 0;
+
+    function shuffleArray(array) {
+      return array.map(value => ({ value, sort: Math.random() }))
+                  .sort((a, b) => a.sort - b.sort)
+                  .map(({ value }) => value);
     }
-  });
 
-  function login() {
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
-    auth.signInWithEmailAndPassword(email, password)
-      .then(() => alert("✅ Logged in"))
-      .catch(err => alert("Login failed: " + err.message));
-  }
+    function startQuiz(letter) {
+      currentSet = letter;
+      if (!state[letter]) {
+        state[letter] = {
+          questions: allQuizzes[letter],
+          index: 0,
+          score: 0,
+          times: [],
+          completed: false,
+          feedbacks: []
+        };
+      }
+      state[letter].index = 0;
+      state[letter].completed = false;
+      loadQuestion(letter);
+    }
 
-  function signup() {
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
-    auth.createUserWithEmailAndPassword(email, password)
-      .then(() => alert("✅ Account created"))
-      .catch(err => alert("Signup failed: " + err.message));
-  }
+    function loadQuestion(letter) {
+      clearInterval(timer);
+      const quiz = state[letter];
+      const q = quiz.questions[quiz.index];
+      const area = document.getElementById("quizArea");
 
-  function logout() {
-    auth.signOut().then(() => alert("🚪 Logged out"));
-  }
-
-  function viewLeaderboard(set) {
-    db.collection("quizHistory").where("set", "==", set).get().then(snapshot => {
-      const allData = snapshot.docs.map(doc => doc.data());
-      allData.sort((a, b) => {
-        if (b.score === a.score) return a.time - b.time;
-        return b.score - a.score;
-      });
-      let html = `<div class="leaderboard-box">
-        <h3>🏆 Leaderboard – Set ${set}</h3>
-        <button onclick="returnToHome()" style="margin-bottom: 10px;">🏠 Return Home</button>
-        <table border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; width: 100%;">
-          <thead style="background: #34495e; color: white;">
-            <tr><th>Rank</th><th>Email</th><th>Score</th><th>Time (s)</th><th>Date</th></tr>
-          </thead><tbody>`;
-      allData.slice(0, 10).forEach((d, i) => {
-        html += `<tr><td>${i + 1}</td><td>${d.email}</td><td>${d.score}/${d.total}</td><td>${d.time}</td><td>${d.date.split('T')[0]}</td></tr>`;
-      });
-      html += `</tbody></table></div>`;
-      document.getElementById("main-content").innerHTML = `
-        <button id="nextBtn" class="nav-button" onclick="navigateNext()">➡</button>
-        <button id="submitNowBtn" onclick="submitQuizNow()">🚨 Submit</button>
-        <div class="quiz-box" id="quizArea">${html}</div>
+      area.innerHTML = `
+        <div class="question">Q${quiz.index + 1}: ${q.question}</div>
+        ${shuffleArray(q.options).map(opt =>
+          `<div class="option"><input type="radio" name="answer" value="${opt}" onchange="submitAnswer()"> ${opt}</div>`
+        ).join('')}
+        <div class="timer" id="timer">Time left: 15s</div>
       `;
-    });
-  }
 
-  function returnToHome() {
-    document.getElementById("main-content").innerHTML = `
-      <button id="nextBtn" class="nav-button" onclick="navigateNext()">➡</button>
-      <button id="submitNowBtn" onclick="submitQuizNow()">🚨 Submit</button>
-      <div class="quiz-box" id="quizArea">
-        <p>Select a category from the sidebar to start the quiz.</p>
-      </div>
-    `;
-  }
-
-
-  function submitQuizNow() {
-  // Assuming you have variables: currentSet, score, totalQuestions, startTime
-  const user = auth.currentUser;
-  if (!user) return;
-
-  const endTime = new Date();
-  const timeTaken = Math.floor((endTime - quizStartTime) / 1000); // quizStartTime must be defined globally
-
-  db.collection("quizHistory").add({
-    email: user.email,
-    score<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Quiz App</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #ecf0f1; }
-    .container { display: flex; height: 100vh; }
-    .sidebar {
-      width: 200px; background: #2c3e50; color: white; padding: 20px;
-      overflow-y: auto; max-height: 100vh; position: sticky; top: 0;
-      display: none;
+      startTimer();
+      startTime = Date.now();
     }
-    .sidebar h2 { font-size: 18px; margin-bottom: 15px; }
-    .sidebar button {
-      width: 100%; margin-bottom: 10px; padding: 8px;
-      background: #34495e; color: white; border: none;
-      text-align: left; border-radius: 4px; cursor: pointer;
-    }
-    .sidebar button:hover { background: #1abc9c; }
-    .content {
-      flex-grow: 1; padding: 20px;
-      overflow-y: auto; position: relative;
-    }
-    .quiz-box {
-      background: white; padding: 20px; border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1); max-width: 700px; margin: auto;
-    }
-    .question { font-weight: bold; margin-bottom: 10px; }
-    .option { margin: 8px 0; }
-    .timer { font-size: 16px; color: #d9534f; font-weight: bold; margin: 10px 0; }
-    .feedback, .summary {
-      margin-top: 20px; padding: 15px; background: #e0f7e0;
-      border-left: 5px solid green; border-radius: 6px;
-    }
-    .nav-button {
-      position: fixed; top: 50%; transform: translateY(-50%);
-      background: #34495e; color: white; border: none;
-      padding: 12px 16px; font-size: 18px; cursor: pointer;
-      z-index: 1000; border-radius: 4px;
-    }
-    #nextBtn { right: 10px; }
-    #submitNowBtn {
-      position: fixed; top: 10px; right: 20px; z-index: 1000;
-      background: #d9534f; color: white; border: none;
-      padding: 8px 14px; border-radius: 4px; cursor: pointer; font-weight: bold;
-    }
-    #authOverlay {
-      position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.5); display: flex; align-items: center;
-      justify-content: center; z-index: 9999;
-    }
-    #authBox {
-      background: white; padding: 20px; border-radius: 8px;
-      width: 300px; box-shadow: 0 0 10px rgba(0,0,0,0.2);
-    }
-    #authBox input { width: 100%; padding: 8px; margin-bottom: 10px; }
-    #authBox button { width: 100%; padding: 10px; margin-bottom: 5px; }
-  </style>
-</head>
-<body>
-<div id="authOverlay">
-  <div id="authBox">
-    <h3 style="text-align:center;">Login to Continue</h3>
-    <input type="email" id="email" placeholder="Email" />
-    <input type="password" id="password" placeholder="Password" />
-    <button onclick="login()">🔐 Login</button>
-    <button onclick="signup()">🆕 Signup</button>
-  </div>
-</div>
 
-<div class="container">
-  <div class="sidebar" id="sidebar">
-    <h2>GS Quiz Sets</h2>
-    <button onclick="startQuiz('A')">Set A</button>
-    <button onclick="startQuiz('B')">Set B</button>
-    <button onclick="startQuiz('C')">Set C</button>
-    <button onclick="startQuiz('D')">Set D</button>
-    <button onclick="startQuiz('E')">Set E</button>
-    <button onclick="viewLeaderboard('A')">🏆 Leaderboard A</button>
-    <button onclick="viewLeaderboard('B')">🏆 Leaderboard B</button>
-    <button onclick="logout()">🚪 Logout</button>
-    <p id="userDisplay" style="margin-top: 10px; font-size: 14px;"></p>
-  </div>
-  <div class="content" id="main-content">
-    <button id="nextBtn" class="nav-button" onclick="navigateNext()">➡</button>
-    <button id="submitNowBtn" onclick="submitQuizNow()">🚨 Submit</button>
-    <div class="quiz-box" id="quizArea">
-      <p>Select a category from the sidebar to start the quiz.</p>
-    </div>
-  </div>
-</div>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
-<script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyCGiOMRZHI_PdbuzIkQK8Kk4YcFXHBWtpc",
-    authDomain: "mathsquiz-5a3b7.firebaseapp.com",
-    projectId: "mathsquiz-5a3b7",
-    storageBucket: "mathsquiz-5a3b7.appspot.com",
-    messagingSenderId: "127657807004",
-    appId: "1:127657807004:web:ef17beddcbb04c5de0f159"
-  };
-  const app = firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
-  const auth = firebase.auth();
+    function startTimer() {
+      clearInterval(timer);
+      let timeLeft = 15;
+      const display = document.getElementById("timer");
+      display.innerText = `Time left: ${timeLeft}s`;
 
-
-
-  auth.onAuthStateChanged(user => {
-    const sidebar = document.getElementById('sidebar');
-    const authOverlay = document.getElementById('authOverlay');
-    const userDisplay = document.getElementById('userDisplay');
-    if (user) {
-      sidebar.style.display = 'block';
-      authOverlay.style.display = 'none';
-      userDisplay.textContent = `Logged in as: ${user.email}`;
-    } else {
-      sidebar.style.display = 'none';
-      authOverlay.style.display = 'flex';
-      userDisplay.textContent = '';
+      timer = setInterval(() => {
+        timeLeft--;
+        display.innerText = `Time left: ${timeLeft}s`;
+        if (timeLeft === 0) {
+          clearInterval(timer);
+          submitAnswer(true);
+        }
+      }, 1000);
     }
-  });
 
-  function login() {
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
-    auth.signInWithEmailAndPassword(email, password)
-      .then(() => alert("✅ Logged in"))
-      .catch(err => alert("Login failed: " + err.message));
-  }
+    function submitAnswer(auto = false) {
+      clearInterval(timer);
+      const quiz = state[currentSet];
+      const q = quiz.questions[quiz.index];
+      const selected = document.querySelector('input[name="answer"]:checked');
+      const choice = selected ? selected.value : null;
+      const timeSpent = Math.round((Date.now() - startTime) / 1000);
+      quiz.times[quiz.index] = timeSpent;
 
-  function signup() {
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
-    auth.createUserWithEmailAndPassword(email, password)
-      .then(() => alert("✅ Account created"))
-      .catch(err => alert("Signup failed: " + err.message));
-  }
+      let message = "";
+      if (!choice) {
+        message = `⏰ Time's up!<br><strong>Correct:</strong> ${q.answer}<br>${q.explanation}`;
+      } else if (choice === q.answer) {
+        quiz.score++;
+        message = `✅ Correct! ${q.explanation}`;
+      } else {
+        message = `❌ Incorrect.<br><strong>Correct:</strong> ${q.answer}<br>${q.explanation}`;
+      }
 
-  function logout() {
-    auth.signOut().then(() => alert("🚪 Logged out"));
-  }
+      quiz.feedbacks[quiz.index] = {
+        question: q.question,
+        feedback: message,
+        selected: choice
+      };
 
-  function submitQuizNow() {
-    const user = auth.currentUser;
-    if (!user) return;
-    const timeTaken = Math.floor((Date.now() - quizStartTime) / 1000);
-    db.collection("quizHistory").add({
-      email: user.email,
-      score: currentScore,
-      total: totalQuestions,
-      set: currentSet,
-      time: timeTaken,
-      date: new Date().toISOString()
-    }).then(() => {
-      alert("✅ Quiz submitted and saved!");
-      returnToHome();
-    }).catch(err => {
-      alert("❌ Error saving to Firestore: " + err.message);
-    });
-  }
+      const fb = document.createElement("div");
+      fb.className = "feedback";
+      fb.innerHTML = message;
+      document.getElementById("quizArea").appendChild(fb);
 
-  function viewLeaderboard(set) {
-    db.collection("quizHistory").where("set", "==", set).get().then(snapshot => {
-      const allData = snapshot.docs.map(doc => doc.data());
-      allData.sort((a, b) => {
-        if (b.score === a.score) return a.time - b.time;
-        return b.score - a.score;
+      setTimeout(() => {
+        quiz.index++;
+        if (quiz.index < quiz.questions.length) {
+          loadQuestion(currentSet);
+        } else {
+          quiz.completed = true;
+          showSummary(currentSet);
+        }
+      }, 1000);
+    }
+
+    async function showSummary(letter) {
+      const quiz = state[letter];
+      const area = document.getElementById("quizArea");
+      let summary = `<div class="summary"><h3>📊 ${letter} Quiz Summary</h3>`;
+      summary += `<p><strong>Score:</strong> ${quiz.score}/${quiz.questions.length}</p>`;
+      quiz.times.forEach((t, i) => summary += `Q${i + 1}: ${t}s<br>`);
+      summary += `</div>`;
+      area.innerHTML = summary;
+
+      firebase.auth().onAuthStateChanged(async (user) => {
+        if (user) {
+          const totalTime = quiz.times.reduce((a, b) => a + b, 0);
+          await db.collection("users").doc(user.uid).collection("quizHistory").doc(letter).set({
+            score: quiz.score,
+            times: quiz.times,
+            feedbacks: quiz.feedbacks,
+            timestamp: Date.now()
+          });
+
+          await db.collection("leaderboards").doc(letter).collection("scores").doc(user.uid).set({
+            name: user.displayName || "Anonymous",
+            score: quiz.score,
+            timeTaken: totalTime,
+            timestamp: Date.now()
+          });
+
+          loadLeaderboard(letter);
+        }
       });
-      let html = `<div class="leaderboard-box">
-        <h3>🏆 Leaderboard – Set ${set}</h3>
-        <button onclick="returnToHome()" style="margin-bottom: 10px;">🏠 Return Home</button>
-        <table border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; width: 100%;">
-          <thead style="background: #34495e; color: white;">
-            <tr><th>Rank</th><th>Email</th><th>Score</th><th>Time (s)</th><th>Date</th></tr>
-          </thead><tbody>`;
-      allData.slice(0, 10).forEach((d, i) => {
-        html += `<tr><td>${i + 1}</td><td>${d.email}</td><td>${d.score}/${d.total}</td><td>${d.time}</td><td>${d.date.split('T')[0]}</td></tr>`;
+    }
+
+    async function loadLeaderboard(letter) {
+      const snapshot = await db.collection("leaderboards").doc(letter).collection("scores").get();
+      const entries = [];
+      snapshot.forEach(doc => entries.push(doc.data()));
+      entries.sort((a, b) => b.score - a.score || a.timeTaken - b.timeTaken);
+
+      let html = `<h3>🏆 Leaderboard</h3><ol>`;
+      entries.slice(0, 10).forEach(entry => {
+        html += `<li><strong>${entry.name}</strong>: ${entry.score} pts (${entry.timeTaken}s)</li>`;
       });
-      html += `</tbody></table></div>`;
-      document.getElementById("main-content").innerHTML = `
-        <button id="nextBtn" class="nav-button" onclick="navigateNext()">➡</button>
-        <button id="submitNowBtn" onclick="submitQuizNow()">🚨 Submit</button>
-        <div class="quiz-box" id="quizArea">${html}</div>
-      `;
-    });
-  }
-
-  function returnToHome() {
-    document.getElementById("main-content").innerHTML = `
-      <button id="nextBtn" class="nav-button" onclick="navigateNext()">➡</button>
-      <button id="submitNowBtn" onclick="submitQuizNow()">🚨 Submit</button>
-      <div class="quiz-box" id="quizArea">
-        <p>Select a category from the sidebar to start the quiz.</p>
-      </div>
-    `;
-  }
-</script>
-<script src="temp1.json"></script>
-<script src="temp.json"></script>
-</body>
-</html>
-: currentScore,   // ← Replace with your score variable
-    total: totalQuestions, // ← Replace with total questions count
-    set: currentSet,       // ← Replace with current quiz set identifier
-    time: timeTaken,
-    date: new Date().toISOString()
-  }).then(() => {
-    alert("✅ Quiz submitted and saved!");
-    returnToHome();
-  }).catch(err => {
-    alert("❌ Error saving to Firestore: " + err.message);
-  });
-}
-
-</script>
-<script src="temp1.json"></script>
-<script src="temp.json"></script>
+      html += `</ol>`;
+      document.getElementById("quizArea").innerHTML += html;
+    }
+  </script>
 </body>
 </html>
