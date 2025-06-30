@@ -1,6 +1,6 @@
 {
-"B": [
-  {
+    "B": [
+       {
     "question": "Which disorder is characterized by self-starvation and weight loss resulting in low weight for height and age?",
     "options": ["Anorexia Nervosa", "Bulimia Nervosa", "Kwashiorkor", "Marasmus"],
     "answer": "Anorexia Nervosa",
@@ -11,6 +11,6 @@
     "options": ["Bulimia Nervosa", "Anorexia Nervosa", "Kwashiorkor", "Marasmus"],
     "answer": "Bulimia Nervosa",
     "explanation": "<b><u>Bulimia Nervosa</u></b> is characterized by binge eating episodes. <b><u>Anorexia Nervosa</u></b> involves self-starvation. <b><u>Kwashiorkor</u></b> and <b><u>Marasmus</u></b> are types of malnutrition in children."
-  },
-]
-}
+     }
+       ]
+ }
