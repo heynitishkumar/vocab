@@ -1,16 +1,112 @@
 {
-    "B": [
-       {
-    "question": "Which disorder is characterized by self-starvation and weight loss resulting in low weight for height and age?",
-    "options": ["Anorexia Nervosa", "Bulimia Nervosa", "Kwashiorkor", "Marasmus"],
-    "answer": "Anorexia Nervosa",
-    "explanation": "<b><u>Anorexia Nervosa</u></b> is an eating disorder where individuals starve themselves, leading to significantly low weight. <b><u>Bulimia Nervosa</u></b> involves binge eating. <b><u>Kwashiorkor</u></b> is due to severe protein deficiency. <b><u>Marasmus</u></b> is a deficiency of all macronutrients."
+"B": [
+  {
+    "question": "When was the Dronacharya Award instituted by the Government of India?",
+    "options": ["1985", "1961", "1991", "2001"],
+    "answer": "1985",
+    "explanation": "The <b><u>Dronacharya Award</u></b> was instituted in <b>1985</b> to honour <b>sports coaches</b> for their contribution to training athletes for international excellence."
   },
   {
-    "question": "Which eating disorder involves consuming large amounts of food at one time?",
-    "options": ["Bulimia Nervosa", "Anorexia Nervosa", "Kwashiorkor", "Marasmus"],
-    "answer": "Bulimia Nervosa",
-    "explanation": "<b><u>Bulimia Nervosa</u></b> is characterized by binge eating episodes. <b><u>Anorexia Nervosa</u></b> involves self-starvation. <b><u>Kwashiorkor</u></b> and <b><u>Marasmus</u></b> are types of malnutrition in children."
-     }
-       ]
- }
+    "question": "What does the Dronacharya Award include?",
+    "options": [
+      "Rs 15 lakh, bronze statue of Dronacharya, and a certificate",
+      "Rs 25 lakh and a gold medal",
+      "Rs 10 lakh and silver statue of Arjuna",
+      "Certificate and a citation plaque"
+    ],
+    "answer": "Rs 15 lakh, bronze statue of Dronacharya, and a certificate",
+    "explanation": "The <b>Dronacharya Award</b> includes a <b>cash prize of Rs 15 lakh</b>, a <b>bronze statue of Dronacharya</b>, and a <b>certificate of appreciation</b>."
+  },
+  {
+    "question": "The Dronacharya Award is presented to individuals who have excelled in:",
+    "options": ["Coaching sportspersons", "Playing at the Olympics", "Sports journalism", "Organizing sports events"],
+    "answer": "Coaching sportspersons",
+    "explanation": "The <b>Dronacharya Award</b> is given to <b>coaches</b> for their <b>commendable efforts</b> in training athletes to achieve success in <b>international competitions</b>."
+  },
+   {
+    "question": "Which organization received the Rashtriya Khel Protsahan Puraskar 2024?",
+    "options": ["Physical Education Foundation of India", "Sports Authority of India", "Chandigarh University", "National Institute of Sports"],
+    "answer": "Physical Education Foundation of India",
+    "explanation": "<b><u>Physical Education Foundation of India</u></b> was awarded the <b>Rashtriya Khel Protsahan Puraskar 2024</b> for its outstanding work in the field of physical education and promoting sports."
+  },
+  {
+    "question": "Which university won the MAKA Trophy 2024 as the overall winner?",
+    "options": ["Chandigarh University", "Guru Nanak Dev University", "Lovely Professional University", "Delhi University"],
+    "answer": "Chandigarh University",
+    "explanation": "<b><u>Chandigarh University</u></b> won the <b>Maulana Abul Kalam Azad (MAKA) Trophy 2024</b> for being the <b>best performing university in sports</b> in India."
+  },
+  {
+    "question": "Which university was the first runner-up in the MAKA Trophy 2024?",
+    "options": ["Lovely Professional University", "Chandigarh University", "Delhi University", "Amity University"],
+    "answer": "Lovely Professional University",
+    "explanation": "<b><u>Lovely Professional University (Punjab)</u></b> was the <b>first runner-up</b> for the <b>MAKA Trophy 2024</b>."
+  },
+  {
+    "question": "Who was the second runner-up in the MAKA Trophy 2024?",
+    "options": ["Guru Nanak Dev University", "Delhi University", "Panjab University", "Jadavpur University"],
+    "answer": "Guru Nanak Dev University",
+    "explanation": "<b><u>Guru Nanak Dev University, Amritsar</u></b> was declared the <b>second runner-up</b> in the <b>2024 MAKA Trophy rankings</b>."
+  },
+  {
+    "question": "Who won the bronze medal at the Women’s World Blitz Chess Championship 2024?",
+    "options": ["Vaishali Rameshbabu", "Ju Wenjun", "Humpy Koneru", "Anna Muzychuk"],
+    "answer": "Vaishali Rameshbabu",
+    "explanation": "<b><u>Vaishali Rameshbabu</u></b> clinched the <b>bronze medal</b> at the <b>Women's World Blitz Chess Championship 2024</b>, continuing India’s strong presence in world chess."
+  },
+  {
+    "question": "Who won the Women’s Blitz Chess title in 2024?",
+    "options": ["Ju Wenjun", "Vaishali Rameshbabu", "Hou Yifan", "Kateryna Lagno"],
+    "answer": "Ju Wenjun",
+    "explanation": "<b><u>Ju Wenjun</u></b> won the <b>Women's World Blitz Chess Championship 2024</b>, reaffirming her position among the top global players."
+  },
+  {
+    "question": "Which two players shared the 2024 World Blitz Chess Championship title?",
+    "options": ["Magnus Carlsen and Ian Nepomniachtchi", "Fabiano Caruana and Hikaru Nakamura", "Magnus Carlsen and Ding Liren", "Anish Giri and Wesley So"],
+    "answer": "Magnus Carlsen and Ian Nepomniachtchi",
+    "explanation": "<b><u>Magnus Carlsen</u></b> (Norway) and <b><u>Ian Nepomniachtchi</u></b> (Russia) <b>shared the 2024 World Blitz title</b> after three sudden-death games ended without a winner — the first such instance in chess history."
+  },
+  {
+    "question": "Which team won the 78th edition of the Santosh Trophy in 2024?",
+    "options": ["West Bengal", "Kerala", "Delhi", "Punjab"],
+    "answer": "West Bengal",
+    "explanation": "<b><u>West Bengal</u></b> defeated <b>Kerala</b> 1-0 in the final at the <b>GMC Balayogi Stadium, Hyderabad</b> to clinch their <b>33rd Santosh Trophy</b> title — a national record."
+  },
+  {
+    "question": "When was the Santosh Trophy football tournament first held?",
+    "options": ["1941", "1951", "1936", "1960"],
+    "answer": "1941",
+    "explanation": "The <b><u>Santosh Trophy</u></b> is India’s premier state-level football tournament, started in <b>1941</b>. Bengal won the <b>inaugural title in 1941-42</b> by defeating Delhi."
+  },
+  {
+    "question": "What trophy and cash prize did the runners-up Kerala receive in the Santosh Trophy 2024?",
+    "options": ["Kamla Gupta Trophy and ₹3 lakhs", "Santosh Trophy and ₹2 lakhs", "Kalinga Cup and ₹5 lakhs", "Bharat Trophy and ₹1 lakh"],
+    "answer": "Kamla Gupta Trophy and ₹3 lakhs",
+    "explanation": "<b><u>Kerala</u></b> received the <b>Kamla Gupta Trophy</b> and a <b>cash prize of ₹3 lakhs</b> as the <b>runners-up</b> in the <b>Santosh Trophy 2024</b>."
+  },
+  {
+    "question": "Who is the Santosh Trophy named after?",
+    "options": ["Sir Manmatha Nath Roy Chowdhury", "Dhyan Chand", "Tulsidas Balaram", "Sukumar Samajpati"],
+    "answer": "Sir Manmatha Nath Roy Chowdhury",
+    "explanation": "The <b><u>Santosh Trophy</u></b> is named after <b>Sir Manmatha Nath Roy Chowdhury</b>, the Maharaja of Santosh (now in Bangladesh), a key patron of Indian football."
+  },
+  {
+    "question": "Who presided as Chief Guest at the launch of the book 'Jammu Kashmir and Ladakh: Through the Ages' in January 2025?",
+    "options": ["Amit Shah", "Narendra Modi", "Dharmendra Pradhan", "Anurag Thakur"],
+    "answer": "Amit Shah",
+    "explanation": "<b><u>Amit Shah</u></b>, Union Home Minister, presided as the <b>Chief Guest</b> at the release of the book <b>'Jammu Kashmir and Ladakh: Through the Ages'</b> on <b>2nd January 2025</b> in New Delhi."
+  },
+  {
+    "question": "Who was the Guest of Honour at the book launch of 'Jammu Kashmir and Ladakh: Through the Ages'?",
+    "options": ["Dharmendra Pradhan", "Amit Shah", "Smriti Irani", "Rajeev Chandrasekhar"],
+    "answer": "Dharmendra Pradhan",
+    "explanation": "<b><u>Dharmendra Pradhan</u></b>, Union Minister for Education, was the <b>Guest of Honour</b> at the event."
+  },
+  {
+    "question": "Which institutions collaborated to publish the book 'Jammu Kashmir and Ladakh: Through the Ages'?",
+    "options": ["National Book Trust & Indian Council of Historical Research", "NITI Aayog & NCERT", "Press Trust of India & IGNCA", "CBSE & Sahitya Akademi"],
+    "answer": "National Book Trust & Indian Council of Historical Research",
+    "explanation": "The book <b>'Jammu Kashmir and Ladakh: Through the Ages'</b> is a <b>collaborative work</b> by the <b>National Book Trust</b> and the <b>Indian Council of Historical Research</b>."
+  }
+]
+
+}
