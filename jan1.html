@@ -119,6 +119,10 @@
     </nav>
   </header>
 <div id="userInfo">👤 <span id="userDisplayName"></span></div>
+  <div style="float: right; display: flex; gap: 10px; align-items: center; margin-bottom: 10px;">
+  <span id="userInfo">👤 <span id="userDisplayName"></span></span>
+  <button onclick="logoutUser()" style="background:#e53935;">🚪 Logout</button>
+</div>
 <h2><span id="quizTitle"></span> <span id="timer"></span></h2>
 <div id="quizScreen">
   <div id="flashcard" class="flashcard"></div>
@@ -510,6 +514,16 @@
   }
 
   renderQuestion();
+
+  function logoutUser() {
+  firebase.auth().signOut().then(() => {
+    localStorage.removeItem("quizUserName");
+    window.location.href = "index.html"; // or any other page you'd like
+  }).catch(error => {
+    alert("Error signing out: " + error.message);
+  });
+}
+
 </script>
 </body>
 </html>
