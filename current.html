@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Current Affairs Section</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #fefefe, #eef2f3);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    header {
+      background-color: #e65100;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+      font-size: 2rem;
+      font-weight: bold;
+    }
+    .home-btn {
+      text-align: center;
+      margin: 1rem;
+    }
+    .home-btn a {
+      text-decoration: none;
+      background-color: #ef6c00;
+      color: white;
+      padding: 0.6rem 1.2rem;
+      border-radius: 6px;
+      font-weight: 600;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+    main {
+      flex: 1;
+      padding: 2rem;
+      text-align: center;
+    }
+    h2 {
+      color: #e65100;
+      margin-bottom: 2rem;
+    }
+    .section-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1.2rem;
+      justify-content: center;
+    }
+    .section-card {
+      background-color: white;
+      padding: 1.2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+      transition: transform 0.2s ease-in-out;
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #e65100;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .section-card:hover {
+      transform: translateY(-5px);
+      background-color: #fff3e0;
+    }
+    footer {
+      background-color: #e65100;
+      color: white;
+      text-align: center;
+      padding: 1rem;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  📰 Welcome to Current Affairs Section
+</header>
+
+<div class="home-btn">
+  <a href="index.html">🏠 Home</a>
+</div>
+
+<main>
+  <h2>Select a Month to Begin</h2>
+  <div class="section-grid">
+    <a href="january.html" class="section-card">📅 January</a>
+    <a href="february.html" class="section-card">📅 February</a>
+    <a href="march.html" class="section-card">📅 March</a>
+    <a href="april.html" class="section-card">📅 April</a>
+    <a href="may.html" class="section-card">📅 May</a>
+    <a href="june.html" class="section-card">📅 June</a>
+    <a href="july.html" class="section-card">📅 July</a>
+  </div>
+</main>
+
+<footer>
+  Stay informed with monthly Current Affairs updates
+</footer>
+
+</body>
+</html>

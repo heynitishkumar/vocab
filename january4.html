@@ -1,0 +1,813 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Current Affairs Quiz</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;600;800&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Nunito', sans-serif;
+      max-width: 800px;
+      margin: auto;
+      padding: 2rem;
+      background: linear-gradient(to right, #f9fafb, #e0f2f1);
+      color: #333;
+    }
+    h2 {
+      text-align: center;
+      color: #1e88e5;
+    }
+    .hidden {
+     display: none !important;
+    }
+    .flashcard {
+      background: #fff;
+      border-left: 6px solid #42a5f5;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .option {
+      margin: 10px 0;
+      display: block;
+      font-weight: 500;
+    }
+    .option input {
+      margin-right: 8px;
+    }
+    .result-correct { color: green; font-weight: bold; }
+    .result-incorrect { color: red; font-weight: bold; }
+    .result-skipped { color: gray; font-weight: bold; }
+    button {
+      background: #1e88e5;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 10px 16px;
+      margin: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background: #1565c0;
+    }
+    #navBtns {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+    #historyList div, #leaderboard div {
+      background: #fff;
+      border-left: 4px solid #7e57c2;
+      padding: 12px;
+      margin: 8px 0;
+      border-radius: 5px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
+    #timer {
+      font-weight: bold;
+      color: #d32f2f;
+      float: right;
+    }
+    #userInfo {
+      float: right;
+      margin-bottom: 10px;
+      font-weight: 600;
+      color: #2e7d32;
+    }
+    #resultContainer {
+      background: #fff;
+      padding: 1rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    hr {
+      border: none;
+      border-bottom: 1px solid #ccc;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+    header nav a {
+      margin-right: 12px;
+      text-decoration: none;
+      font-weight: 600;
+      color: #1e88e5;
+      transition: color 0.3s;
+    }
+    header nav a:hover {
+      color: #1565c0;
+    }
+   
+   #startScreen button:hover {
+  background: #2e7d32;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+#startScreen {
+  animation: fadeIn 1s ease-in-out;
+}
+
+ @keyframes countdownScale {
+  0% { transform: scale(0.5); opacity: 0.2; }
+  50% { transform: scale(1.3); opacity: 1; }
+  100% { transform: scale(1); opacity: 0.8; }
+}
+
+#countdownText {
+  animation: countdownScale 1s ease-in-out;
+}
+
+  </style>
+</head>
+<body>
+  <header style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+  <div>
+    <strong>📰 Current Affairs Quiz</strong><br>
+    <button onclick="confirmQuizInterrupt(viewHistory)" style="background:#6d4c41; margin-top: 6px;">📜 View History</button>
+    <button onclick="confirmQuizInterrupt(showLeaderboard)" style="background:#00897b; margin-top: 6px;">🏆 View Leaderboard</button>
+  </div>
+  <nav>
+    <a href="indexnod.html">🏠 Home</a>
+    <a href="january.html">📅 January CA</a>
+  </nav>
+</header>
+
+<div id="userInfo">👤 <span id="userDisplayName"></span></div>
+  <div style="float: right; display: flex; gap: 10px; align-items: center; margin-bottom: 10px;">
+  <span id="userInfo">👤 <span id="userDisplayName"></span></span>
+  <button onclick="confirmQuizInterrupt(logoutUser)" style="background:#e53935;">🚪 Logout</button>
+</div>
+<h2><span id="quizTitle"></span> <span id="timer"></span></h2>
+
+<div id="startScreen">
+  <h2>🧠 Welcome </h2>
+  <p id="totalQuestions"></p>
+
+  <div id="quizInfoBox">
+    <div style="
+      background: #ffffff;
+      padding: 1rem 1.5rem;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      margin: 20px 0;
+      max-width: 500px;
+    ">
+      <h3 style="margin: 0 0 10px 0;">📋 Quiz Info</h3>
+      <ul style="text-align: left; padding-left: 20px; color: #444; line-height: 1.6;">
+        <li>15 seconds per question</li>
+        <li>Auto-skip on timeout</li>
+        <li>Leaderboard ranks by score + speed</li>
+        <li>Answer explanations after submission</li>
+      </ul>
+    </div>
+  </div>
+
+  <div id="startContent">
+    <button id="startBtn" onclick="startQuiz()" style="
+      padding: 12px 24px;
+      font-size: 1.25rem;
+      border-radius: 10px;
+      background: #43a047;
+      font-weight: bold;
+    ">▶️ Start Quiz</button>
+  </div>
+</div>
+
+
+<div id="quizScreen" class="hidden">
+
+  <div id="flashcard" class="flashcard"></div>
+  <div id="navBtns">
+    <button onclick="skipQuestion()">⏭ Skip</button>
+  </div>
+  <button onclick="submitQuiz()">Submit Quiz</button>
+</div>
+
+<div id="resultScreen" class="hidden">
+  <div id="resultContainer">
+    <h2>Quiz Result: <span id="quizTitleResult"></span></h2>
+    <p><strong>Correct:</strong> <span id="correctQ"></span></p>
+    <p><strong>Incorrect:</strong> <span id="incorrectQ"></span></p>
+    <p><strong>Skipped:</strong> <span id="skippedQ"></span></p>
+    <p><strong>Time Taken:</strong> <span id="timeTaken"></span></p>
+    <h3>Review:</h3>
+    <div id="finalList"></div>
+  </div>
+  <button onclick="downloadResult()">📥 Download PNG</button>
+  <button onclick="viewHistory()">📜 View History</button>
+  <button onclick="showLeaderboard()">🏆 View Leaderboard</button>
+</div>
+
+<div id="historyScreen" class="hidden">
+  <h2>📚 Quiz History (<span id="historyTitle"></span>)</h2>
+  <div id="historyList"></div>
+  <button onclick="backToResults()">🔙 Back</button>
+</div>
+
+<div id="leaderboard" class="hidden">
+  <h2>🏆 Leaderboard</h2>
+  <div id="leaderboardList"></div>
+  <button onclick="backToResults()">🔙 Back</button>
+</div>
+
+<script>
+
+function confirmQuizInterrupt(actionFn) {
+  const quizScreen = document.getElementById("quizScreen");
+  const startScreen = document.getElementById("startScreen");
+
+  const quizInProgress = !quizScreen.classList.contains("hidden") && startScreen.classList.contains("hidden");
+
+  if (quizInProgress) {
+    const proceed = confirm("⚠️ This will submit your current quiz. Are you sure?");
+    if (proceed) {
+      submitQuiz(); // Submit quiz first
+      setTimeout(actionFn, 500); // Run the action after quiz is submitted
+    }
+  } else {
+    // No quiz running — proceed freely
+    actionFn();
+  }
+}
+
+  const quizTitle = "Jan 4 Quiz";
+  const quizId = quizTitle.replace(/[^a-zA-Z0-9]/g, "_");
+
+  document.getElementById("quizTitle").innerText = quizTitle;
+  document.getElementById("quizTitleResult").innerText = quizTitle;
+  document.getElementById("historyTitle").innerText = quizTitle;
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCGiOMRZHI_PdbuzIkQK8Kk4YcFXHBWtpc",
+    authDomain: "mathsquiz-5a3b7.firebaseapp.com",
+    projectId: "mathsquiz-5a3b7",
+    storageBucket: "mathsquiz-5a3b7.appspot.com",
+    messagingSenderId: "127657807004",
+    appId: "1:127657807004:web:ef17beddcbb04c5de0f159",
+    measurementId: "G-Q73EQ54DPG"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+  const auth = firebase.auth();
+
+  let userName = localStorage.getItem("quizUserName") || "";
+  if (!userName) {
+    userName = prompt("Enter your name:");
+    localStorage.setItem("quizUserName", userName);
+  }
+  document.getElementById("userDisplayName").innerText = userName;
+
+  auth.signInAnonymously().catch(console.error);
+
+  let currentUserId = "";
+  auth.onAuthStateChanged(user => {
+    if (user) {
+      currentUserId = user.uid;
+    }
+  });
+
+const pending = JSON.parse(localStorage.getItem("pendingSubmission"));
+if (pending) {
+  const timestamp = firebase.firestore.Timestamp.fromDate(new Date(pending.timestamp));
+  db.collection("vocabularyQuizHistory").add({
+    title: pending.title,
+    correct: pending.correct,
+    incorrect: pending.incorrect,
+    skipped: pending.skipped,
+    timeTaken: pending.timeTaken,
+    timestamp
+  });
+
+  const lbRef = db.collection("vocabLeaderboard_" + quizId).doc(pending.name);
+  lbRef.get().then(doc => {
+    const data = doc.data();
+    const attempts = (data?.attempts || 0) + 1;
+    if (!doc.exists || data.score < pending.correct || (data.score === pending.correct && data.timeTakenInSeconds > pending.timeTakenInSeconds)) {
+      lbRef.set({
+        name: pending.name,
+        score: pending.correct,
+        timeTaken: pending.timeTaken,
+        timeTakenInSeconds: pending.timeTakenInSeconds,
+        attempts
+      });
+    } else {
+      lbRef.update({ attempts });
+    }
+    localStorage.removeItem("pendingSubmission");
+  });
+}
+
+
+    const allQuizzes = {
+  A: [
+{
+    "question": "When is World Braille Day celebrated?",
+    "options": ["January 4", "January 12", "January 1", "January 24"],
+    "answer": "January 4",
+    "explanation": "<b><u>World Braille Day</u></b> is celebrated on <b>January 4</b> since <b>2019</b> to raise awareness about the importance of <b>Braille</b> as a communication tool for the visually impaired."
+  },
+  {
+    "question": "Who invented the Braille system of writing?",
+    "options": ["Louis Braille", "Helen Keller", "Thomas Braille", "Claude Monet"],
+    "answer": "Louis Braille",
+    "explanation": "<b><u>Braille</u></b> is named after its inventor <b>Louis Braille</b>, who created the tactile reading and writing system in <b>19th-century France</b> using <b>six-dot symbols</b>."
+  },
+  {
+    "question": "What day is celebrated as Lokpal Day in India?",
+    "options": ["January 16", "January 1", "January 4", "January 26"],
+    "answer": "January 16",
+    "explanation": "<b><u>Lokpal Day</u></b> is observed on <b>January 16</b> annually to mark the establishment of the <b>Lokpal of India</b> under the <b>Lokpal and Lokayuktas Act, 2013</b>."
+  },
+  {
+    "question": "Who coined the terms ‘Lokpal’ and ‘Lokayukta’?",
+    "options": ["Dr. L. M. Singhvi", "Ashok Kumar Sen", "Anna Hazare", "Kiran Bedi"],
+    "answer": "Dr. L. M. Singhvi",
+    "explanation": "The term <b><u>'Lokpal'</u></b> and <b>'Lokayukta'</b> was coined by <b>Dr. L. M. Singhvi</b> in <b>1963</b> to describe an anti-corruption watchdog at the central and state levels."
+  },
+  {
+    "question": "Who is the second Chairperson of the Lokpal of India?",
+    "options": ["Justice A. M. Khanwilkar", "Justice Pinaki Chandra Ghose", "Justice Sanjiv Khanna", "Justice Dipak Misra"],
+    "answer": "Justice A. M. Khanwilkar",
+    "explanation": "<b><u>Justice A. M. Khanwilkar</u></b> is the <b>second Chairperson</b> of the <b>Lokpal of India</b>."
+  },
+  {
+    "question": "Which social movement led to the passage of the Lokpal Bill in 2013?",
+    "options": ["India Against Corruption", "Nirbhaya Movement", "Swachh Bharat Movement", "Save Democracy Campaign"],
+    "answer": "India Against Corruption",
+    "explanation": "The <b><u>India Against Corruption</u></b> movement led by <b>Anna Hazare</b> in 2011 demanded the establishment of an <b>independent anti-corruption body</b> — Lokpal."
+  },
+  {
+    "question": "Who was the first Indian queen to fight against British colonial rule?",
+    "options": ["Rani Velu Nachiyar", "Rani Lakshmibai", "Rani Gaidinliu", "Rani Durgavati"],
+    "answer": "Rani Velu Nachiyar",
+    "explanation": "<b><u>Rani Velu Nachiyar</u></b> of <b>Sivaganga</b> (Tamil Nadu) was the <b>first queen</b> in Indian history to <b>fight against British colonialism</b> in the 18th century."
+  },
+  {
+    "question": "Which Indian woman is regarded as India’s first female teacher?",
+    "options": ["Savitribai Phule", "Anandi Gopal Joshi", "Sarojini Naidu", "Begum Rokeya"],
+    "answer": "Savitribai Phule",
+    "explanation": "<b><u>Savitribai Phule</u></b> is considered <b>India’s first woman teacher</b>. She, along with her husband <b>Jyotirao Phule</b>, opened the <b>first school for girls</b> in Pune in <b>1848</b>."
+  },
+  {
+    "question": "Which social reform group was founded by Savitribai and Jyotirao Phule in 1873?",
+    "options": ["Satyashodhak Samaj", "Arya Samaj", "Brahmo Samaj", "Prarthana Samaj"],
+    "answer": "Satyashodhak Samaj",
+    "explanation": "<b><u>Satyashodhak Samaj</u></b> (Truth-Seeker Society) was founded in <b>1873</b> by <b>Savitribai and Jyotirao Phule</b> to promote <b>social equality and education</b>."
+  },
+  {
+    "question": "Which of the following are works of Savitribai Phule?",
+    "options": ["Kavya Phule and Bavan Kashi Subodh Ratnakar", "Gitanjali and Shabari", "Bhakti Ratnakar and Amar Jiban", "Gulzar-e-Hind and Lajwanti"],
+    "answer": "Kavya Phule and Bavan Kashi Subodh Ratnakar",
+    "explanation": "<b><u>Savitribai Phule</u></b> authored <b>'Kavya Phule'</b> and <b>'Bavan Kashi Subodh Ratnakar'</b> — important literary contributions focused on <b>social justice and women’s empowerment</b>."
+  },
+  {
+    "question": "Which state declared January 3 as Women's Teachers’ Day to honor Savitribai Phule?",
+    "options": ["Telangana", "Maharashtra", "Uttar Pradesh", "Karnataka"],
+    "answer": "Telangana",
+    "explanation": "<b><u>Telangana</u></b> announced that <b>January 3</b>, the birth anniversary of <b>Savitribai Phule</b>, will be celebrated as <b>Women's Teachers’ Day</b> across the state."
+  },
+  {
+    "question": "The Urs festival commemorates the death anniversary of which Sufi saint?",
+    "options": ["Khwaja Moinuddin Chishti", "Nizamuddin Auliya", "Qutbuddin Bakhtiyar Kaki", "Fareeduddin Ganj-e-Shakar"],
+    "answer": "Khwaja Moinuddin Chishti",
+    "explanation": "<b><u>Urs</u></b> is celebrated at <b>Ajmer Sharif</b> in Rajasthan to commemorate the <b>death anniversary of Khwaja Moinuddin Chishti</b>, the founder of the Chishtiya order in India."
+  },
+  {
+    "question": "What does the phrase 'Sulh-i-Kul' associated with Chishti teachings mean?",
+    "options": ["Peace with all", "Prayer in silence", "Unity of soul", "Path of devotion"],
+    "answer": "Peace with all",
+    "explanation": "<b><u>Sulh-i-Kul</u></b> means <b>'Peace with all'</b>, a key principle of the <b>Chishti Sufi tradition</b> propagated by Khwaja Moinuddin Chishti."
+  },
+  {
+    "question": "Which Act replaced the 90-year-old Aircraft Act of 1934 in India?",
+    "options": ["Bharatiya Vayuyan Adhiniyam 2024", "Civil Aviation Modernisation Act", "Indian Air Safety Act", "Aircraft Regulation Bill 2024"],
+    "answer": "Bharatiya Vayuyan Adhiniyam 2024",
+    "explanation": "The <b><u>Bharatiya Vayuyan Adhiniyam 2024</u></b> replaced the <b>Aircraft Act of 1934</b> to enhance safety, promote investment, and strengthen passenger rights in civil aviation."
+  },
+  {
+    "question": "Who introduced the Bharatiya Vayuyan Adhiniyam 2024 in Parliament?",
+    "options": ["Kinjarapu Ram Mohan Naidu", "Jyotiraditya Scindia", "Nitin Gadkari", "Ashwini Vaishnaw"],
+    "answer": "Kinjarapu Ram Mohan Naidu",
+    "explanation": "<b><u>Civil Aviation Minister Kinjarapu Ram Mohan Naidu</u></b> introduced the <b>Bharatiya Vayuyan Adhiniyam 2024</b> during the <b>Winter Session</b> of Parliament."
+  },
+  {
+    "question": "Who received the Padmapani Lifetime Achievement Award at AIFF 2025?",
+    "options": ["Sai Paranjpye", "Shyam Benegal", "Meera Nair", "Zoya Akhtar"],
+    "answer": "Sai Paranjpye",
+    "explanation": "<b><u>Sai Paranjpye</u></b>, veteran filmmaker and writer, was honored with the <b>Padmapani Lifetime Achievement Award</b> at the <b>Ajanta-Ellora International Film Festival 2025</b>."
+  },
+  {
+    "question": "Which poet received the Gangadhar National Award for Poetry 2023?",
+    "options": ["Prativa Satpathy", "Jayanta Mahapatra", "Sukrita Paul Kumar", "Kedarnath Singh"],
+    "answer": "Prativa Satpathy",
+    "explanation": "<b><u>Prativa Satpathy</u></b>, a prominent Odia poet, was awarded the <b>Gangadhar National Award 2023</b> by <b>Sambalpur University</b>."
+  },
+  {
+    "question": "Which IIT filed 152 Intellectual Property Rights (IPRs) in 2024?",
+    "options": ["IIT Kanpur", "IIT Delhi", "IIT Bombay", "IIT Madras"],
+    "answer": "IIT Kanpur",
+    "explanation": "<b><u>IIT Kanpur</u></b> set a record by filing <b>152 IPRs in 2024</b>, including <b>124 patents</b>, and received the <b>STEM Impact Awards</b> for technology transfer."
+  },
+  {
+    "question": "Which portal was launched to centralize e-auction property listings of PSBs?",
+    "options": ["Baanknet", "BankBazaar", "eSevaAuction", "AssetMitra"],
+    "answer": "Baanknet",
+    "explanation": "<b><u>Baanknet</u></b>, launched by <b>Shri M. Nagaraju</b> (Secretary, DFS), serves as a centralized platform for <b>e-auction listings by Public Sector Banks</b>."
+  },
+  {
+    "question": "Who is the richest Chief Minister in India as per the ADR report 2025?",
+    "options": ["N. Chandrababu Naidu", "Pema Khandu", "Hemant Soren", "Naveen Patnaik"],
+    "answer": "N. Chandrababu Naidu",
+    "explanation": "<b><u>N. Chandrababu Naidu</u></b> is reported as the <b>richest CM</b> in India with assets worth over <b>₹931 crore</b> (ADR report 2025)."
+  },
+  {
+    "question": "Which CM is listed as the poorest according to the ADR 2025 report?",
+    "options": ["Mamata Banerjee", "Omar Abdullah", "Bhupesh Baghel", "Nitish Kumar"],
+    "answer": "Mamata Banerjee",
+    "explanation": "<b><u>Mamata Banerjee</u></b>, West Bengal CM, is reported as the <b>poorest Chief Minister</b> with just <b>₹15 lakh</b> in assets."
+  },
+  {
+    "question": "Which award was conferred upon the noted Art Historian and Epigraphist in 2024?",
+    "options": ["Padma Shri", "Sahitya Akademi Award", "Kala Ratna", "Bharat Ratna"],
+    "answer": "Padma Shri",
+    "explanation": "A renowned <b>art historian and epigraphist</b> received the <b>Padma Shri in 2024</b> and earlier received the <b>Kannada Rajyotsava Award</b> and <b>Sanskrit Honour Certificate</b> (2014)."
+  },
+  {
+    "question": "What is the name of India’s upcoming research station in Antarctica?",
+    "options": ["Maitri-2", "Dakshin Bharati", "Gangotri-2", "IndArctic"],
+    "answer": "Maitri-2",
+    "explanation": "India is constructing a new Antarctic research station called <b><u>Maitri-2</u></b> near the existing <b>Maitri</b> station to enhance scientific research capacity for up to <b>90 scientists</b>."
+  },
+  {
+    "question": "Which organization manages India’s Antarctic Programme?",
+    "options": ["National Centre for Polar and Ocean Research (NCPOR)", "ISRO", "National Institute of Oceanography", "DRDO"],
+    "answer": "National Centre for Polar and Ocean Research (NCPOR)",
+    "explanation": "India’s Antarctic Programme is administered by the <b><u>National Centre for Polar and Ocean Research (NCPOR)</u></b>, and the first expedition was launched in <b>1981</b>."
+  },
+  {
+    "question": "Which was India’s first research base in Antarctica?",
+    "options": ["Dakshin Gangotri", "Maitri", "Bharati", "Gangotri-2"],
+    "answer": "Dakshin Gangotri",
+    "explanation": "<b><u>Dakshin Gangotri</u></b>, established in <b>1983</b>, was India’s first Antarctic research base but was later decommissioned due to ice submersion."
+  },
+  {
+    "question": "Which country recently unveiled the world’s fastest train prototype, the CR450?",
+    "options": ["China", "Japan", "Germany", "South Korea"],
+    "answer": "China",
+    "explanation": "<b><u>China</u></b> has unveiled the <b>CR450</b> high-speed train capable of speeds up to <b>450 km/h</b>, surpassing the <b>CR400 Fuxing</b> (350 km/h)."
+  },
+  {
+    "question": "What is the maximum speed of China’s newly launched CR450 high-speed train?",
+    "options": ["450 km/h", "400 km/h", "360 km/h", "500 km/h"],
+    "answer": "450 km/h",
+    "explanation": "The <b><u>CR450</u></b> is China’s next-generation <b>high-speed train</b> capable of reaching speeds of <b>450 km/h</b>, making it the world’s fastest."
+  },
+  {
+    "question": "Who became the first woman to head Syria’s central bank?",
+    "options": ["Maysaa Sabrine", "Asmaa al-Assad", "Rania Haddad", "Samar Murad"],
+    "answer": "Maysaa Sabrine",
+    "explanation": "<b><u>Maysaa Sabrine</u></b> was appointed as the <b>first female governor</b> of Syria’s Central Bank in its <b>70-year history</b> after recent regime change developments."
+  },
+    {
+    "question": "Where will the first-ever Kho Kho World Cup 2025 be held?",
+    "options": ["Indira Gandhi Indoor Stadium, New Delhi", "Kalinga Stadium, Bhubaneswar", "Pune Sports Complex", "Chennai Nehru Stadium"],
+    "answer": "Indira Gandhi Indoor Stadium, New Delhi",
+    "explanation": "The inaugural <b><u>Kho Kho World Cup 2025</u></b> will be hosted at <b>Indira Gandhi Indoor Stadium</b>, New Delhi from <b>January 13–19</b>."
+  },
+  {
+    "question": "What are the names of the official mascots of the Kho Kho World Cup 2025?",
+    "options": ["Tejas and Tara", "Kho and Khoi", "Rana and Rani", "Bolt and Blaze"],
+    "answer": "Tejas and Tara",
+    "explanation": "<b><u>'Tejas' and 'Tara'</u></b>, two gazelles, are the official <b>mascots</b> of the <b>Kho Kho World Cup 2025</b>."
+  },
+  {
+    "question": "Which two celebrities are co-brand ambassadors for the Kho Kho World Cup 2025?",
+    "options": ["Tiger Shroff and Salman Khan", "Virat Kohli and Akshay Kumar", "PV Sindhu and Ranveer Singh", "Neeraj Chopra and Priyanka Chopra"],
+    "answer": "Tiger Shroff and Salman Khan",
+    "explanation": "<b><u>Tiger Shroff</u></b> and <b><u>Salman Khan</u></b> have been appointed as the <b>co-brand ambassadors</b> for the <b>Kho Kho World Cup 2025</b>."
+  },
+  {
+    "question": "What is the official tagline of the Kho Kho World Cup 2025?",
+    "options": ["#TheWorldGoesKho", "#KhoKhoUnites", "#RunChaseWin", "#KhoKhoRising"],
+    "answer": "#TheWorldGoesKho",
+    "explanation": "The official tagline for the <b><u>Kho Kho World Cup 2025</u></b> is <b>#TheWorldGoesKho</b>."
+  }
+]
+
+};
+
+
+  const questions = allQuizzes.A;
+  let answers = Array(questions.length).fill(null);
+  let current = 0;
+  let startTime = Date.now();
+  let timerInterval;
+  let timePerQuestion = 15;
+  let timeLeft = timePerQuestion;
+
+  function shuffleArray(array) {
+    return array.map(value => ({ value, sort: Math.random() }))
+                .sort((a, b) => a.sort - b.sort)
+                .map(({ value }) => value);
+  }
+
+function startQuiz() {
+  // Hide only quiz info and button, not the whole screen
+  document.getElementById("quizInfoBox").classList.add("hidden");
+  document.getElementById("startContent").classList.add("hidden");
+
+document.getElementById("historyScreen").classList.add("hidden");
+  document.getElementById("leaderboard").classList.add("hidden");
+  document.getElementById("resultScreen").classList.add("hidden");
+  document.getElementById("countdownOverlay").classList.remove("hidden");
+
+  let count = 3;
+  const countdownText = document.getElementById("countdownText");
+  countdownText.innerText = count;
+
+  const countdownInterval = setInterval(() => {
+    count--;
+    if (count > 0) {
+      countdownText.innerText = count;
+      countdownText.style.animation = "none";
+      void countdownText.offsetWidth;
+      countdownText.style.animation = "countdownScale 1s ease-in-out";
+    } else {
+      countdownText.innerText = "🚀 Go!";
+      clearInterval(countdownInterval);
+      setTimeout(() => {
+        document.getElementById("countdownOverlay").classList.add("hidden");
+        document.getElementById("quizScreen").classList.remove("hidden");
+        document.getElementById("startScreen").classList.add("hidden"); // now hide full start screen
+        renderQuestion();
+      }, 700);
+    }
+  }, 1000);
+}
+
+
+  function renderQuestion() {
+    clearInterval(timerInterval);
+    timeLeft = timePerQuestion;
+    document.getElementById("timer").innerText = `⏳ ${timeLeft}s`;
+    timerInterval = setInterval(() => {
+      timeLeft--;
+      document.getElementById("timer").innerText = `⏳ ${timeLeft}s`;
+      if (timeLeft <= 0) {
+        clearInterval(timerInterval);
+        skipQuestion();
+      }
+    }, 1000);
+
+    const q = questions[current];
+    const flash = document.getElementById("flashcard");
+    const shuffledOptions = shuffleArray(q.options);
+    flash.innerHTML = `<strong>Q${current + 1}: ${q.question}</strong><br>` +
+      shuffledOptions.map((opt, i) => {
+        const letter = String.fromCharCode(65 + i);
+        return `<label class="option">
+          <input type="radio" name="q${current}" value="${opt}" onclick="selectOption('${opt}')"
+          ${answers[current] === opt ? 'checked' : ''}> ${letter}. ${opt}
+        </label>`;
+      }).join('');
+  }
+
+  function selectOption(opt) {
+    answers[current] = opt;
+    if (current < questions.length - 1) {
+      current++;
+      renderQuestion();
+    } else {
+      clearInterval(timerInterval);
+    }
+  }
+
+  function skipQuestion() {
+    answers[current] = null;
+    if (current < questions.length - 1) {
+      current++;
+      renderQuestion();
+    } else {
+      clearInterval(timerInterval);
+    }
+  }
+
+  function submitQuiz() {
+    clearInterval(timerInterval);
+    const timeTakenSec = Math.floor((Date.now() - startTime) / 1000);
+    const timeStr = `${Math.floor(timeTakenSec/60)}m ${timeTakenSec%60}s`;
+
+    let correct = 0, incorrect = 0, skipped = 0;
+    const finalList = document.getElementById("finalList");
+    finalList.innerHTML = "";
+
+    answers.forEach((ans, i) => {
+      const q = questions[i];
+      let resultClass = "", message = "";
+
+      if (ans === null) {
+        skipped++;
+        resultClass = "result-skipped";
+        message = `Skipped. Correct: <b>${q.answer}</b><br>${q.explanation}`;
+      } else if (ans === q.answer) {
+        correct++;
+        resultClass = "result-correct";
+        message = `Correct! <br>${q.explanation}`;
+      } else {
+        incorrect++;
+        resultClass = "result-incorrect";
+        message = `Incorrect. You chose: <b>${ans}</b><br>Correct: <b>${q.answer}</b><br>${q.explanation}`;
+      }
+
+      const div = document.createElement("div");
+      div.innerHTML = `<div class="${resultClass}"><b>Q${i+1}:</b> ${q.question}<br>${message}</div><hr>`;
+      finalList.appendChild(div);
+    });
+
+    document.getElementById("correctQ").innerText = correct;
+    document.getElementById("incorrectQ").innerText = incorrect;
+    document.getElementById("skippedQ").innerText = skipped;
+    document.getElementById("timeTaken").innerText = timeStr;
+
+    document.getElementById("quizScreen").classList.add("hidden");
+    document.getElementById("resultScreen").classList.remove("hidden");
+
+    const timestamp = firebase.firestore.Timestamp.now();
+
+    db.collection("vocabularyQuizHistory").add({ title: quizTitle, correct, incorrect, skipped, timeTaken: timeStr, timestamp });
+
+    const lbRef = db.collection("vocabLeaderboard_" + quizId).doc(userName);
+    lbRef.get().then(doc => {
+      const data = doc.data();
+      const attempts = (data?.attempts || 0) + 1;
+      if (!doc.exists || data.score < correct || (data.score === correct && data.timeTakenInSeconds > timeTakenSec)) {
+        lbRef.set({ name: userName, score: correct, timeTaken: timeStr, timeTakenInSeconds: timeTakenSec, attempts });
+      } else {
+        lbRef.update({ attempts });
+      }
+    });
+  }     // end of submitQuiz function
+
+function autoSubmitQuizBeforeUnload() {
+  const quizScreen = document.getElementById("quizScreen");
+  const startScreen = document.getElementById("startScreen");
+
+  const quizInProgress = !quizScreen.classList.contains("hidden") && startScreen.classList.contains("hidden");
+
+  if (!quizInProgress) return;
+
+  const timeTakenSec = Math.floor((Date.now() - startTime) / 1000);
+  const timeStr = `${Math.floor(timeTakenSec/60)}m ${timeTakenSec%60}s`;
+
+  let correct = 0, incorrect = 0, skipped = 0;
+
+  const submissionData = {
+    title: quizTitle,
+    timeTaken: timeStr,
+    timeTakenInSeconds: timeTakenSec,
+    timestamp: Date.now(),
+    name: userName,
+    answers: answers,
+    questions: questions
+  };
+
+  answers.forEach((ans, i) => {
+    if (ans === null) skipped++;
+    else if (ans === questions[i].answer) correct++;
+    else incorrect++;
+  });
+
+  submissionData.correct = correct;
+  submissionData.incorrect = incorrect;
+  submissionData.skipped = skipped;
+
+  localStorage.setItem("pendingSubmission", JSON.stringify(submissionData));
+}
+
+
+
+  function downloadResult() {
+    html2canvas(document.getElementById("resultContainer")).then(canvas => {
+      const link = document.createElement('a');
+      link.download = `${quizTitle}.png`;
+      link.href = canvas.toDataURL();
+      link.click();
+    });
+  }
+
+  function viewHistory() {
+    document.getElementById("resultScreen").classList.add("hidden");
+    document.getElementById("historyScreen").classList.remove("hidden");
+    const list = document.getElementById("historyList");
+    list.innerHTML = "Loading...";
+
+ db.collection("vocabularyQuizHistory").orderBy("timestamp", "desc").limit(15).get().then(snapshot => {
+      list.innerHTML = "";
+      snapshot.forEach(doc => {
+        const d = doc.data();
+        const entry = document.createElement("div");
+        entry.innerHTML = `<b>${d.title}</b> - ${d.timestamp.toDate().toLocaleString()}<br>✅ Correct: ${d.correct}, ❌ Incorrect: ${d.incorrect}, ⚪ Skipped: ${d.skipped}<br>🕒 Time: ${d.timeTaken}`;
+        list.appendChild(entry);
+      });
+    });
+  }
+
+  function showLeaderboard() {
+    document.getElementById("resultScreen").classList.add("hidden");
+    document.getElementById("leaderboard").classList.remove("hidden");
+    const board = document.getElementById("leaderboardList");
+    board.innerHTML = "Loading...";
+
+    db.collection("vocabLeaderboard_" + quizId).get().then(snapshot => {
+      const data = [];
+      snapshot.forEach(doc => data.push(doc.data()));
+      data.sort((a, b) => b.score - a.score || a.timeTakenInSeconds - b.timeTakenInSeconds);
+      board.innerHTML = "";
+      data.forEach((u, i) => {
+        const row = document.createElement("div");
+        row.innerHTML = `#${i+1}. <b>${u.name}</b> (${u.attempts}) — ✅ ${u.score} | 🕒 ${u.timeTaken}`;
+        board.appendChild(row);
+      });
+    });
+  }
+
+  function backToResults() {
+    document.getElementById("historyScreen").classList.add("hidden");
+    document.getElementById("leaderboard").classList.add("hidden");
+    document.getElementById("resultScreen").classList.remove("hidden");
+  }
+
+  
+
+  function logoutUser() {
+  firebase.auth().signOut().then(() => {
+    localStorage.removeItem("quizUserName");
+    window.location.href = "index.html"; // or any other page you'd like
+  }).catch(error => {
+    alert("Error signing out: " + error.message);
+  });
+}
+
+
+
+
+
+
+window.addEventListener("beforeunload", function (e) {
+  const quizScreen = document.getElementById("quizScreen");
+  const startScreen = document.getElementById("startScreen");
+
+  const quizInProgress = !quizScreen.classList.contains("hidden") && startScreen.classList.contains("hidden");
+
+  if (quizInProgress) {
+    autoSubmitQuizBeforeUnload();
+    e.preventDefault();
+    e.returnValue = "⚠️ You have an active quiz. Leaving will submit it.";
+  }
+});
+
+</script>
+<div id="countdownOverlay" class="hidden" style="
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.85);
+  color: white;
+  font-size: 4rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  font-weight: bold;
+  flex-direction: column;
+">
+  <div id="countdownText">3</div>
+</div>
+
+</body>
+</html>
