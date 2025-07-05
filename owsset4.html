@@ -1,0 +1,1102 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>OWS Quiz</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;600;800&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Nunito', sans-serif;
+      max-width: 800px;
+      margin: auto;
+      padding: 2rem;
+      background: linear-gradient(to right, #f9fafb, #e0f2f1);
+      color: #333;
+    }
+    h2 {
+      text-align: center;
+      color: #1e88e5;
+    }
+    .hidden {
+     display: none !important;
+    }
+    .flashcard {
+      background: #fff;
+      border-left: 6px solid #42a5f5;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .option {
+      margin: 10px 0;
+      display: block;
+      font-weight: 500;
+    }
+    .option input {
+      margin-right: 8px;
+    }
+    .result-correct { color: green; font-weight: bold; }
+    .result-incorrect { color: red; font-weight: bold; }
+    .result-skipped { color: gray; font-weight: bold; }
+    button {
+      background: #1e88e5;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 10px 16px;
+      margin: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background: #1565c0;
+    }
+    #navBtns {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+    #historyList div, #leaderboard div {
+      background: #fff;
+      border-left: 4px solid #7e57c2;
+      padding: 12px;
+      margin: 8px 0;
+      border-radius: 5px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
+    #timer {
+      font-weight: bold;
+      color: #d32f2f;
+      float: right;
+    }
+    #userInfo {
+      float: right;
+      margin-bottom: 10px;
+      font-weight: 600;
+      color: #2e7d32;
+    }
+    #resultContainer {
+      background: #fff;
+      padding: 1rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    hr {
+      border: none;
+      border-bottom: 1px solid #ccc;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+    header nav a {
+      margin-right: 12px;
+      text-decoration: none;
+      font-weight: 600;
+      color: #1e88e5;
+      transition: color 0.3s;
+    }
+    header nav a:hover {
+      color: #1565c0;
+    }
+   
+   #startScreen button:hover {
+  background: #2e7d32;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+#startScreen {
+  animation: fadeIn 1s ease-in-out;
+}
+
+ @keyframes countdownScale {
+  0% { transform: scale(0.5); opacity: 0.2; }
+  50% { transform: scale(1.3); opacity: 1; }
+  100% { transform: scale(1); opacity: 0.8; }
+}
+
+#countdownText {
+  animation: countdownScale 1s ease-in-out;
+}
+
+details {
+  background: #f9f9f9;
+  padding: 10px;
+  border-radius: 8px;
+}
+details summary {
+  font-weight: bold;
+  cursor: pointer;
+}
+
+
+  </style>
+</head>
+<body>
+  <header style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+  <div>
+    <strong>📰 One Word Substitution Quiz</strong><br>
+    <button onclick="confirmQuizInterrupt(viewHistory)" style="background:#6d4c41; margin-top: 6px;">📜 View History</button>
+    <button onclick="confirmQuizInterrupt(showLeaderboard)" style="background:#00897b; margin-top: 6px;">🏆 View Leaderboard</button>
+  </div>
+  <nav>
+    <a href="indexnod.html">🏠 Home</a>
+    <a href="vocabulary.html">📅 Vocabulary</a>
+  </nav>
+</header>
+
+<div id="userInfo">👤 <span id="userDisplayName"></span></div>
+  <div style="float: right; display: flex; gap: 10px; align-items: center; margin-bottom: 10px;">
+  <span id="userInfo">👤 <span id="userDisplayName"></span></span>
+  <button onclick="confirmQuizInterrupt(logoutUser)" style="background:#e53935;">🚪 Logout</button>
+</div>
+<h2><span id="quizTitle"></span> <span id="timer"></span></h2>
+
+<div id="startScreen">
+  <h2>🧠 Welcome </h2>
+  <p id="totalQuestions"></p>
+
+  <div id="quizInfoBox">
+    <div style="
+      background: #ffffff;
+      padding: 1rem 1.5rem;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      margin: 20px 0;
+      max-width: 500px;
+    ">
+      <h3 style="margin: 0 0 10px 0;">📋 Quiz Info</h3>
+      <ul style="text-align: left; padding-left: 20px; color: #444; line-height: 1.6;">
+        <li>15 seconds per question</li>
+        <li>Auto-skip on timeout</li>
+        <li>Leaderboard ranks by score + speed</li>
+        <li>Answer explanations after submission</li>
+      </ul>
+    </div>
+  </div>
+
+  <div id="startContent">
+    <button id="startBtn"  style="
+      padding: 12px 24px;
+      font-size: 1.25rem;
+      border-radius: 10px;
+      background: #43a047;
+      font-weight: bold;
+    ">▶️ Start Quiz</button>
+  </div>
+</div>
+
+
+<div id="quizScreen" class="hidden">
+
+  <div id="flashcard" class="flashcard"></div>
+  <div id="navBtns">
+    <button onclick="skipQuestion()">⏭ Skip</button>
+  </div>
+  <button onclick="submitQuiz()">Submit Quiz</button>
+</div>
+
+<div id="resultScreen" class="hidden">
+  <div id="resultContainer">
+    <h2>Quiz Result: <span id="quizTitleResult"></span></h2>
+    <p><strong>Correct:</strong> <span id="correctQ"></span></p>
+    <p><strong>Incorrect:</strong> <span id="incorrectQ"></span></p>
+    <p><strong>Skipped:</strong> <span id="skippedQ"></span></p>
+    <p><strong>Time Taken:</strong> <span id="timeTaken"></span></p>
+    <h3>Review:</h3>
+    <div id="finalList"></div>
+  </div>
+  <button onclick="downloadResult()">📥 Download PNG</button>
+  <button onclick="viewHistory()">📜 View History</button>
+  <button onclick="showLeaderboard()">🏆 View Leaderboard</button>
+</div>
+
+<div id="historyScreen" class="hidden">
+  <h2>📚 Quiz History (<span id="historyTitle"></span>)</h2>
+  <div id="historyList"></div>
+  <button onclick="backToResults()">🔙 Back</button>
+</div>
+
+<div id="leaderboard" class="hidden">
+  <h2>🏆 Leaderboard</h2>
+  <div id="leaderboardList"></div>
+  <button onclick="backToResults()">🔙 Back</button>
+</div>
+
+<script>
+function retryQuiz() {
+  window.scrollTo(0, 0);
+  startQuiz(); // or just reload if you want to reset everything: window.location.reload();
+}
+
+
+function confirmQuizInterrupt(actionFn) {
+  const quizScreen = document.getElementById("quizScreen");
+  const startScreen = document.getElementById("startScreen");
+
+  const quizInProgress = !quizScreen.classList.contains("hidden") && startScreen.classList.contains("hidden");
+
+  if (quizInProgress) {
+    const proceed = confirm("⚠️ This will submit your current quiz. Are you sure?");
+    if (proceed) {
+      submitQuiz(); // Submit quiz first
+      setTimeout(actionFn, 500); // Run the action after quiz is submitted
+    }
+  } else {
+    // No quiz running — proceed freely
+    actionFn();
+  }
+}
+
+  const quizTitle = "OWS Tab 81-83";
+  const quizId = quizTitle.replace(/[^a-zA-Z0-9]/g, "_");
+
+  document.getElementById("quizTitle").innerText = quizTitle;
+  document.getElementById("quizTitleResult").innerText = quizTitle;
+  document.getElementById("historyTitle").innerText = quizTitle;
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCGiOMRZHI_PdbuzIkQK8Kk4YcFXHBWtpc",
+    authDomain: "mathsquiz-5a3b7.firebaseapp.com",
+    projectId: "mathsquiz-5a3b7",
+    storageBucket: "mathsquiz-5a3b7.appspot.com",
+    messagingSenderId: "127657807004",
+    appId: "1:127657807004:web:ef17beddcbb04c5de0f159",
+    measurementId: "G-Q73EQ54DPG"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+  const auth = firebase.auth();
+
+  let userName = localStorage.getItem("quizUserName") || "";
+  if (!userName) {
+    userName = prompt("Enter your name:");
+    localStorage.setItem("quizUserName", userName);
+  }
+  document.getElementById("userDisplayName").innerText = userName;
+
+  auth.signInAnonymously().catch(console.error);
+
+  let currentUserId = "";
+  auth.onAuthStateChanged(user => {
+    if (user) {
+      currentUserId = user.uid;
+    }
+  });
+
+const pending = JSON.parse(localStorage.getItem("pendingSubmission"));
+if (pending) {
+  const timestamp = firebase.firestore.Timestamp.fromDate(new Date(pending.timestamp));
+db.collection("vocabularyQuizHistory").add({ 
+  title: quizTitle,
+  name: userName,
+  correct,
+  incorrect,
+  skipped,
+  timeTaken: timeStr,
+  timestamp
+});
+
+
+  const lbRef = db.collection("vocabLeaderboard_" + quizId).doc(pending.name);
+  lbRef.get().then(doc => {
+    const data = doc.data();
+    const attempts = (data?.attempts || 0) + 1;
+    if (!doc.exists || data.score < pending.correct || (data.score === pending.correct && data.timeTakenInSeconds > pending.timeTakenInSeconds)) {
+      lbRef.set({
+        name: pending.name,
+        score: pending.correct,
+        timeTaken: pending.timeTaken,
+        timeTakenInSeconds: pending.timeTakenInSeconds,
+        attempts
+      });
+    } else {
+      lbRef.update({ attempts });
+    }
+    localStorage.removeItem("pendingSubmission");
+  });
+}
+
+
+      const allQuizzes = {
+  A: [
+  {
+    "question": "One word for: A fabricated or unknown term without widely accepted meaning.",
+    "options": [
+      "ergomania",
+      "carpology",
+      "Quantgo",
+      "nostomania"
+    ],
+    "answer": "Quantgo",
+    "explanation": "<b><u>Quantgo</u></b>: A fabricated or unknown term without widely accepted meaning."
+  },
+  {
+    "question": "One word for: An excessive desire to live in the countryside.",
+    "options": [
+      "orology",
+      "megalomania",
+      "pathology",
+      "agromania"
+    ],
+    "answer": "agromania",
+    "explanation": "<b><u>agromania</u></b>: An excessive desire to live in the countryside."
+  },
+  {
+    "question": "One word for: A short promotional piece accompanying a creative work.",
+    "options": [
+      "mythomania",
+      "blurb",
+      "pathology",
+      "Demomania"
+    ],
+    "answer": "blurb",
+    "explanation": "<b><u>blurb</u></b>: A short promotional piece accompanying a creative work."
+  },
+  {
+    "question": "One word for: Cunning, scheming, and unscrupulous, especially in politics.",
+    "options": [
+      "cryptology",
+      "ergomania",
+      "hedomania",
+      "machiavellian"
+    ],
+    "answer": "machiavellian",
+    "explanation": "<b><u>machiavellian</u></b>: Cunning, scheming, and unscrupulous, especially in politics."
+  },
+  {
+    "question": "One word for: An obsession with flowers.",
+    "options": [
+      "blurb",
+      "pathology",
+      "melomania",
+      "anthomania"
+    ],
+    "answer": "anthomania",
+    "explanation": "<b><u>anthomania</u></b>: An obsession with flowers."
+  },
+  {
+    "question": "One word for: An obsession with causing destruction.",
+    "options": [
+      "Demomania",
+      "orology",
+      "agromania",
+      "dromomania"
+    ],
+    "answer": "Demomania",
+    "explanation": "<b><u>Demomania</u></b>: An obsession with causing destruction."
+  },
+  {
+    "question": "One word for: An abnormal love for crowds.",
+    "options": [
+      "Ochlomania",
+      "melomania",
+      "verbomania",
+      "opsomania"
+    ],
+    "answer": "Ochlomania",
+    "explanation": "<b><u>Ochlomania</u></b>: An abnormal love for crowds."
+  },
+  {
+    "question": "One word for: An uncontrollable craving for alcohol.",
+    "options": [
+      "megalomania",
+      "verbomania",
+      "blurb",
+      "dipsomania"
+    ],
+    "answer": "dipsomania",
+    "explanation": "<b><u>dipsomania</u></b>: An uncontrollable craving for alcohol."
+  },
+  {
+    "question": "One word for: An uncontrollable urge to wander or travel.",
+    "options": [
+      "Quantgo",
+      "dromomania",
+      "blurb",
+      "pomology"
+    ],
+    "answer": "dromomania",
+    "explanation": "<b><u>dromomania</u></b>: An uncontrollable urge to wander or travel."
+  },
+  {
+    "question": "One word for: A compulsion to wander away from home.",
+    "options": [
+      "poriomania",
+      "nostomania",
+      "hedomania",
+      "machiavellian"
+    ],
+    "answer": "poriomania",
+    "explanation": "<b><u>poriomania</u></b>: A compulsion to wander away from home."
+  },
+  {
+    "question": "One word for: An obsession with words.",
+    "options": [
+      "hedomania",
+      "verbomania",
+      "logomania",
+      "agromania"
+    ],
+    "answer": "logomania",
+    "explanation": "<b><u>logomania</u></b>: An obsession with words."
+  },
+  {
+    "question": "One word for: An excessive use or obsession with words.",
+    "options": [
+      "opsomania",
+      "ethnology",
+      "verbomania",
+      "carpology"
+    ],
+    "answer": "verbomania",
+    "explanation": "<b><u>verbomania</u></b>: An excessive use or obsession with words."
+  },
+  {
+    "question": "One word for: An abnormal love for one kind of food.",
+    "options": [
+      "nosology",
+      "opsomania",
+      "orology",
+      "dromomania"
+    ],
+    "answer": "opsomania",
+    "explanation": "<b><u>opsomania</u></b>: An abnormal love for one kind of food."
+  },
+  {
+    "question": "One word for: An abnormal craving for food.",
+    "options": [
+      "orology",
+      "sitomania",
+      "ethnology",
+      "opsomania"
+    ],
+    "answer": "sitomania",
+    "explanation": "<b><u>sitomania</u></b>: An abnormal craving for food."
+  },
+  {
+    "question": "One word for: An uncontrollable craving for pleasure.",
+    "options": [
+      "hedomania",
+      "ethnology",
+      "dipsomania",
+      "pomology"
+    ],
+    "answer": "hedomania",
+    "explanation": "<b><u>hedomania</u></b>: An uncontrollable craving for pleasure."
+  },
+  {
+    "question": "One word for: An excessive desire to work or exercise.",
+    "options": [
+      "Quantgo",
+      "dipsomania",
+      "petrology",
+      "ergomania"
+    ],
+    "answer": "ergomania",
+    "explanation": "<b><u>ergomania</u></b>: An excessive desire to work or exercise."
+  },
+  {
+    "question": "One word for: An abnormal fondness for music.",
+    "options": [
+      "megalomania",
+      "hedomania",
+      "poriomania",
+      "melomania"
+    ],
+    "answer": "melomania",
+    "explanation": "<b><u>melomania</u></b>: An abnormal fondness for music."
+  },
+  {
+    "question": "One word for: A delusional mental illness marked by feelings of personal omnipotence and grandeur.",
+    "options": [
+      "petrology",
+      "sitomania",
+      "megalomania",
+      "opsomania"
+    ],
+    "answer": "megalomania",
+    "explanation": "<b><u>megalomania</u></b>: A delusional mental illness marked by feelings of personal omnipotence and grandeur."
+  },
+  {
+    "question": "One word for: An abnormal tendency to lie or exaggerate.",
+    "options": [
+      "ergomania",
+      "glottochronology",
+      "megalomania",
+      "mythomania"
+    ],
+    "answer": "mythomania",
+    "explanation": "<b><u>mythomania</u></b>: An abnormal tendency to lie or exaggerate."
+  },
+  {
+    "question": "One word for: An intense homesickness.",
+    "options": [
+      "agromania",
+      "poriomania",
+      "ethnology",
+      "nostomania"
+    ],
+    "answer": "nostomania",
+    "explanation": "<b><u>nostomania</u></b>: An intense homesickness."
+  },
+  {
+    "question": "One word for: An excessive desire for wealth.",
+    "options": [
+      "logomania",
+      "plutomania",
+      "verbomania",
+      "pomology"
+    ],
+    "answer": "plutomania",
+    "explanation": "<b><u>plutomania</u></b>: An excessive desire for wealth."
+  },
+  {
+    "question": "One word for: The scientific study of diseases.",
+    "options": [
+      "glottochronology",
+      "pathology",
+      "Demomania",
+      "Quantgo"
+    ],
+    "answer": "pathology",
+    "explanation": "<b><u>pathology</u></b>: The scientific study of diseases."
+  },
+  {
+    "question": "One word for: The study of causes or origins of diseases.",
+    "options": [
+      "hedomania",
+      "eschatology",
+      "aetiology",
+      "glottochronology"
+    ],
+    "answer": "aetiology",
+    "explanation": "<b><u>aetiology</u></b>: The study of causes or origins of diseases."
+  },
+  {
+    "question": "One word for: The study and cultivation of fruit.",
+    "options": [
+      "nostomania",
+      "sitomania",
+      "pomology",
+      "agromania"
+    ],
+    "answer": "pomology",
+    "explanation": "<b><u>pomology</u></b>: The study and cultivation of fruit."
+  },
+  {
+    "question": "One word for: The study of fruits and seeds.",
+    "options": [
+      "carpology",
+      "pathology",
+      "opsomania",
+      "agromania"
+    ],
+    "answer": "carpology",
+    "explanation": "<b><u>carpology</u></b>: The study of fruits and seeds."
+  },
+  {
+    "question": "One word for: The study of codes and secret writing.",
+    "options": [
+      "logomania",
+      "epistemoloygy",
+      "cryptology",
+      "mythomania"
+    ],
+    "answer": "cryptology",
+    "explanation": "<b><u>cryptology</u></b>: The study of codes and secret writing."
+  },
+  {
+    "question": "One word for: The study of the characteristics of different peoples.",
+    "options": [
+      "ethnology",
+      "eremology",
+      "glottochronology",
+      "pathology"
+    ],
+    "answer": "ethnology",
+    "explanation": "<b><u>ethnology</u></b>: The study of the characteristics of different peoples."
+  },
+  {
+    "question": "One word for: The branch of philosophy concerned with knowledge.",
+    "options": [
+      "pathology",
+      "melomania",
+      "aetiology",
+      "epistemoloygy"
+    ],
+    "answer": "epistemoloygy",
+    "explanation": "<b><u>epistemoloygy</u></b>: The branch of philosophy concerned with knowledge."
+  },
+  {
+    "question": "One word for: The study of deserts.",
+    "options": [
+      "pedology",
+      "eremology",
+      "verbomania",
+      "ergomania"
+    ],
+    "answer": "eremology",
+    "explanation": "<b><u>eremology</u></b>: The study of deserts."
+  },
+  {
+    "question": "One word for: The part of theology concerned with death and the final destiny of the soul.",
+    "options": [
+      "Quantgo",
+      "dromomania",
+      "plutomania",
+      "eschatology"
+    ],
+    "answer": "eschatology",
+    "explanation": "<b><u>eschatology</u></b>: The part of theology concerned with death and the final destiny of the soul."
+  },
+  {
+    "question": "One word for: The science of animal behavior.",
+    "options": [
+      "ethology",
+      "pathology",
+      "ethnology",
+      "melomania"
+    ],
+    "answer": "ethology",
+    "explanation": "<b><u>ethology</u></b>: The science of animal behavior."
+  },
+  {
+    "question": "One word for: The study of the origin of words.",
+    "options": [
+      "epistemoloygy",
+      "nostomania",
+      "etymology",
+      "eremology"
+    ],
+    "answer": "etymology",
+    "explanation": "<b><u>etymology</u></b>: The study of the origin of words."
+  },
+  {
+    "question": "One word for: Study of History of language.",
+    "options": [
+      "mythomania",
+      "ergomania",
+      "pathology",
+      "glottochronology"
+    ],
+    "answer": "glottochronology",
+    "explanation": "<b><u>glottochronology</u></b>: Study of History of language."
+  },
+  {
+    "question": "One word for: The study of blood and its disorders.",
+    "options": [
+      "haematology",
+      "poriomania",
+      "aetiology",
+      "opsomania"
+    ],
+    "answer": "haematology",
+    "explanation": "<b><u>haematology</u></b>: The study of blood and its disorders."
+  },
+  {
+    "question": "One word for: The study of soils.",
+    "options": [
+      "dipsomania",
+      "pedology",
+      "glottochronology",
+      "carpology"
+    ],
+    "answer": "pedology",
+    "explanation": "<b><u>pedology</u></b>: The study of soils."
+  },
+  {
+    "question": "One word for: The scientific study of rocks.",
+    "options": [
+      "pedology",
+      "petrology",
+      "Quantgo",
+      "plutomania"
+    ],
+    "answer": "petrology",
+    "explanation": "<b><u>petrology</u></b>: The scientific study of rocks."
+  },
+  {
+    "question": "One word for: The study of mountains.",
+    "options": [
+      "pedology",
+      "orology",
+      "plutomania",
+      "etymology"
+    ],
+    "answer": "orology",
+    "explanation": "<b><u>orology</u></b>: The study of mountains."
+  },
+  {
+    "question": "One word for: The branch of medicine dealing with the classification of diseases.",
+    "options": [
+      "nosology",
+      "verbomania",
+      "ergomania",
+      "megalomania"
+    ],
+    "answer": "nosology",
+    "explanation": "<b><u>nosology</u></b>: The branch of medicine dealing with the classification of diseases."
+  }
+]
+
+
+};
+
+
+
+
+  const questions = allQuizzes.A;
+  let answers = Array(questions.length).fill(null);
+  let current = 0;
+  let startTime = Date.now();
+  let timerInterval;
+  let timePerQuestion = 15;
+  let timeLeft = timePerQuestion;
+
+  function shuffleArray(array) {
+    return array.map(value => ({ value, sort: Math.random() }))
+                .sort((a, b) => a.sort - b.sort)
+                .map(({ value }) => value);
+  }
+
+function startQuiz() {
+  // Hide only quiz info and button, not the whole screen
+  document.getElementById("quizInfoBox").classList.add("hidden");
+  document.getElementById("startContent").classList.add("hidden");
+
+document.getElementById("historyScreen").classList.add("hidden");
+  document.getElementById("leaderboard").classList.add("hidden");
+  document.getElementById("resultScreen").classList.add("hidden");
+  document.getElementById("countdownOverlay").classList.remove("hidden");
+
+  let count = 3;
+  const countdownText = document.getElementById("countdownText");
+  countdownText.innerText = count;
+
+  const countdownInterval = setInterval(() => {
+    count--;
+    if (count > 0) {
+      countdownText.innerText = count;
+      countdownText.style.animation = "none";
+      void countdownText.offsetWidth;
+      countdownText.style.animation = "countdownScale 1s ease-in-out";
+    } else {
+      countdownText.innerText = "🚀 Go!";
+      clearInterval(countdownInterval);
+      setTimeout(() => {
+        document.getElementById("countdownOverlay").classList.add("hidden");
+        document.getElementById("quizScreen").classList.remove("hidden");
+        document.getElementById("startScreen").classList.add("hidden"); // now hide full start screen
+        renderQuestion();
+      }, 700);
+    }
+  }, 1000);
+}
+
+
+  function renderQuestion() {
+    clearInterval(timerInterval);
+    timeLeft = timePerQuestion;
+    document.getElementById("timer").innerText = `⏳ ${timeLeft}s`;
+    timerInterval = setInterval(() => {
+      timeLeft--;
+      document.getElementById("timer").innerText = `⏳ ${timeLeft}s`;
+      if (timeLeft <= 0) {
+        clearInterval(timerInterval);
+        skipQuestion();
+      }
+    }, 1000);
+
+    const q = questions[current];
+    const flash = document.getElementById("flashcard");
+    const shuffledOptions = shuffleArray(q.options);
+    flash.innerHTML = `<strong>Q${current + 1}: ${q.question}</strong><br>` +
+      shuffledOptions.map((opt, i) => {
+        const letter = String.fromCharCode(65 + i);
+        return `<label class="option">
+          <input type="radio" name="q${current}" value="${opt}" onclick="selectOption('${opt}')"
+          ${answers[current] === opt ? 'checked' : ''}> ${letter}. ${opt}
+        </label>`;
+      }).join('');
+  }
+
+  function selectOption(opt) {
+    answers[current] = opt;
+    if (current < questions.length - 1) {
+      current++;
+      renderQuestion();
+    } else {
+      clearInterval(timerInterval);
+    }
+  }
+
+  function skipQuestion() {
+    answers[current] = null;
+    if (current < questions.length - 1) {
+      current++;
+      renderQuestion();
+    } else {
+      clearInterval(timerInterval);
+    }
+  }
+
+  function submitQuiz() {
+    clearInterval(timerInterval);
+    const timeTakenSec = Math.floor((Date.now() - startTime) / 1000);
+    const timeStr = `${Math.floor(timeTakenSec/60)}m ${timeTakenSec%60}s`;
+
+    let correct = 0, incorrect = 0, skipped = 0;
+    const finalList = document.getElementById("finalList");
+    finalList.innerHTML = "";
+
+    answers.forEach((ans, i) => {
+      const q = questions[i];
+      let resultClass = "", message = "";
+
+      if (ans === null) {
+        skipped++;
+        resultClass = "result-skipped";
+        message = `Skipped. Correct: <b>${q.answer}</b><br>${q.explanation}`;
+      } else if (ans === q.answer) {
+        correct++;
+        resultClass = "result-correct";
+        message = `Correct! <br>${q.explanation}`;
+      } else {
+        incorrect++;
+        resultClass = "result-incorrect";
+        message = `Incorrect. You chose: <b>${ans}</b><br>Correct: <b>${q.answer}</b><br>${q.explanation}`;
+      }
+
+      const div = document.createElement("div");
+      div.innerHTML = `<div class="${resultClass}"><b>Q${i+1}:</b> ${q.question}<br>${message}</div><hr>`;
+      finalList.appendChild(div);
+    });
+
+    document.getElementById("correctQ").innerText = correct;
+    document.getElementById("incorrectQ").innerText = incorrect;
+    document.getElementById("skippedQ").innerText = skipped;
+    document.getElementById("timeTaken").innerText = timeStr;
+
+    document.getElementById("quizScreen").classList.add("hidden");
+    document.getElementById("resultScreen").classList.remove("hidden");
+
+    const timestamp = firebase.firestore.Timestamp.now();
+
+
+const submissionData = {
+  title: quizTitle,
+  correct,
+  incorrect,
+  skipped,
+  timeTaken: timeStr,
+  timeTakenInSeconds: timeTakenSec,
+  timestamp: firebase.firestore.Timestamp.now(),
+  name: userName,
+  answers,
+  questions: questions.map(q => ({
+    question: q.question,
+    answer: q.answer,
+    explanation: q.explanation
+  }))
+};
+
+db.collection("vocabularyQuizHistory").add(submissionData);
+
+
+    const lbRef = db.collection("vocabLeaderboard_" + quizId).doc(userName);
+    lbRef.get().then(doc => {
+      const data = doc.data();
+      const attempts = (data?.attempts || 0) + 1;
+      if (!doc.exists || data.score < correct || (data.score === correct && data.timeTakenInSeconds > timeTakenSec)) {
+        lbRef.set({ name: userName, score: correct, timeTaken: timeStr, timeTakenInSeconds: timeTakenSec, attempts });
+      } else {
+        lbRef.update({ attempts });
+      }
+    });
+  }     // end of submitQuiz function
+
+function autoSubmitQuizBeforeUnload() {
+  const quizScreen = document.getElementById("quizScreen");
+  const startScreen = document.getElementById("startScreen");
+
+  const quizInProgress = !quizScreen.classList.contains("hidden") && startScreen.classList.contains("hidden");
+
+  if (!quizInProgress) return;
+
+  const timeTakenSec = Math.floor((Date.now() - startTime) / 1000);
+  const timeStr = `${Math.floor(timeTakenSec/60)}m ${timeTakenSec%60}s`;
+
+  let correct = 0, incorrect = 0, skipped = 0;
+
+  const submissionData = {
+    title: quizTitle,
+    timeTaken: timeStr,
+    timeTakenInSeconds: timeTakenSec,
+    timestamp: Date.now(),
+    name: userName,
+    answers: answers,
+    questions: questions
+  };
+
+  answers.forEach((ans, i) => {
+    if (ans === null) skipped++;
+    else if (ans === questions[i].answer) correct++;
+    else incorrect++;
+  });
+
+  submissionData.correct = correct;
+  submissionData.incorrect = incorrect;
+  submissionData.skipped = skipped;
+
+  localStorage.setItem("pendingSubmission", JSON.stringify(submissionData));
+}
+
+
+
+  function downloadResult() {
+    html2canvas(document.getElementById("resultContainer")).then(canvas => {
+      const link = document.createElement('a');
+      link.download = `${quizTitle}.png`;
+      link.href = canvas.toDataURL();
+      link.click();
+    });
+  }
+
+function viewHistory() {
+  document.getElementById("resultScreen").classList.add("hidden");
+  document.getElementById("historyScreen").classList.remove("hidden");
+  const list = document.getElementById("historyList");
+  list.innerHTML = "Loading...";
+
+  db.collection("vocabularyQuizHistory")
+    .where("title", "==", quizTitle)
+    .orderBy("timestamp", "desc")
+    .get().then(snapshot => {
+      list.innerHTML = "";
+      if (snapshot.empty) {
+        list.innerHTML = "No history found for this quiz.";
+        return;
+      }
+    
+    snapshot.forEach(doc => {
+  const d = doc.data();
+  const entry = document.createElement("div");
+  entry.innerHTML = `<b>${d.name || "Anonymous"}</b> — ${d.timestamp.toDate().toLocaleString()}<br>
+  ✅ Correct: ${d.correct}, ❌ Incorrect: ${d.incorrect}, ⚪ Skipped: ${d.skipped}<br>🕒 Time: ${d.timeTaken}`;
+
+  // 🔽 Highlight if this entry belongs to the current user
+  if (d.name === userName) {
+    entry.style.borderLeftColor = "#43a047"; // green
+    entry.style.background = "#e8f5e9"; // light green background
+  }
+
+  list.appendChild(entry);
+      });
+});
+}
+
+
+
+
+  function showLeaderboard() {
+    document.getElementById("resultScreen").classList.add("hidden");
+    document.getElementById("leaderboard").classList.remove("hidden");
+    const board = document.getElementById("leaderboardList");
+    board.innerHTML = "Loading...";
+
+    db.collection("vocabLeaderboard_" + quizId).get().then(snapshot => {
+      const data = [];
+      snapshot.forEach(doc => data.push(doc.data()));
+      data.sort((a, b) => b.score - a.score || a.timeTakenInSeconds - b.timeTakenInSeconds);
+      board.innerHTML = "";
+      data.forEach((u, i) => {
+        const row = document.createElement("div");
+        row.innerHTML = `#${i+1}. <b>${u.name}</b> (${u.attempts}) — ✅ ${u.score} | 🕒 ${u.timeTaken}`;
+        board.appendChild(row);
+      });
+    });
+  }
+
+  function backToResults() {
+    document.getElementById("historyScreen").classList.add("hidden");
+    document.getElementById("leaderboard").classList.add("hidden");
+    document.getElementById("resultScreen").classList.remove("hidden");
+  }
+
+  
+
+  function logoutUser() {
+  firebase.auth().signOut().then(() => {
+    localStorage.removeItem("quizUserName");
+    window.location.href = "index.html"; // or any other page you'd like
+  }).catch(error => {
+    alert("Error signing out: " + error.message);
+  });
+}
+
+
+
+
+
+
+window.addEventListener("beforeunload", function (e) {
+  const quizScreen = document.getElementById("quizScreen");
+  const startScreen = document.getElementById("startScreen");
+
+  const quizInProgress = !quizScreen.classList.contains("hidden") && startScreen.classList.contains("hidden");
+
+  if (quizInProgress) {
+    autoSubmitQuizBeforeUnload();
+    e.preventDefault();
+    e.returnValue = "⚠️ You have an active quiz. Leaving will submit it.";
+  }
+});
+
+document.getElementById("startBtn").addEventListener("click", startQuiz);
+
+
+</script>
+<div id="countdownOverlay" class="hidden" style="
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.85);
+  color: white;
+  font-size: 4rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  font-weight: bold;
+  flex-direction: column;
+">
+  <div id="countdownText">3</div>
+</div>
+
+</body>
+</html>

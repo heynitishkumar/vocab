@@ -1,0 +1,863 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Current Affairs Quiz</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;600;800&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Nunito', sans-serif;
+      max-width: 800px;
+      margin: auto;
+      padding: 2rem;
+      background: linear-gradient(to right, #f9fafb, #e0f2f1);
+      color: #333;
+    }
+    h2 {
+      text-align: center;
+      color: #1e88e5;
+    }
+    .hidden {
+     display: none !important;
+    }
+    .flashcard {
+      background: #fff;
+      border-left: 6px solid #42a5f5;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .option {
+      margin: 10px 0;
+      display: block;
+      font-weight: 500;
+    }
+    .option input {
+      margin-right: 8px;
+    }
+    .result-correct { color: green; font-weight: bold; }
+    .result-incorrect { color: red; font-weight: bold; }
+    .result-skipped { color: gray; font-weight: bold; }
+    button {
+      background: #1e88e5;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 10px 16px;
+      margin: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background: #1565c0;
+    }
+    #navBtns {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+    #historyList div, #leaderboard div {
+      background: #fff;
+      border-left: 4px solid #7e57c2;
+      padding: 12px;
+      margin: 8px 0;
+      border-radius: 5px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
+    #timer {
+      font-weight: bold;
+      color: #d32f2f;
+      float: right;
+    }
+    #userInfo {
+      float: right;
+      margin-bottom: 10px;
+      font-weight: 600;
+      color: #2e7d32;
+    }
+    #resultContainer {
+      background: #fff;
+      padding: 1rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    hr {
+      border: none;
+      border-bottom: 1px solid #ccc;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+    header nav a {
+      margin-right: 12px;
+      text-decoration: none;
+      font-weight: 600;
+      color: #1e88e5;
+      transition: color 0.3s;
+    }
+    header nav a:hover {
+      color: #1565c0;
+    }
+   
+   #startScreen button:hover {
+  background: #2e7d32;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+#startScreen {
+  animation: fadeIn 1s ease-in-out;
+}
+
+ @keyframes countdownScale {
+  0% { transform: scale(0.5); opacity: 0.2; }
+  50% { transform: scale(1.3); opacity: 1; }
+  100% { transform: scale(1); opacity: 0.8; }
+}
+
+#countdownText {
+  animation: countdownScale 1s ease-in-out;
+}
+
+details {
+  background: #f9f9f9;
+  padding: 10px;
+  border-radius: 8px;
+}
+details summary {
+  font-weight: bold;
+  cursor: pointer;
+}
+
+
+  </style>
+</head>
+<body>
+  <header style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+  <div>
+    <strong>📰Current Affairs Quiz</strong><br>
+    <button onclick="confirmQuizInterrupt(viewHistory)" style="background:#6d4c41; margin-top: 6px;">📜 View History</button>
+    <button onclick="confirmQuizInterrupt(showLeaderboard)" style="background:#00897b; margin-top: 6px;">🏆 View Leaderboard</button>
+  </div>
+  <nav>
+    <a href="indexnod.html">🏠 Home</a>
+    <a href="vocabulary.html">📅 Vocabulary</a>
+  </nav>
+</header>
+
+<div id="userInfo">👤 <span id="userDisplayName"></span></div>
+  <div style="float: right; display: flex; gap: 10px; align-items: center; margin-bottom: 10px;">
+  <span id="userInfo">👤 <span id="userDisplayName"></span></span>
+  <button onclick="confirmQuizInterrupt(logoutUser)" style="background:#e53935;">🚪 Logout</button>
+</div>
+<h2><span id="quizTitle"></span> <span id="timer"></span></h2>
+
+<div id="startScreen">
+  <h2>🧠 Welcome </h2>
+  <p id="totalQuestions"></p>
+
+  <div id="quizInfoBox">
+    <div style="
+      background: #ffffff;
+      padding: 1rem 1.5rem;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      margin: 20px 0;
+      max-width: 500px;
+    ">
+      <h3 style="margin: 0 0 10px 0;">📋 Quiz Info</h3>
+      <ul style="text-align: left; padding-left: 20px; color: #444; line-height: 1.6;">
+        <li>15 seconds per question</li>
+        <li>Auto-skip on timeout</li>
+        <li>Leaderboard ranks by score + speed</li>
+        <li>Answer explanations after submission</li>
+      </ul>
+    </div>
+  </div>
+
+  <div id="startContent">
+    <button id="startBtn"  style="
+      padding: 12px 24px;
+      font-size: 1.25rem;
+      border-radius: 10px;
+      background: #43a047;
+      font-weight: bold;
+    ">▶️ Start Quiz</button>
+  </div>
+</div>
+
+
+<div id="quizScreen" class="hidden">
+
+  <div id="flashcard" class="flashcard"></div>
+  <div id="navBtns">
+    <button onclick="skipQuestion()">⏭ Skip</button>
+  </div>
+  <button onclick="submitQuiz()">Submit Quiz</button>
+</div>
+
+<div id="resultScreen" class="hidden">
+  <div id="resultContainer">
+    <h2>Quiz Result: <span id="quizTitleResult"></span></h2>
+    <p><strong>Correct:</strong> <span id="correctQ"></span></p>
+    <p><strong>Incorrect:</strong> <span id="incorrectQ"></span></p>
+    <p><strong>Skipped:</strong> <span id="skippedQ"></span></p>
+    <p><strong>Time Taken:</strong> <span id="timeTaken"></span></p>
+    <h3>Review:</h3>
+    <div id="finalList"></div>
+  </div>
+  <button onclick="downloadResult()">📥 Download PNG</button>
+  <button onclick="viewHistory()">📜 View History</button>
+  <button onclick="showLeaderboard()">🏆 View Leaderboard</button>
+</div>
+
+<div id="historyScreen" class="hidden">
+  <h2>📚 Quiz History (<span id="historyTitle"></span>)</h2>
+  <div id="historyList"></div>
+  <button onclick="backToResults()">🔙 Back</button>
+</div>
+
+<div id="leaderboard" class="hidden">
+  <h2>🏆 Leaderboard</h2>
+  <div id="leaderboardList"></div>
+  <button onclick="backToResults()">🔙 Back</button>
+</div>
+
+<script>
+function retryQuiz() {
+  window.scrollTo(0, 0);
+  startQuiz(); // or just reload if you want to reset everything: window.location.reload();
+}
+
+
+function confirmQuizInterrupt(actionFn) {
+  const quizScreen = document.getElementById("quizScreen");
+  const startScreen = document.getElementById("startScreen");
+
+  const quizInProgress = !quizScreen.classList.contains("hidden") && startScreen.classList.contains("hidden");
+
+  if (quizInProgress) {
+    const proceed = confirm("⚠️ This will submit your current quiz. Are you sure?");
+    if (proceed) {
+      submitQuiz(); // Submit quiz first
+      setTimeout(actionFn, 500); // Run the action after quiz is submitted
+    }
+  } else {
+    // No quiz running — proceed freely
+    actionFn();
+  }
+}
+
+  const quizTitle = "Jan 1-3 Quiz No 3";
+  const quizId = quizTitle.replace(/[^a-zA-Z0-9]/g, "_");
+
+  document.getElementById("quizTitle").innerText = quizTitle;
+  document.getElementById("quizTitleResult").innerText = quizTitle;
+  document.getElementById("historyTitle").innerText = quizTitle;
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCGiOMRZHI_PdbuzIkQK8Kk4YcFXHBWtpc",
+    authDomain: "mathsquiz-5a3b7.firebaseapp.com",
+    projectId: "mathsquiz-5a3b7",
+    storageBucket: "mathsquiz-5a3b7.appspot.com",
+    messagingSenderId: "127657807004",
+    appId: "1:127657807004:web:ef17beddcbb04c5de0f159",
+    measurementId: "G-Q73EQ54DPG"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+  const auth = firebase.auth();
+
+  let userName = localStorage.getItem("quizUserName") || "";
+  if (!userName) {
+    userName = prompt("Enter your name:");
+    localStorage.setItem("quizUserName", userName);
+  }
+  document.getElementById("userDisplayName").innerText = userName;
+
+  auth.signInAnonymously().catch(console.error);
+
+  let currentUserId = "";
+  auth.onAuthStateChanged(user => {
+    if (user) {
+      currentUserId = user.uid;
+    }
+  });
+
+const pending = JSON.parse(localStorage.getItem("pendingSubmission"));
+if (pending) {
+  const timestamp = firebase.firestore.Timestamp.fromDate(new Date(pending.timestamp));
+db.collection("vocabularyQuizHistory").add({ 
+  title: quizTitle,
+  name: userName,
+  correct,
+  incorrect,
+  skipped,
+  timeTaken: timeStr,
+  timestamp
+});
+
+
+  const lbRef = db.collection("vocabLeaderboard_" + quizId).doc(pending.name);
+  lbRef.get().then(doc => {
+    const data = doc.data();
+    const attempts = (data?.attempts || 0) + 1;
+    if (!doc.exists || data.score < pending.correct || (data.score === pending.correct && data.timeTakenInSeconds > pending.timeTakenInSeconds)) {
+      lbRef.set({
+        name: pending.name,
+        score: pending.correct,
+        timeTaken: pending.timeTaken,
+        timeTakenInSeconds: pending.timeTakenInSeconds,
+        attempts
+      });
+    } else {
+      lbRef.update({ attempts });
+    }
+    localStorage.removeItem("pendingSubmission");
+  });
+}
+
+
+  
+   const allQuizzes = {
+  A: [
+{
+    "question": "Where is India's first-ever 'Coastline-Waders Bird Census' being conducted?",
+    "options": ["Jamnagar, Gujarat", "Sundarbans, West Bengal", "Chilika Lake, Odisha", "Pulicat Lake, Tamil Nadu"],
+    "answer": "Jamnagar, Gujarat",
+    "explanation": "India's first <b><u>'Coastline-Waders Bird Census'</u></b> is being held from <b>January 3–5, 2025</b> at <b>Marine National Park and Sanctuary in Jamnagar</b>, Gujarat."
+  },
+  {
+    "question": "Which Indian state is home to the first marine national park?",
+    "options": ["Gujarat", "Goa", "Tamil Nadu", "Odisha"],
+    "answer": "Gujarat",
+    "explanation": "The <b>Marine National Park and Sanctuary</b> in Gujarat is <b>India’s first marine national park</b>, spread across <b>Jamnagar, Devbhoomi Dwarka, and Morbi</b>."
+  },
+  {
+    "question": "Where is the ‘Know Your Army’ Mela 2025 being organized?",
+    "options": ["Golconda Fort, Hyderabad", "Red Fort, Delhi", "Gateway of India, Mumbai", "India Gate, Delhi"],
+    "answer": "Golconda Fort, Hyderabad",
+    "explanation": "The <b><u>'Know Your Army' Mela 2025</u></b> is being held at <b>Golconda Fort</b> from <b>January 3–5</b> to showcase the <b>Indian Army’s technological prowess</b>."
+  },
+  {
+    "question": "Who assumed command of the Indian Air Force’s Western Air Command on January 1, 2025?",
+    "options": ["Air Marshal Jeetendra Mishra", "Air Marshal Pankaj Mohan Sinha", "Air Marshal Vivek Ram Chaudhari", "Air Marshal R.K. Singh Bhadauria"],
+    "answer": "Air Marshal Jeetendra Mishra",
+    "explanation": "<b><u>Air Marshal Jeetendra Mishra</u></b> took over as the <b>Commander of IAF's Western Air Command</b> on <b>1 January 2025</b>."
+  },
+  {
+    "question": "Where is the headquarters of the Indian Air Force's Western Air Command located?",
+    "options": ["Delhi", "Gandhinagar", "Nagpur", "Shillong"],
+    "answer": "Delhi",
+    "explanation": "<b><u>Western Air Command</u></b> is headquartered in <b>Delhi</b> and is one of the most strategic commands in the Indian Air Force."
+  },
+   {
+    "question": "Who was appointed as the CEO of UIDAI on January 1, 2025?",
+    "options": ["Bhuvnesh Kumar", "Amit Agrawal", "Vitul Kumar", "Rakesh Ranjan"],
+    "answer": "Bhuvnesh Kumar",
+    "explanation": "<b><u>Bhuvnesh Kumar</u></b>, Additional Secretary at MEITY, was appointed as <b>CEO of UIDAI</b> on <b>1 January 2025</b>, succeeding <b>Amit Agrawal</b>."
+  },
+  {
+    "question": "Which central force operates under the Ministry of Home Affairs and is responsible for internal security?",
+    "options": ["CRPF", "NSG", "BSF", "ITBP"],
+    "answer": "CRPF",
+    "explanation": "The <b><u>Central Reserve Police Force (CRPF)</u></b> is a <b>Central Armed Police Force</b> under the <b>Ministry of Home Affairs</b>, responsible for maintaining internal security."
+  },
+  {
+    "question": "Who became the acting Director General of CRPF in January 2025?",
+    "options": ["Vitul Kumar", "Anish Dayal Singh", "Sanjay Arora", "M.A. Ganapathy"],
+    "answer": "Vitul Kumar",
+    "explanation": "<b><u>Vitul Kumar</u></b> was appointed as the <b>Acting Director General of CRPF</b> on <b>1 January 2025</b>, succeeding <b>Anish Dayal Singh</b>."
+  },
+  {
+    "question": "When was the CRPF formally established through a parliamentary act?",
+    "options": ["28th December 1949", "15th August 1947", "1st January 1950", "26th January 1950"],
+    "answer": "28th December 1949",
+    "explanation": "The <b><u>CRPF</u></b> was formally established by the <b>CRPF Act</b> on <b>28th December 1949</b>, evolving from the <b>Crown Representative Police (1939)</b>."
+  },
+  {
+    "question": "Who was appointed the new Secretary General of ASSOCHAM in 2025?",
+    "options": ["Singhal", "Deepak Sood", "Harsh Pati Singhania", "Rakesh Bharti Mittal"],
+    "answer": "Singhal",
+    "explanation": "<b><u>Singhal</u></b> succeeded <b>Deepak Sood</b> as the Secretary General of <b>ASSOCHAM</b> after his five-year tenure."
+  },
+  {
+    "question": "Bharati Kulkarni was appointed the Director of which ICMR institution?",
+    "options": ["National Institute of Nutrition (NIN)", "National Institute of Virology", "National Institute for Research in Tuberculosis", "National AIDS Research Institute"],
+    "answer": "National Institute of Nutrition (NIN)",
+    "explanation": "<b><u>Bharati Kulkarni</u></b>, a physician-scientist, took over as the new director of <b>ICMR-NIN</b> on <b>January 1, 2025</b>."
+  },
+  {
+    "question": "Where was India’s first sea-over glass bridge inaugurated in December 2024?",
+    "options": ["Kanyakumari", "Rameswaram", "Daman", "Vizag"],
+    "answer": "Kanyakumari",
+    "explanation": "India's <b>first sea glass bridge</b> was inaugurated at <b>Kanyakumari</b>, connecting <b>Vivekananda Rock Memorial</b> and the <b>Thiruvalluvar statue</b>."
+  },
+  {
+    "question": "What is the world's longest and highest glass bridge located in China called?",
+    "options": ["Zhangjiajie Glass Bridge", "Beijing Sky Walk", "Great Wall Glass Bridge", "Xi’an Skywalk"],
+    "answer": "Zhangjiajie Glass Bridge",
+    "explanation": "<b><u>Zhangjiajie Glass Bridge</u></b> in China is the <b>world’s longest and highest glass bridge</b>, stretching <b>430 meters</b> and suspended <b>300 meters above the ground</b>."
+  },
+  {
+    "question": "What cultural week has been introduced in Tamil Nadu to honor Thiruvalluvar?",
+    "options": ["Thirukkural Week", "Tamil Heritage Week", "Sangam Week", "Thiruvalluvar Jayanti Week"],
+    "answer": "Thirukkural Week",
+    "explanation": "Tamil Nadu will now celebrate the last week of December as <b><u>Thirukkural Week</u></b> to honor the works of the Tamil poet <b>Thiruvalluvar</b>."
+  },
+  {
+    "question": "Which botanical garden in Uttarakhand showcases plants from the Mahabharata?",
+    "options": ["Mahabharata Vatika", "Vana Parva Vatika", "Epic Eco Garden", "Bhagavad Vatika"],
+    "answer": "Mahabharata Vatika",
+    "explanation": "<b><u>Mahabharata Vatika</u></b> in <b>Haldwani</b> was developed by the <b>Uttarakhand Forest Department</b> to showcase 37 plants from the <b>Mahabharata</b>."
+  },
+  {
+    "question": "Which epic inspired the 'Ramayana Vatika' also developed in Haldwani?",
+    "options": ["Ramayana", "Mahabharata", "Bhagavad Gita", "Vedas"],
+    "answer": "Ramayana",
+    "explanation": "The <b><u>Ramayana Vatika</u></b> was developed based on <b>plant species from the Ramayana</b> and includes various forest types visited by <b>Lord Rama</b>."
+  },
+  {
+    "question": "What is the theme of Uttar Pradesh’s Sanskriti Utsava 2025?",
+    "options": [
+      "Uttar Pradesh Parv – Hamari Sanskriti Hamari Pehchaan",
+      "Gaurav UP – Sanskriti aur Virasat",
+      "Ek Bharat Shreshtha Bharat",
+      "UP Cultural Mahotsav"
+    ],
+    "answer": "Uttar Pradesh Parv – Hamari Sanskriti Hamari Pehchaan",
+    "explanation": "The theme for <b>Sanskriti Utsava 2025</b> is <b><u>'Uttar Pradesh Parv – Hamari Sanskriti Hamari Pehchaan'</u></b>."
+  },
+  {
+    "question": "On which date is Uttar Pradesh Diwas celebrated?",
+    "options": ["24th January", "26th January", "1st January", "15th August"],
+    "answer": "24th January",
+    "explanation": "<b><u>Uttar Pradesh Diwas</u></b> is celebrated on <b>24th January</b>, marking the renaming of <b>United Provinces to Uttar Pradesh</b> in <b>1950</b>."
+  },
+  {
+    "question": "Which Carnatic musician was awarded the Sangita Kalanidhi title in 2024?",
+    "options": ["T.M. Krishna", "Bombay Jayashri", "Lalgudi Jayaraman", "Aruna Sairam"],
+    "answer": "T.M. Krishna",
+    "explanation": "<b><u>T.M. Krishna</u></b> received the <b>Sangita Kalanidhi 2024</b>, the <b>highest honor in Carnatic music</b> given by <b>The Music Academy, Chennai</b>."
+  },
+  {
+    "question": "When was the Sangita Kalanidhi title first instituted?",
+    "options": ["1942", "1960", "1955", "1930"],
+    "answer": "1942",
+    "explanation": "The <b><u>Sangita Kalanidhi</u></b> title was instituted in <b>1942</b> and is considered the <b>highest recognition in Carnatic classical music</b>."
+  },
+  {
+    "question": "Which ancient botanical manuscript did Dr. K.S. Manilal research and translate into English and Malayalam?",
+    "options": ["Hortus Malabaricus", "Charaka Samhita", "De Materia Medica", "Silva Indica"],
+    "answer": "Hortus Malabaricus",
+    "explanation": "<b><u>Dr. K.S. Manilal</u></b> dedicated over 35 years to <b>translating and annotating</b> the 17th-century Latin manuscript <b>'Hortus Malabaricus'</b> into <b>English (2003)</b> and <b>Malayalam (2008)</b>."
+  },
+  {
+    "question": "Which Padma award was conferred upon Dr. K.S. Manilal in 2020 for his work in botany?",
+    "options": ["Padma Shri", "Padma Bhushan", "Padma Vibhushan", "Bharat Ratna"],
+    "answer": "Padma Shri",
+    "explanation": "<b><u>Dr. K.S. Manilal</u></b> received the <b>Padma Shri</b> in <b>2020</b> for his outstanding contributions to the field of botany."
+  },
+  {
+    "question": "Which prestigious Dutch honor was awarded to Dr. K.S. Manilal in 2012?",
+    "options": ["Order of Orange-Nassau", "Royal Order of Netherlands", "Order of the Dutch Lion", "Order of William"],
+    "answer": "Order of Orange-Nassau",
+    "explanation": "In <b>2012</b>, <b><u>Dr. K.S. Manilal</u></b> became the <b>first Asian</b> to receive the <b>Officer of the Order of Orange-Nassau</b> from the Netherlands."
+  },
+  {
+    "question": "Which community celebrates the festival of Tamu Lhosar?",
+    "options": ["Gurung", "Sherpa", "Newar", "Tharu"],
+    "answer": "Gurung",
+    "explanation": "<b><u>Tamu Lhosar</u></b> is celebrated by the <b>Gurung community</b> in Nepal to mark the <b>beginning of a new year</b> based on animal cycles."
+  },
+  {
+    "question": "In Tamu Lhosar, what is the traditional term used for each year represented by an animal?",
+    "options": ["Lho", "Tamu", "Lama", "Bhoti"],
+    "answer": "Lho",
+    "explanation": "Each year in the <b>Gurung calendar</b> is symbolized by a <b><u>'Lho'</u></b>, with each Lho representing a specific animal cycle."
+  },
+  {
+    "question": "Which animal cycle did the Gurung community welcome during the most recent Tamu Lhosar celebration?",
+    "options": ["Snake", "Tiger", "Mouse", "Horse"],
+    "answer": "Snake",
+    "explanation": "During the latest <b>Tamu Lhosar</b>, the <b>Gurung community</b> <b>welcomed the Snake cycle</b> and bid farewell to the Garuda (eagle) cycle."
+  },
+  {
+    "question": "Sevdalinka, recently added to UNESCO’s cultural heritage inventory, originates from which region?",
+    "options": ["Bosnia", "Greece", "Armenia", "Ukraine"],
+    "answer": "Bosnia",
+    "explanation": "<b><u>Sevdalinka</u></b> is a <b>traditional Bosnian love song</b> that has been added to <b>UNESCO’s National Inventory of Intangible Cultural Heritage</b>."
+  },
+  {
+    "question": "What type of song is Sevdalinka often described as?",
+    "options": ["Balkan Blues", "Gypsy Jazz", "Mediterranean Melody", "Oriental Opera"],
+    "answer": "Balkan Blues",
+    "explanation": "Sevdalinka is often referred to as the <b><u>'Balkan Blues'</u></b> due to its deep emotional resonance and rich cultural history."
+  },
+  {
+    "question": "Sevdalinka songs trace back to which century?",
+    "options": ["16th century", "12th century", "18th century", "19th century"],
+    "answer": "16th century",
+    "explanation": "<b><u>Sevdalinka</u></b> songs originated in the <b>16th century</b> and reflect the unique musical traditions of the <b>Balkan region</b>."
+  }
+
+]
+
+};
+
+
+
+  const questions = allQuizzes.A;
+  let answers = Array(questions.length).fill(null);
+  let current = 0;
+  let startTime = Date.now();
+  let timerInterval;
+  let timePerQuestion = 15;
+  let timeLeft = timePerQuestion;
+
+  function shuffleArray(array) {
+    return array.map(value => ({ value, sort: Math.random() }))
+                .sort((a, b) => a.sort - b.sort)
+                .map(({ value }) => value);
+  }
+
+function startQuiz() {
+  // Hide only quiz info and button, not the whole screen
+  document.getElementById("quizInfoBox").classList.add("hidden");
+  document.getElementById("startContent").classList.add("hidden");
+
+document.getElementById("historyScreen").classList.add("hidden");
+  document.getElementById("leaderboard").classList.add("hidden");
+  document.getElementById("resultScreen").classList.add("hidden");
+  document.getElementById("countdownOverlay").classList.remove("hidden");
+
+  let count = 3;
+  const countdownText = document.getElementById("countdownText");
+  countdownText.innerText = count;
+
+  const countdownInterval = setInterval(() => {
+    count--;
+    if (count > 0) {
+      countdownText.innerText = count;
+      countdownText.style.animation = "none";
+      void countdownText.offsetWidth;
+      countdownText.style.animation = "countdownScale 1s ease-in-out";
+    } else {
+      countdownText.innerText = "🚀 Go!";
+      clearInterval(countdownInterval);
+      setTimeout(() => {
+        document.getElementById("countdownOverlay").classList.add("hidden");
+        document.getElementById("quizScreen").classList.remove("hidden");
+        document.getElementById("startScreen").classList.add("hidden"); // now hide full start screen
+        renderQuestion();
+      }, 700);
+    }
+  }, 1000);
+}
+
+
+  function renderQuestion() {
+    clearInterval(timerInterval);
+    timeLeft = timePerQuestion;
+    document.getElementById("timer").innerText = `⏳ ${timeLeft}s`;
+    timerInterval = setInterval(() => {
+      timeLeft--;
+      document.getElementById("timer").innerText = `⏳ ${timeLeft}s`;
+      if (timeLeft <= 0) {
+        clearInterval(timerInterval);
+        skipQuestion();
+      }
+    }, 1000);
+
+    const q = questions[current];
+    const flash = document.getElementById("flashcard");
+    const shuffledOptions = shuffleArray(q.options);
+    flash.innerHTML = `<strong>Q${current + 1}: ${q.question}</strong><br>` +
+      shuffledOptions.map((opt, i) => {
+        const letter = String.fromCharCode(65 + i);
+        return `<label class="option">
+          <input type="radio" name="q${current}" value="${opt}" onclick="selectOption('${opt}')"
+          ${answers[current] === opt ? 'checked' : ''}> ${letter}. ${opt}
+        </label>`;
+      }).join('');
+  }
+
+  function selectOption(opt) {
+    answers[current] = opt;
+    if (current < questions.length - 1) {
+      current++;
+      renderQuestion();
+    } else {
+      clearInterval(timerInterval);
+    }
+  }
+
+  function skipQuestion() {
+    answers[current] = null;
+    if (current < questions.length - 1) {
+      current++;
+      renderQuestion();
+    } else {
+      clearInterval(timerInterval);
+    }
+  }
+
+  function submitQuiz() {
+    clearInterval(timerInterval);
+    const timeTakenSec = Math.floor((Date.now() - startTime) / 1000);
+    const timeStr = `${Math.floor(timeTakenSec/60)}m ${timeTakenSec%60}s`;
+
+    let correct = 0, incorrect = 0, skipped = 0;
+    const finalList = document.getElementById("finalList");
+    finalList.innerHTML = "";
+
+    answers.forEach((ans, i) => {
+      const q = questions[i];
+      let resultClass = "", message = "";
+
+      if (ans === null) {
+        skipped++;
+        resultClass = "result-skipped";
+        message = `Skipped. Correct: <b>${q.answer}</b><br>${q.explanation}`;
+      } else if (ans === q.answer) {
+        correct++;
+        resultClass = "result-correct";
+        message = `Correct! <br>${q.explanation}`;
+      } else {
+        incorrect++;
+        resultClass = "result-incorrect";
+        message = `Incorrect. You chose: <b>${ans}</b><br>Correct: <b>${q.answer}</b><br>${q.explanation}`;
+      }
+
+      const div = document.createElement("div");
+      div.innerHTML = `<div class="${resultClass}"><b>Q${i+1}:</b> ${q.question}<br>${message}</div><hr>`;
+      finalList.appendChild(div);
+    });
+
+    document.getElementById("correctQ").innerText = correct;
+    document.getElementById("incorrectQ").innerText = incorrect;
+    document.getElementById("skippedQ").innerText = skipped;
+    document.getElementById("timeTaken").innerText = timeStr;
+
+    document.getElementById("quizScreen").classList.add("hidden");
+    document.getElementById("resultScreen").classList.remove("hidden");
+
+    const timestamp = firebase.firestore.Timestamp.now();
+
+
+const submissionData = {
+  title: quizTitle,
+  correct,
+  incorrect,
+  skipped,
+  timeTaken: timeStr,
+  timeTakenInSeconds: timeTakenSec,
+  timestamp: firebase.firestore.Timestamp.now(),
+  name: userName,
+  answers,
+  questions: questions.map(q => ({
+    question: q.question,
+    answer: q.answer,
+    explanation: q.explanation
+  }))
+};
+
+db.collection("vocabularyQuizHistory").add(submissionData);
+
+
+    const lbRef = db.collection("vocabLeaderboard_" + quizId).doc(userName);
+    lbRef.get().then(doc => {
+      const data = doc.data();
+      const attempts = (data?.attempts || 0) + 1;
+      if (!doc.exists || data.score < correct || (data.score === correct && data.timeTakenInSeconds > timeTakenSec)) {
+        lbRef.set({ name: userName, score: correct, timeTaken: timeStr, timeTakenInSeconds: timeTakenSec, attempts });
+      } else {
+        lbRef.update({ attempts });
+      }
+    });
+  }     // end of submitQuiz function
+
+function autoSubmitQuizBeforeUnload() {
+  const quizScreen = document.getElementById("quizScreen");
+  const startScreen = document.getElementById("startScreen");
+
+  const quizInProgress = !quizScreen.classList.contains("hidden") && startScreen.classList.contains("hidden");
+
+  if (!quizInProgress) return;
+
+  const timeTakenSec = Math.floor((Date.now() - startTime) / 1000);
+  const timeStr = `${Math.floor(timeTakenSec/60)}m ${timeTakenSec%60}s`;
+
+  let correct = 0, incorrect = 0, skipped = 0;
+
+  const submissionData = {
+    title: quizTitle,
+    timeTaken: timeStr,
+    timeTakenInSeconds: timeTakenSec,
+    timestamp: Date.now(),
+    name: userName,
+    answers: answers,
+    questions: questions
+  };
+
+  answers.forEach((ans, i) => {
+    if (ans === null) skipped++;
+    else if (ans === questions[i].answer) correct++;
+    else incorrect++;
+  });
+
+  submissionData.correct = correct;
+  submissionData.incorrect = incorrect;
+  submissionData.skipped = skipped;
+
+  localStorage.setItem("pendingSubmission", JSON.stringify(submissionData));
+}
+
+
+
+  function downloadResult() {
+    html2canvas(document.getElementById("resultContainer")).then(canvas => {
+      const link = document.createElement('a');
+      link.download = `${quizTitle}.png`;
+      link.href = canvas.toDataURL();
+      link.click();
+    });
+  }
+
+function viewHistory() {
+  document.getElementById("resultScreen").classList.add("hidden");
+  document.getElementById("historyScreen").classList.remove("hidden");
+  const list = document.getElementById("historyList");
+  list.innerHTML = "Loading...";
+
+  db.collection("vocabularyQuizHistory")
+    .where("title", "==", quizTitle)
+    .orderBy("timestamp", "desc")
+    .get().then(snapshot => {
+      list.innerHTML = "";
+      if (snapshot.empty) {
+        list.innerHTML = "No history found for this quiz.";
+        return;
+      }
+    
+    snapshot.forEach(doc => {
+  const d = doc.data();
+  const entry = document.createElement("div");
+  entry.innerHTML = `<b>${d.name || "Anonymous"}</b> — ${d.timestamp.toDate().toLocaleString()}<br>
+  ✅ Correct: ${d.correct}, ❌ Incorrect: ${d.incorrect}, ⚪ Skipped: ${d.skipped}<br>🕒 Time: ${d.timeTaken}`;
+
+  // 🔽 Highlight if this entry belongs to the current user
+  if (d.name === userName) {
+    entry.style.borderLeftColor = "#43a047"; // green
+    entry.style.background = "#e8f5e9"; // light green background
+  }
+
+  list.appendChild(entry);
+      });
+});
+}
+
+
+
+
+  function showLeaderboard() {
+    document.getElementById("resultScreen").classList.add("hidden");
+    document.getElementById("leaderboard").classList.remove("hidden");
+    const board = document.getElementById("leaderboardList");
+    board.innerHTML = "Loading...";
+
+    db.collection("vocabLeaderboard_" + quizId).get().then(snapshot => {
+      const data = [];
+      snapshot.forEach(doc => data.push(doc.data()));
+      data.sort((a, b) => b.score - a.score || a.timeTakenInSeconds - b.timeTakenInSeconds);
+      board.innerHTML = "";
+      data.forEach((u, i) => {
+        const row = document.createElement("div");
+        row.innerHTML = `#${i+1}. <b>${u.name}</b> (${u.attempts}) — ✅ ${u.score} | 🕒 ${u.timeTaken}`;
+        board.appendChild(row);
+      });
+    });
+  }
+
+  function backToResults() {
+    document.getElementById("historyScreen").classList.add("hidden");
+    document.getElementById("leaderboard").classList.add("hidden");
+    document.getElementById("resultScreen").classList.remove("hidden");
+  }
+
+  
+
+  function logoutUser() {
+  firebase.auth().signOut().then(() => {
+    localStorage.removeItem("quizUserName");
+    window.location.href = "index.html"; // or any other page you'd like
+  }).catch(error => {
+    alert("Error signing out: " + error.message);
+  });
+}
+
+
+
+
+
+
+window.addEventListener("beforeunload", function (e) {
+  const quizScreen = document.getElementById("quizScreen");
+  const startScreen = document.getElementById("startScreen");
+
+  const quizInProgress = !quizScreen.classList.contains("hidden") && startScreen.classList.contains("hidden");
+
+  if (quizInProgress) {
+    autoSubmitQuizBeforeUnload();
+    e.preventDefault();
+    e.returnValue = "⚠️ You have an active quiz. Leaving will submit it.";
+  }
+});
+
+document.getElementById("startBtn").addEventListener("click", startQuiz);
+
+
+</script>
+<div id="countdownOverlay" class="hidden" style="
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.85);
+  color: white;
+  font-size: 4rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  font-weight: bold;
+  flex-direction: column;
+">
+  <div id="countdownText">3</div>
+</div>
+
+</body>
+</html>

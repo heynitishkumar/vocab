@@ -1,0 +1,930 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Current Affairs Quiz</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;600;800&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Nunito', sans-serif;
+      max-width: 800px;
+      margin: auto;
+      padding: 2rem;
+      background: linear-gradient(to right, #f9fafb, #e0f2f1);
+      color: #333;
+    }
+    h2 {
+      text-align: center;
+      color: #1e88e5;
+    }
+    .hidden {
+     display: none !important;
+    }
+    .flashcard {
+      background: #fff;
+      border-left: 6px solid #42a5f5;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .option {
+      margin: 10px 0;
+      display: block;
+      font-weight: 500;
+    }
+    .option input {
+      margin-right: 8px;
+    }
+    .result-correct { color: green; font-weight: bold; }
+    .result-incorrect { color: red; font-weight: bold; }
+    .result-skipped { color: gray; font-weight: bold; }
+    button {
+      background: #1e88e5;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 10px 16px;
+      margin: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background: #1565c0;
+    }
+    #navBtns {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+    #historyList div, #leaderboard div {
+      background: #fff;
+      border-left: 4px solid #7e57c2;
+      padding: 12px;
+      margin: 8px 0;
+      border-radius: 5px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
+    #timer {
+      font-weight: bold;
+      color: #d32f2f;
+      float: right;
+    }
+    #userInfo {
+      float: right;
+      margin-bottom: 10px;
+      font-weight: 600;
+      color: #2e7d32;
+    }
+    #resultContainer {
+      background: #fff;
+      padding: 1rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    hr {
+      border: none;
+      border-bottom: 1px solid #ccc;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+    header nav a {
+      margin-right: 12px;
+      text-decoration: none;
+      font-weight: 600;
+      color: #1e88e5;
+      transition: color 0.3s;
+    }
+    header nav a:hover {
+      color: #1565c0;
+    }
+   
+   #startScreen button:hover {
+  background: #2e7d32;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+#startScreen {
+  animation: fadeIn 1s ease-in-out;
+}
+
+ @keyframes countdownScale {
+  0% { transform: scale(0.5); opacity: 0.2; }
+  50% { transform: scale(1.3); opacity: 1; }
+  100% { transform: scale(1); opacity: 0.8; }
+}
+
+#countdownText {
+  animation: countdownScale 1s ease-in-out;
+}
+
+details {
+  background: #f9f9f9;
+  padding: 10px;
+  border-radius: 8px;
+}
+details summary {
+  font-weight: bold;
+  cursor: pointer;
+}
+
+
+  </style>
+</head>
+<body>
+  <header style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+  <div>
+    <strong>📰Current Affairs Quiz</strong><br>
+    <button onclick="confirmQuizInterrupt(viewHistory)" style="background:#6d4c41; margin-top: 6px;">📜 View History</button>
+    <button onclick="confirmQuizInterrupt(showLeaderboard)" style="background:#00897b; margin-top: 6px;">🏆 View Leaderboard</button>
+  </div>
+  <nav>
+    <a href="indexnod.html">🏠 Home</a>
+    <a href="january.html">📅 January</a>
+  </nav>
+</header>
+
+<div id="userInfo">👤 <span id="userDisplayName"></span></div>
+  <div style="float: right; display: flex; gap: 10px; align-items: center; margin-bottom: 10px;">
+  <span id="userInfo">👤 <span id="userDisplayName"></span></span>
+  <button onclick="confirmQuizInterrupt(logoutUser)" style="background:#e53935;">🚪 Logout</button>
+</div>
+<h2><span id="quizTitle"></span> <span id="timer"></span></h2>
+
+<div id="startScreen">
+  <h2>🧠 Welcome </h2>
+  <p id="totalQuestions"></p>
+
+  <div id="quizInfoBox">
+    <div style="
+      background: #ffffff;
+      padding: 1rem 1.5rem;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      margin: 20px 0;
+      max-width: 500px;
+    ">
+      <h3 style="margin: 0 0 10px 0;">📋 Quiz Info</h3>
+      <ul style="text-align: left; padding-left: 20px; color: #444; line-height: 1.6;">
+        <li>15 seconds per question</li>
+        <li>Auto-skip on timeout</li>
+        <li>Leaderboard ranks by score + speed</li>
+        <li>Answer explanations after submission</li>
+      </ul>
+    </div>
+  </div>
+
+  <div id="startContent">
+    <button id="startBtn"  style="
+      padding: 12px 24px;
+      font-size: 1.25rem;
+      border-radius: 10px;
+      background: #43a047;
+      font-weight: bold;
+    ">▶️ Start Quiz</button>
+  </div>
+</div>
+
+
+<div id="quizScreen" class="hidden">
+
+  <div id="flashcard" class="flashcard"></div>
+  <div id="navBtns">
+    <button onclick="skipQuestion()">⏭ Skip</button>
+  </div>
+  <button onclick="submitQuiz()">Submit Quiz</button>
+</div>
+
+<div id="resultScreen" class="hidden">
+  <div id="resultContainer">
+    <h2>Quiz Result: <span id="quizTitleResult"></span></h2>
+    <p><strong>Correct:</strong> <span id="correctQ"></span></p>
+    <p><strong>Incorrect:</strong> <span id="incorrectQ"></span></p>
+    <p><strong>Skipped:</strong> <span id="skippedQ"></span></p>
+    <p><strong>Time Taken:</strong> <span id="timeTaken"></span></p>
+    <h3>Review:</h3>
+    <div id="finalList"></div>
+  </div>
+  <button onclick="downloadResult()">📥 Download PNG</button>
+  <button onclick="viewHistory()">📜 View History</button>
+  <button onclick="showLeaderboard()">🏆 View Leaderboard</button>
+</div>
+
+<div id="historyScreen" class="hidden">
+  <h2>📚 Quiz History (<span id="historyTitle"></span>)</h2>
+  <div id="historyList"></div>
+  <button onclick="backToResults()">🔙 Back</button>
+</div>
+
+<div id="leaderboard" class="hidden">
+  <h2>🏆 Leaderboard</h2>
+  <div id="leaderboardList"></div>
+  <button onclick="backToResults()">🔙 Back</button>
+</div>
+
+<script>
+function retryQuiz() {
+  window.scrollTo(0, 0);
+  startQuiz(); // or just reload if you want to reset everything: window.location.reload();
+}
+
+
+function confirmQuizInterrupt(actionFn) {
+  const quizScreen = document.getElementById("quizScreen");
+  const startScreen = document.getElementById("startScreen");
+
+  const quizInProgress = !quizScreen.classList.contains("hidden") && startScreen.classList.contains("hidden");
+
+  if (quizInProgress) {
+    const proceed = confirm("⚠️ This will submit your current quiz. Are you sure?");
+    if (proceed) {
+      submitQuiz(); // Submit quiz first
+      setTimeout(actionFn, 500); // Run the action after quiz is submitted
+    }
+  } else {
+    // No quiz running — proceed freely
+    actionFn();
+  }
+}
+
+  const quizTitle = "Jan 5-6 Quiz No 1";
+  const quizId = quizTitle.replace(/[^a-zA-Z0-9]/g, "_");
+
+  document.getElementById("quizTitle").innerText = quizTitle;
+  document.getElementById("quizTitleResult").innerText = quizTitle;
+  document.getElementById("historyTitle").innerText = quizTitle;
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCGiOMRZHI_PdbuzIkQK8Kk4YcFXHBWtpc",
+    authDomain: "mathsquiz-5a3b7.firebaseapp.com",
+    projectId: "mathsquiz-5a3b7",
+    storageBucket: "mathsquiz-5a3b7.appspot.com",
+    messagingSenderId: "127657807004",
+    appId: "1:127657807004:web:ef17beddcbb04c5de0f159",
+    measurementId: "G-Q73EQ54DPG"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+  const auth = firebase.auth();
+
+  let userName = localStorage.getItem("quizUserName") || "";
+  if (!userName) {
+    userName = prompt("Enter your name:");
+    localStorage.setItem("quizUserName", userName);
+  }
+  document.getElementById("userDisplayName").innerText = userName;
+
+  auth.signInAnonymously().catch(console.error);
+
+  let currentUserId = "";
+  auth.onAuthStateChanged(user => {
+    if (user) {
+      currentUserId = user.uid;
+    }
+  });
+
+const pending = JSON.parse(localStorage.getItem("pendingSubmission"));
+if (pending) {
+  const timestamp = firebase.firestore.Timestamp.fromDate(new Date(pending.timestamp));
+db.collection("vocabularyQuizHistory").add({ 
+  title: quizTitle,
+  name: userName,
+  correct,
+  incorrect,
+  skipped,
+  timeTaken: timeStr,
+  timestamp
+});
+
+
+  const lbRef = db.collection("vocabLeaderboard_" + quizId).doc(pending.name);
+  lbRef.get().then(doc => {
+    const data = doc.data();
+    const attempts = (data?.attempts || 0) + 1;
+    if (!doc.exists || data.score < pending.correct || (data.score === pending.correct && data.timeTakenInSeconds > pending.timeTakenInSeconds)) {
+      lbRef.set({
+        name: pending.name,
+        score: pending.correct,
+        timeTaken: pending.timeTaken,
+        timeTakenInSeconds: pending.timeTakenInSeconds,
+        attempts
+      });
+    } else {
+      lbRef.update({ attempts });
+    }
+    localStorage.removeItem("pendingSubmission");
+  });
+}
+
+
+  
+    const allQuizzes = {
+  A: [
+  {
+    "question": "Guru Gobind Singh Ji was born in which city?",
+    "options": ["Patna Sahib", "Amritsar", "Anandpur Sahib", "Lahore"],
+    "answer": "Patna Sahib",
+    "explanation": "<b><u>Guru Gobind Singh Ji</u></b>, the 10th Guru of Sikhism, was born on <b>December 22, 1666</b>, in <b>Patna Sahib</b> (present-day Bihar)."
+  },
+  {
+    "question": "At what age did Guru Gobind Singh Ji become the Guru of the Sikh community?",
+    "options": ["9", "13", "16", "21"],
+    "answer": "9",
+    "explanation": "Guru Gobind Singh Ji became the Guru of the Sikh community at the young age of <b>nine</b>, after the martyrdom of his father <b>Guru Tegh Bahadur Ji</b>."
+  },
+  {
+    "question": "Which spiritual warrior group was founded by Guru Gobind Singh Ji in 1699?",
+    "options": ["Khalsa", "Singh Sabha", "Nihangs", "Namdharis"],
+    "answer": "Khalsa",
+    "explanation": "In <b>1699</b>, Guru Gobind Singh Ji established the <b><u>Khalsa</u></b>, a group of initiated Sikhs trained as spiritual warriors, symbolizing equality and bravery."
+  },
+  {
+    "question": "What are the Five Ks introduced by Guru Gobind Singh Ji for Khalsa Sikhs?",
+    "options": ["Kesh, Kanga, Kara, Kirpan, Kachera", "Kesar, Kada, Kalgi, Khanda, Kachera", "Kirtan, Kanga, Kirpan, Kaul, Kadi", "Kesh, Kada, Kamal, Kirpan, Kurta"],
+    "answer": "Kesh, Kanga, Kara, Kirpan, Kachera",
+    "explanation": "The <b>Five Ks</b> introduced by Guru Gobind Singh Ji are: <b>Kesh</b> (uncut hair), <b>Kanga</b> (wooden comb), <b>Kara</b> (iron bracelet), <b>Kirpan</b> (dagger), and <b>Kachera</b> (short breeches)."
+  },
+  {
+    "question": "What is the title of the Sikh national anthem composed by Guru Gobind Singh Ji?",
+    "options": ["Deh Shiva Bar Mohe Ihai", "Satnam Waheguru", "Ek Onkar", "Chardi Kala"],
+    "answer": "Deh Shiva Bar Mohe Ihai",
+    "explanation": "<b><u>Deh Shiva Bar Mohe Ihai</u></b> is a hymn composed by Guru Gobind Singh Ji and is revered as the <b>national anthem of the Sikh community</b>."
+  },
+  {
+    "question": "Which scripture, partly composed by Guru Gobind Singh Ji, is a major literary work in Sikhism?",
+    "options": ["Dasam Granth", "Guru Granth Sahib", "Japji Sahib", "Anand Sahib"],
+    "answer": "Dasam Granth",
+    "explanation": "The <b><u>Dasam Granth</u></b> is a <b>major scripture</b> attributed to Guru Gobind Singh Ji and contains his compositions, hymns, and heroic poetry."
+  },
+  {
+    "question": "Which Sikh festival was initiated by Guru Gobind Singh Ji as a martial alternative to Holi?",
+    "options": ["Hola Mohalla", "Baisakhi", "Gurpurab", "Maghi"],
+    "answer": "Hola Mohalla",
+    "explanation": "<b><u>Hola Mohalla</u></b> was established by Guru Gobind Singh Ji as a <b>martial and spiritual event</b> showcasing Sikh warrior skills, celebrated a day after Holi."
+  },
+  {
+    "question": "Which famous Sikh slogan was popularized by Guru Gobind Singh Ji?",
+    "options": ["Bole So Nihal", "Waheguru Ji Ka Khalsa", "Chardi Kala", "Satnam Waheguru"],
+    "answer": "Bole So Nihal",
+    "explanation": "Guru Gobind Singh Ji gave prominence to the Sikh war cry <b><u>'Bole So Nihal'</u></b>, often followed by <b>'Sat Sri Akal'</b>."
+  },
+  {
+    "question": "Who was the founder and first Guru of Sikhism?",
+    "options": ["Guru Nanak", "Guru Gobind Singh", "Guru Tegh Bahadur", "Guru Arjan Dev"],
+    "answer": "Guru Nanak",
+    "explanation": "<b><u>Guru Nanak</u></b> (1469–1539) was the <b>founder of Sikhism</b> and the <b>first Sikh Guru</b>, known for spreading the message of equality and devotion to one God."
+  },
+  {
+    "question": "Who was the fifth Guru of Sikhism and the compiler of the Adi Granth?",
+    "options": ["Guru Arjan Dev", "Guru Ram Das", "Guru Tegh Bahadur", "Guru Amar Das"],
+    "answer": "Guru Arjan Dev",
+    "explanation": "<b><u>Guru Arjan Dev</u></b> (1563–1606), the <b>fifth Sikh Guru</b>, compiled the <b>Adi Granth</b>, the primary scripture of Sikhism, and was the first Sikh martyr."
+  },
+  {
+    "question": "Who was the youngest Guru in Sikh history?",
+    "options": ["Guru Har Krishan", "Guru Har Rai", "Guru Gobind Singh", "Guru Angad"],
+    "answer": "Guru Har Krishan",
+    "explanation": "<b><u>Guru Har Krishan</u></b> (1656–1664) became Guru at the age of <b>5</b> and was the <b>youngest Guru</b> in Sikh history. He died young due to smallpox."
+  },
+  {
+    "question": "Which Sikh Guru introduced the concept of Miri and Piri (spiritual and temporal authority)?",
+    "options": ["Guru Har Govind", "Guru Tegh Bahadur", "Guru Gobind Singh", "Guru Amar Das"],
+    "answer": "Guru Har Govind",
+    "explanation": "<b><u>Guru Har Govind</u></b> (1595–1644), the sixth Guru, introduced the concept of <b>Miri and Piri</b>, symbolizing the dual responsibility of <b>spiritual and temporal leadership</b>."
+  },
+  {
+    "question": "Which Guru sacrificed his life to protect religious freedom and was beheaded by Aurangzeb?",
+    "options": ["Guru Tegh Bahadur", "Guru Arjan Dev", "Guru Gobind Singh", "Guru Har Rai"],
+    "answer": "Guru Tegh Bahadur",
+    "explanation": "<b><u>Guru Tegh Bahadur</u></b> (1621–1675), the <b>ninth Guru</b>, was <b>martyred</b> in Delhi by Mughal Emperor Aurangzeb for defending the religious rights of Hindus and Sikhs."
+  },
+  {
+    "question": "Which Guru established the Khalsa in 1699?",
+    "options": ["Guru Gobind Singh", "Guru Tegh Bahadur", "Guru Arjan Dev", "Guru Ram Das"],
+    "answer": "Guru Gobind Singh",
+    "explanation": "<b><u>Guru Gobind Singh</u></b> (1666–1708), the <b>tenth Guru</b>, founded the <b>Khalsa</b> in <b>1699</b>, transforming Sikhs into a spiritual and warrior community."
+  },
+  {
+    "question": "What is the purpose of observing National Birds Day on January 5?",
+    "options": [
+      "To raise awareness about the struggles of orphaned children",
+      "To celebrate migratory birds",
+      "To mark the founding of BirdLife International",
+      "To highlight avian research efforts"
+    ],
+    "answer": "To raise awareness about the struggles of orphaned children",
+    "explanation": "<b><u>National Birds Day</u></b> observed on <b>January 5</b> focuses on <b>raising awareness about children orphaned</b> due to wars and conflicts, supported by the <b>Worldwide Organization for Charity (WOC)</b>."
+  },
+  {
+    "question": "Which upcoming religious event will Uttar Pradesh promote at global tourism fairs in Spain and Germany?",
+    "options": ["Mahakumbh 2025", "Taj Mahotsav", "Ganga Mahotsav", "Kailash Yatra"],
+    "answer": "Mahakumbh 2025",
+    "explanation": "The <b>Yogi government</b> will promote <b>Mahakumbh 2025</b>, scheduled in <b>Prayagraj</b> (Jan 13 – Feb 26), at international tourism trade fairs in <b>Madrid and Berlin</b>."
+  },
+  {
+    "question": "At which of the following rivers is the Kumbh Mela NOT celebrated?",
+    "options": ["Narmada", "Shipra", "Ganges", "Godavari"],
+    "answer": "Narmada",
+    "explanation": "The <b>Kumbh Mela</b> is held at <b>Shipra (Ujjain)</b>, <b>Ganges (Haridwar)</b>, <b>Godavari (Nashik)</b>, and the <b>confluence at Prayagraj</b>. It is <b>not held at the Narmada</b>."
+  },
+  {
+    "question": "How often does the Maha Kumbh Mela occur at Prayagraj?",
+    "options": ["Every 144 years", "Every 12 years", "Every 6 years", "Every 36 years"],
+    "answer": "Every 144 years",
+    "explanation": "The <b>Maha Kumbh Mela</b> is held once every <b>144 years</b> at <b>Prayagraj</b>, following 12 complete Purna Kumbh Melas."
+  },
+  {
+    "question": "In which year was the Kumbh Mela inscribed on UNESCO’s List of Intangible Cultural Heritage?",
+    "options": ["2017", "2007", "2022", "2013"],
+    "answer": "2017",
+    "explanation": "In <b>2017</b>, the <b>Kumbh Mela</b> was added to <b>UNESCO’s Representative List of Intangible Cultural Heritage of Humanity</b>."
+  },
+  {
+    "question": "Which river hosts the Kumbh Mela in Nashik?",
+    "options": ["Godavari", "Shipra", "Krishna", "Yamuna"],
+    "answer": "Godavari",
+    "explanation": "In <b>Nashik, Maharashtra</b>, the <b>Kumbh Mela</b> is held on the banks of the <b>Godavari River</b>."
+  },
+  {
+    "question": "Which form of Kumbh Mela occurs every 6th year between Haridwar and Prayagraj?",
+    "options": ["Ardh Kumbh Mela", "Maha Kumbh Mela", "Purna Kumbh Mela", "Kumbh Mela"],
+    "answer": "Ardh Kumbh Mela",
+    "explanation": "The <b>Ardh Kumbh Mela</b> is held every <b>6th year</b> in rotation between <b>Haridwar</b> and <b>Prayagraj</b>."
+  },
+  {
+    "question": "Who has been appointed as the Director General of the DGCA in 2025?",
+    "options": ["Faiz Ahmed Kidwai", "Ashutosh Agnihotri", "Rajiv Bansal", "Vitul Kumar"],
+    "answer": "Faiz Ahmed Kidwai",
+    "explanation": "<b><u>Faiz Ahmed Kidwai</u></b>, a senior IAS officer, was appointed as the <b>Director General of the DGCA</b> (Directorate General of Civil Aviation) in 2025."
+  },
+  {
+    "question": "Who has been appointed as the Chairman and Managing Director of the Food Corporation of India (FCI)?",
+    "options": ["Ashutosh Agnihotri", "Faiz Ahmed Kidwai", "Rajeev Saxena", "Ajay Bhushan Pandey"],
+    "answer": "Ashutosh Agnihotri",
+    "explanation": "<b><u>Ashutosh Agnihotri</u></b>, an IAS officer from the Ministry of Home Affairs, has been appointed as the <b>Chairman and MD of the Food Corporation of India</b>."
+  },
+  {
+    "question": "Who has been appointed as the Mission Director of the Jal Jeevan Mission?",
+    "options": ["Kamal Kishore Soan", "Rajiv Ranjan Mishra", "G Asok Kumar", "Manoj Joshi"],
+    "answer": "Kamal Kishore Soan",
+    "explanation": "<b><u>Kamal Kishore Soan</u></b> has been appointed as the <b>Additional Secretary and Mission Director</b> of the <b>Jal Jeevan Mission</b> under the Ministry of Jal Shakti."
+  },
+  {
+    "question": "Senior scientist Rajagopala Chidambaram, who passed away in 2025, was associated with which major event?",
+    "options": ["India’s nuclear tests at Pokhran", "Mars Orbiter Mission", "Green Revolution", "INS Arihant submarine launch"],
+    "answer": "India’s nuclear tests at Pokhran",
+    "explanation": "<b><u>Rajagopala Chidambaram</u></b> played a crucial role in both of <b>India’s nuclear tests</b>: <b>Smiling Buddha (1974)</b> and <b>Operation Shakti (1998)</b> at Pokhran."
+  },
+  {
+    "question": "What was the codename of the 1974 nuclear test in which Dr. R. Chidambaram participated?",
+    "options": ["Smiling Buddha", "Operation Lotus", "Shakti Mission", "Trishul Strike"],
+    "answer": "Smiling Buddha",
+    "explanation": "India’s <b>first nuclear test in 1974</b> was codenamed <b><u>Smiling Buddha</u></b>, carried out under high secrecy in <b>Pokhran, Rajasthan</b>."
+  },
+  {
+    "question": "Which of the following awards was Dr. R. Chidambaram honored with?",
+    "options": ["Padma Shri and Padma Vibhushan", "Padma Bhushan and Bharat Ratna", "Bharat Ratna and Shanti Swaroop Bhatnagar", "Shaurya Chakra and Padma Shri"],
+    "answer": "Padma Shri and Padma Vibhushan",
+    "explanation": "<b><u>Dr. Rajagopala Chidambaram</u></b> was awarded the <b>Padma Shri (1975)</b> and <b>Padma Vibhushan (1999)</b> for his contributions to nuclear energy and strategic technologies."
+  },
+  {
+    "question": "Dr. R. Chidambaram served as India’s Principal Scientific Advisor (PSA) from which years?",
+    "options": ["2002–2018", "1998–2010", "2005–2015", "2010–2022"],
+    "answer": "2002–2018",
+    "explanation": "<b><u>Dr. R. Chidambaram</u></b> was India’s <b>Principal Scientific Advisor</b> (PSA) from <b>2002 to 2018</b>, making him the longest-serving PSA."
+  },
+  {
+    "question": "Where was the Grameen Bharat Mahotsav 2025 inaugurated?",
+    "options": ["Bharat Mandapam, New Delhi", "Vigyan Bhawan, New Delhi", "Paryavaran Bhawan, Delhi", "Pragati Maidan, Delhi"],
+    "answer": "Bharat Mandapam, New Delhi",
+    "explanation": "Prime Minister Narendra Modi inaugurated the <b><u>Grameen Bharat Mahotsav 2025</u></b> at <b>Bharat Mandapam, New Delhi</b>."
+  },
+  {
+    "question": "What is the theme of the Grameen Bharat Mahotsav 2025?",
+    "options": ["Building a Resilient Rural India for a Viksit Bharat 2047", "Atmanirbhar Bharat Abhiyan", "Digital India for Rural Youth", "Smart Villages of Tomorrow"],
+    "answer": "Building a Resilient Rural India for a Viksit Bharat 2047",
+    "explanation": "The <b>theme</b> of the <b>Grameen Bharat Mahotsav 2025</b> is <b><u>'Building a Resilient Rural India for a Viksit Bharat 2047'</u></b>."
+  },
+  {
+    "question": "What is the motto of the Grameen Bharat Mahotsav 2025?",
+    "options": ["गांव बढ़े, तो देश बढ़े", "विकसित भारत - समृद्ध गांव", "शिक्षा से समृद्धि", "हर गांव डिजिटल"],
+    "answer": "गांव बढ़े, तो देश बढ़े",
+    "explanation": "The <b>motto</b> of the <b>Grameen Bharat Mahotsav 2025</b> is <b><u>'गांव बढ़े, तो देश बढ़े'</u></b>."
+  },
+  {
+    "question": "Which section of the Namo Bharat corridor did PM Modi inaugurate in January 2025?",
+    "options": ["Sahibabad to New Ashok Nagar", "New Delhi to Meerut", "Noida to Ghaziabad", "Rithala to Nathupur"],
+    "answer": "Sahibabad to New Ashok Nagar",
+    "explanation": "PM Narendra Modi inaugurated a <b>13 km stretch</b> of the <b>Namo Bharat corridor</b> between <b>Sahibabad and New Ashok Nagar</b>."
+  },
+  {
+    "question": "Which section of the Delhi Metro Phase-IV was inaugurated recently?",
+    "options": ["Rithala to Kundli", "Dwarka to Aerocity", "Yamuna Vihar to Vaishali", "Botanical Garden to Noida Sector 142"],
+    "answer": "Rithala to Kundli",
+    "explanation": "PM Modi laid the foundation stone for the <b>26.5 km Rithala–Kundli section</b> under <b>Delhi Metro Phase-IV</b>."
+  },
+  {
+    "question": "Where will the new building for Central Ayurveda Research Institute (CARI) be constructed?",
+    "options": ["Rohini, New Delhi", "Dwarka, Delhi", "Noida", "Lucknow"],
+    "answer": "Rohini, New Delhi",
+    "explanation": "PM Modi also laid the foundation stone for the new <b>Central Ayurveda Research Institute (CARI)</b> building at <b>Rohini, New Delhi</b>."
+  },
+  {
+    "question": "Which section of the Namo Bharat corridor did PM Modi inaugurate in January 2025?",
+    "options": ["Sahibabad to New Ashok Nagar", "New Delhi to Meerut", "Noida to Ghaziabad", "Rithala to Nathupur"],
+    "answer": "Sahibabad to New Ashok Nagar",
+    "explanation": "PM Narendra Modi inaugurated a <b>13 km stretch</b> of the <b>Namo Bharat corridor</b> between <b>Sahibabad and New Ashok Nagar</b>."
+  },
+  {
+    "question": "Which section of the Delhi Metro Phase-IV was inaugurated recently?",
+    "options": ["Rithala to Kundli", "Dwarka to Aerocity", "Yamuna Vihar to Vaishali", "Botanical Garden to Noida Sector 142"],
+    "answer": "Rithala to Kundli",
+    "explanation": "PM Modi laid the foundation stone for the <b>26.5 km Rithala–Kundli section</b> under <b>Delhi Metro Phase-IV</b>."
+  },
+  {
+    "question": "Where will the new building for Central Ayurveda Research Institute (CARI) be constructed?",
+    "options": ["Rohini, New Delhi", "Dwarka, Delhi", "Noida", "Lucknow"],
+    "answer": "Rohini, New Delhi",
+    "explanation": "PM Modi also laid the foundation stone for the new <b>Central Ayurveda Research Institute (CARI)</b> building at <b>Rohini, New Delhi</b>."
+  },
+  {
+    "question": "Under Telangana’s Rythu Bharosa scheme, how much annual aid per acre will be provided to farmers?",
+    "options": ["₹12,000", "₹10,000", "₹15,000", "₹8,000"],
+    "answer": "₹12,000",
+    "explanation": "Under the <b><u>Rythu Bharosa scheme</u></b>, Telangana farmers will receive <b>₹12,000 per acre annually</b>, increased from ₹10,000."
+  },
+  {
+    "question": "When will Telangana’s new agricultural schemes be implemented?",
+    "options": ["26th January 2025", "1st February 2025", "15th January 2025", "2nd October 2025"],
+    "answer": "26th January 2025",
+    "explanation": "Both <b>Rythu Bharosa</b> and <b>Indiramma Atmeeya Bharosa</b> schemes will start from <b>26th January 2025</b>."
+  },
+  {
+    "question": "What is the name of the scheme launched for landless farm labourers in Telangana?",
+    "options": ["Indiramma Atmeeya Bharosa", "Rythu Vedika", "Annadata Scheme", "Grama Jyothi"],
+    "answer": "Indiramma Atmeeya Bharosa",
+    "explanation": "<b><u>Indiramma Atmeeya Bharosa</u></b> scheme is meant to support <b>landless farm labourers</b> in Telangana, offering ₹12,000 per year."
+  }
+  
+]
+
+
+};
+
+
+
+  const questions = allQuizzes.A;
+  let answers = Array(questions.length).fill(null);
+  let current = 0;
+  let startTime = Date.now();
+  let timerInterval;
+  let timePerQuestion = 15;
+  let timeLeft = timePerQuestion;
+
+  function shuffleArray(array) {
+    return array.map(value => ({ value, sort: Math.random() }))
+                .sort((a, b) => a.sort - b.sort)
+                .map(({ value }) => value);
+  }
+
+function startQuiz() {
+  // Hide only quiz info and button, not the whole screen
+  document.getElementById("quizInfoBox").classList.add("hidden");
+  document.getElementById("startContent").classList.add("hidden");
+
+document.getElementById("historyScreen").classList.add("hidden");
+  document.getElementById("leaderboard").classList.add("hidden");
+  document.getElementById("resultScreen").classList.add("hidden");
+  document.getElementById("countdownOverlay").classList.remove("hidden");
+
+  let count = 3;
+  const countdownText = document.getElementById("countdownText");
+  countdownText.innerText = count;
+
+  const countdownInterval = setInterval(() => {
+    count--;
+    if (count > 0) {
+      countdownText.innerText = count;
+      countdownText.style.animation = "none";
+      void countdownText.offsetWidth;
+      countdownText.style.animation = "countdownScale 1s ease-in-out";
+    } else {
+      countdownText.innerText = "🚀 Go!";
+      clearInterval(countdownInterval);
+      setTimeout(() => {
+        document.getElementById("countdownOverlay").classList.add("hidden");
+        document.getElementById("quizScreen").classList.remove("hidden");
+        document.getElementById("startScreen").classList.add("hidden"); // now hide full start screen
+        renderQuestion();
+      }, 700);
+    }
+  }, 1000);
+}
+
+
+  function renderQuestion() {
+    clearInterval(timerInterval);
+    timeLeft = timePerQuestion;
+    document.getElementById("timer").innerText = `⏳ ${timeLeft}s`;
+    timerInterval = setInterval(() => {
+      timeLeft--;
+      document.getElementById("timer").innerText = `⏳ ${timeLeft}s`;
+      if (timeLeft <= 0) {
+        clearInterval(timerInterval);
+        skipQuestion();
+      }
+    }, 1000);
+
+    const q = questions[current];
+    const flash = document.getElementById("flashcard");
+    const shuffledOptions = shuffleArray(q.options);
+    flash.innerHTML = `<strong>Q${current + 1}: ${q.question}</strong><br>` +
+      shuffledOptions.map((opt, i) => {
+        const letter = String.fromCharCode(65 + i);
+        return `<label class="option">
+          <input type="radio" name="q${current}" value="${opt}" onclick="selectOption('${opt}')"
+          ${answers[current] === opt ? 'checked' : ''}> ${letter}. ${opt}
+        </label>`;
+      }).join('');
+  }
+
+  function selectOption(opt) {
+    answers[current] = opt;
+    if (current < questions.length - 1) {
+      current++;
+      renderQuestion();
+    } else {
+      clearInterval(timerInterval);
+    }
+  }
+
+  function skipQuestion() {
+    answers[current] = null;
+    if (current < questions.length - 1) {
+      current++;
+      renderQuestion();
+    } else {
+      clearInterval(timerInterval);
+    }
+  }
+
+  function submitQuiz() {
+    clearInterval(timerInterval);
+    const timeTakenSec = Math.floor((Date.now() - startTime) / 1000);
+    const timeStr = `${Math.floor(timeTakenSec/60)}m ${timeTakenSec%60}s`;
+
+    let correct = 0, incorrect = 0, skipped = 0;
+    const finalList = document.getElementById("finalList");
+    finalList.innerHTML = "";
+
+    answers.forEach((ans, i) => {
+      const q = questions[i];
+      let resultClass = "", message = "";
+
+      if (ans === null) {
+        skipped++;
+        resultClass = "result-skipped";
+        message = `Skipped. Correct: <b>${q.answer}</b><br>${q.explanation}`;
+      } else if (ans === q.answer) {
+        correct++;
+        resultClass = "result-correct";
+        message = `Correct! <br>${q.explanation}`;
+      } else {
+        incorrect++;
+        resultClass = "result-incorrect";
+        message = `Incorrect. You chose: <b>${ans}</b><br>Correct: <b>${q.answer}</b><br>${q.explanation}`;
+      }
+
+      const div = document.createElement("div");
+      div.innerHTML = `<div class="${resultClass}"><b>Q${i+1}:</b> ${q.question}<br>${message}</div><hr>`;
+      finalList.appendChild(div);
+    });
+
+    document.getElementById("correctQ").innerText = correct;
+    document.getElementById("incorrectQ").innerText = incorrect;
+    document.getElementById("skippedQ").innerText = skipped;
+    document.getElementById("timeTaken").innerText = timeStr;
+
+    document.getElementById("quizScreen").classList.add("hidden");
+    document.getElementById("resultScreen").classList.remove("hidden");
+
+    const timestamp = firebase.firestore.Timestamp.now();
+
+
+const submissionData = {
+  title: quizTitle,
+  correct,
+  incorrect,
+  skipped,
+  timeTaken: timeStr,
+  timeTakenInSeconds: timeTakenSec,
+  timestamp: firebase.firestore.Timestamp.now(),
+  name: userName,
+  answers,
+  questions: questions.map(q => ({
+    question: q.question,
+    answer: q.answer,
+    explanation: q.explanation
+  }))
+};
+
+db.collection("vocabularyQuizHistory").add(submissionData);
+
+
+    const lbRef = db.collection("vocabLeaderboard_" + quizId).doc(userName);
+    lbRef.get().then(doc => {
+      const data = doc.data();
+      const attempts = (data?.attempts || 0) + 1;
+      if (!doc.exists || data.score < correct || (data.score === correct && data.timeTakenInSeconds > timeTakenSec)) {
+        lbRef.set({ name: userName, score: correct, timeTaken: timeStr, timeTakenInSeconds: timeTakenSec, attempts });
+      } else {
+        lbRef.update({ attempts });
+      }
+    });
+  }     // end of submitQuiz function
+
+function autoSubmitQuizBeforeUnload() {
+  const quizScreen = document.getElementById("quizScreen");
+  const startScreen = document.getElementById("startScreen");
+
+  const quizInProgress = !quizScreen.classList.contains("hidden") && startScreen.classList.contains("hidden");
+
+  if (!quizInProgress) return;
+
+  const timeTakenSec = Math.floor((Date.now() - startTime) / 1000);
+  const timeStr = `${Math.floor(timeTakenSec/60)}m ${timeTakenSec%60}s`;
+
+  let correct = 0, incorrect = 0, skipped = 0;
+
+  const submissionData = {
+    title: quizTitle,
+    timeTaken: timeStr,
+    timeTakenInSeconds: timeTakenSec,
+    timestamp: Date.now(),
+    name: userName,
+    answers: answers,
+    questions: questions
+  };
+
+  answers.forEach((ans, i) => {
+    if (ans === null) skipped++;
+    else if (ans === questions[i].answer) correct++;
+    else incorrect++;
+  });
+
+  submissionData.correct = correct;
+  submissionData.incorrect = incorrect;
+  submissionData.skipped = skipped;
+
+  localStorage.setItem("pendingSubmission", JSON.stringify(submissionData));
+}
+
+
+
+  function downloadResult() {
+    html2canvas(document.getElementById("resultContainer")).then(canvas => {
+      const link = document.createElement('a');
+      link.download = `${quizTitle}.png`;
+      link.href = canvas.toDataURL();
+      link.click();
+    });
+  }
+
+function viewHistory() {
+  document.getElementById("resultScreen").classList.add("hidden");
+  document.getElementById("historyScreen").classList.remove("hidden");
+  const list = document.getElementById("historyList");
+  list.innerHTML = "Loading...";
+
+  db.collection("vocabularyQuizHistory")
+    .where("title", "==", quizTitle)
+    .orderBy("timestamp", "desc")
+    .get().then(snapshot => {
+      list.innerHTML = "";
+      if (snapshot.empty) {
+        list.innerHTML = "No history found for this quiz.";
+        return;
+      }
+    
+    snapshot.forEach(doc => {
+  const d = doc.data();
+  const entry = document.createElement("div");
+  entry.innerHTML = `<b>${d.name || "Anonymous"}</b> — ${d.timestamp.toDate().toLocaleString()}<br>
+  ✅ Correct: ${d.correct}, ❌ Incorrect: ${d.incorrect}, ⚪ Skipped: ${d.skipped}<br>🕒 Time: ${d.timeTaken}`;
+
+  // 🔽 Highlight if this entry belongs to the current user
+  if (d.name === userName) {
+    entry.style.borderLeftColor = "#43a047"; // green
+    entry.style.background = "#e8f5e9"; // light green background
+  }
+
+  list.appendChild(entry);
+      });
+});
+}
+
+
+
+
+  function showLeaderboard() {
+    document.getElementById("resultScreen").classList.add("hidden");
+    document.getElementById("leaderboard").classList.remove("hidden");
+    const board = document.getElementById("leaderboardList");
+    board.innerHTML = "Loading...";
+
+    db.collection("vocabLeaderboard_" + quizId).get().then(snapshot => {
+      const data = [];
+      snapshot.forEach(doc => data.push(doc.data()));
+      data.sort((a, b) => b.score - a.score || a.timeTakenInSeconds - b.timeTakenInSeconds);
+      board.innerHTML = "";
+      data.forEach((u, i) => {
+        const row = document.createElement("div");
+        row.innerHTML = `#${i+1}. <b>${u.name}</b> (${u.attempts}) — ✅ ${u.score} | 🕒 ${u.timeTaken}`;
+        board.appendChild(row);
+      });
+    });
+  }
+
+  function backToResults() {
+    document.getElementById("historyScreen").classList.add("hidden");
+    document.getElementById("leaderboard").classList.add("hidden");
+    document.getElementById("resultScreen").classList.remove("hidden");
+  }
+
+  
+
+  function logoutUser() {
+  firebase.auth().signOut().then(() => {
+    localStorage.removeItem("quizUserName");
+    window.location.href = "index.html"; // or any other page you'd like
+  }).catch(error => {
+    alert("Error signing out: " + error.message);
+  });
+}
+
+
+
+
+
+
+window.addEventListener("beforeunload", function (e) {
+  const quizScreen = document.getElementById("quizScreen");
+  const startScreen = document.getElementById("startScreen");
+
+  const quizInProgress = !quizScreen.classList.contains("hidden") && startScreen.classList.contains("hidden");
+
+  if (quizInProgress) {
+    autoSubmitQuizBeforeUnload();
+    e.preventDefault();
+    e.returnValue = "⚠️ You have an active quiz. Leaving will submit it.";
+  }
+});
+
+document.getElementById("startBtn").addEventListener("click", startQuiz);
+
+
+</script>
+<div id="countdownOverlay" class="hidden" style="
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.85);
+  color: white;
+  font-size: 4rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  font-weight: bold;
+  flex-direction: column;
+">
+  <div id="countdownText">3</div>
+</div>
+
+</body>
+</html>
