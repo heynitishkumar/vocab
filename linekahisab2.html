@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Mesmerising Calendar</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap');
+    
+    body {
+      font-family: 'Outfit', sans-serif;
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 0.5rem;
+    }
+
+    .day-box:hover {
+      transform: scale(1.05);
+      transition: all 0.3s ease;
+      background-color: rgba(255, 255, 255, 0.05);
+    }
+
+    .tooltip {
+      position: absolute;
+      z-index: 20;
+      background: rgba(0, 0, 0, 0.8);
+      color: #fff;
+      padding: 0.4rem 0.8rem;
+      font-size: 0.75rem;
+      border-radius: 0.4rem;
+      white-space: nowrap;
+      transform: translate(-50%, -110%);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s ease-in-out;
+      backdrop-filter: blur(5px);
+    }
+
+    .has-tooltip:hover .tooltip {
+      opacity: 1;
+    }
+
+    .glass-card {
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .gradient-ring-blue {
+      background: linear-gradient(145deg, #60a5fa, #3b82f6);
+    }
+
+    .gradient-ring-green {
+      background: linear-gradient(145deg, #34d399, #10b981);
+    }
+
+    .gradient-ring-red {
+      background: linear-gradient(145deg, #f87171, #ef4444);
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white min-h-screen py-10 px-4">
+
+  <div class="max-w-7xl mx-auto text-center">
+    <h1 class="text-5xl font-extrabold mb-10 tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-400">
+      ✨ Mesmerising Calendar ✨
+    </h1>
+
+    <!-- Legend -->
+    <div class="flex justify-center flex-wrap gap-6 mb-10 text-sm sm:text-base">
+      <div class="flex items-center gap-2">
+        <div class="w-4 h-4 rounded-full gradient-ring-blue"></div>
+        <span class="text-blue-300 font-medium">Hanuman Singh</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <div class="w-4 h-4 rounded-full gradient-ring-green"></div>
+        <span class="text-green-300 font-medium">Hukam Singh</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <div class="w-4 h-4 rounded-full gradient-ring-red"></div>
+        <span class="text-red-300 font-medium">Harlal Singh</span>
+      </div>
+    </div>
+
+    <div id="calendarContainer" class="space-y-16"></div>
+  </div>
+
+  <script>
+    const calendarContainer = document.getElementById("calendarContainer");
+    const today = new Date();
+    const currentYear = today.getFullYear();
+    const ringStart = new Date(currentYear, 6, 11); // July 11
+
+    function generateCalendar(month, year) {
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+      const firstDay = new Date(year, month, 1).getDay();
+      const monthName = new Date(year, month).toLocaleString('default', { month: 'long' });
+
+      let html = `<div class="glass-card rounded-2xl p-6 shadow-xl">
+        <h2 class="text-2xl font-bold mb-4 text-center text-slate-100">${monthName} ${year}</h2>
+        <div class="calendar-grid text-center text-base font-semibold text-slate-200">
+          ${['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d => `<div class="text-slate-400 font-semibold">${d}</div>`).join('')}
+      `;
+
+      for (let i = 0; i < firstDay; i++) html += `<div></div>`;
+
+      for (let day = 1; day <= daysInMonth; day++) {
+        const currentDate = new Date(year, month, day);
+        let ringClass = "", name = "", tooltip = "";
+
+        if (currentDate >= ringStart) {
+          const diffDays = Math.floor((currentDate - ringStart) / (1000 * 60 * 60 * 24));
+          const cycleDay = diffDays % 6;
+
+          if (cycleDay === 0 || cycleDay === 1) {
+            ringClass = "gradient-ring-blue text-blue-100";
+            name = "Hanuman Singh";
+          } else if (cycleDay === 2 || cycleDay === 3) {
+            ringClass = "gradient-ring-green text-green-100";
+            name = "Hukam Singh";
+          } else if (cycleDay === 4 || cycleDay === 5) {
+            ringClass = "gradient-ring-red text-red-100";
+            name = "Harlal Singh";
+          }
+
+          tooltip = `<div class="tooltip">${name}</div>`;
+        }
+
+        html += `
+          <div class="p-2 day-box rounded-lg transition has-tooltip relative">
+            <div class="w-11 h-11 sm:w-12 sm:h-12 mx-auto flex items-center justify-center rounded-full font-bold cursor-default ${ringClass}">
+              ${day}
+            </div>
+            ${tooltip}
+          </div>
+        `;
+      }
+
+      html += `</div></div>`;
+      return html;
+    }
+
+    for (let m = today.getMonth(); m <= 11; m++) {
+      calendarContainer.innerHTML += generateCalendar(m, currentYear);
+    }
+  </script>
+</body>
+</html>

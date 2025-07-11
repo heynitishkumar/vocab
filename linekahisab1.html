@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Ring Calendar with Hover Tooltips</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 0.5rem;
+    }
+    .day-box:hover {
+      transform: scale(1.05);
+      transition: all 0.2s;
+      background-color: rgba(0, 0, 0, 0.03);
+    }
+    .tooltip {
+      position: absolute;
+      z-index: 20;
+      background-color: rgba(0, 0, 0, 0.75);
+      color: white;
+      padding: 0.3rem 0.6rem;
+      font-size: 0.75rem;
+      border-radius: 0.25rem;
+      white-space: nowrap;
+      transform: translate(-50%, -110%);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+    .has-tooltip:hover .tooltip {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-slate-100 to-slate-200 text-gray-800 min-h-screen py-6">
+
+  <div class="max-w-6xl mx-auto px-4">
+    <h1 class="text-4xl font-extrabold text-center mb-4 text-gray-800">📅 Hover Tooltip Calendar</h1>
+
+    <!-- Legend -->
+    <div class="flex justify-center gap-6 mb-8 text-sm sm:text-base">
+      <div class="flex items-center gap-2">
+        <div class="w-4 h-4 rounded-full ring-4 ring-blue-500"></div>
+        <span class="font-medium text-blue-700">Hanuman Singh</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <div class="w-4 h-4 rounded-full ring-4 ring-green-500"></div>
+        <span class="font-medium text-green-700">Hukam Singh</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <div class="w-4 h-4 rounded-full ring-4 ring-red-500"></div>
+        <span class="font-medium text-red-700">Harlal Singh</span>
+      </div>
+    </div>
+
+    <div id="calendarContainer" class="space-y-12"></div>
+  </div>
+
+  <script>
+    const calendarContainer = document.getElementById("calendarContainer");
+    const today = new Date();
+    const currentYear = today.getFullYear();
+    const ringStart = new Date(currentYear, 6, 11); // July 11
+
+    function generateCalendar(month, year) {
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+      const firstDay = new Date(year, month, 1).getDay();
+      const monthName = new Date(year, month).toLocaleString('default', { month: 'long' });
+
+      let html = `<div class="bg-white shadow-lg rounded-xl p-6">
+        <h2 class="text-2xl font-semibold mb-4 text-center text-gray-700">${monthName} ${year}</h2>
+        <div class="calendar-grid text-center text-sm sm:text-base font-medium text-gray-700">
+          ${['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d => `<div class="text-gray-500 font-bold">${d}</div>`).join('')}
+      `;
+
+      // Empty cells before 1st
+      for (let i = 0; i < firstDay; i++) {
+        html += `<div></div>`;
+      }
+
+      for (let day = 1; day <= daysInMonth; day++) {
+        const currentDate = new Date(year, month, day);
+        let ringColor = "", textColor = "", name = "", tooltip = "";
+
+        if (currentDate >= ringStart) {
+          const diffDays = Math.floor((currentDate - ringStart) / (1000 * 60 * 60 * 24));
+          const cycleDay = diffDays % 6;
+
+          if (cycleDay === 0 || cycleDay === 1) {
+            ringColor = "ring-4 ring-blue-500";
+            textColor = "text-blue-700";
+            name = "Hanuman Singh";
+          } else if (cycleDay === 2 || cycleDay === 3) {
+            ringColor = "ring-4 ring-green-500";
+            textColor = "text-green-700";
+            name = "Hukam Singh";
+          } else if (cycleDay === 4 || cycleDay === 5) {
+            ringColor = "ring-4 ring-red-500";
+            textColor = "text-red-700";
+            name = "Harlal Singh";
+          }
+
+          tooltip = `
+            <div class="tooltip">${name}</div>
+          `;
+        }
+
+        html += `
+          <div class="p-2 day-box rounded-lg transition has-tooltip relative">
+            <div class="w-10 h-10 sm:w-12 sm:h-12 mx-auto flex items-center justify-center rounded-full font-semibold cursor-default ${ringColor} ${textColor}">
+              ${day}
+            </div>
+            ${tooltip}
+          </div>
+        `;
+      }
+
+      html += `</div></div>`;
+      return html;
+    }
+
+    // Generate calendars from current month to December
+    for (let m = today.getMonth(); m <= 11; m++) {
+      calendarContainer.innerHTML += generateCalendar(m, currentYear);
+    }
+  </script>
+</body>
+</html>
