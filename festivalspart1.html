@@ -1,0 +1,1075 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Static GK Quiz</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;600;800&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Nunito', sans-serif;
+      max-width: 800px;
+      margin: auto;
+      padding: 2rem;
+      background: linear-gradient(to right, #f9fafb, #e0f2f1);
+      color: #333;
+    }
+    h2 {
+      text-align: center;
+      color: #1e88e5;
+    }
+    .hidden {
+     display: none !important;
+    }
+    .flashcard {
+      background: #fff;
+      border-left: 6px solid #42a5f5;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .option {
+      margin: 10px 0;
+      display: block;
+      font-weight: 500;
+    }
+    .option input {
+      margin-right: 8px;
+    }
+    .result-correct { color: green; font-weight: bold; }
+    .result-incorrect { color: red; font-weight: bold; }
+    .result-skipped { color: gray; font-weight: bold; }
+    button {
+      background: #1e88e5;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 10px 16px;
+      margin: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background: #1565c0;
+    }
+    #navBtns {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+    #historyList div, #leaderboard div {
+      background: #fff;
+      border-left: 4px solid #7e57c2;
+      padding: 12px;
+      margin: 8px 0;
+      border-radius: 5px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
+    #timer {
+      font-weight: bold;
+      color: #d32f2f;
+      float: right;
+    }
+    #userInfo {
+      float: right;
+      margin-bottom: 10px;
+      font-weight: 600;
+      color: #2e7d32;
+    }
+    #resultContainer {
+      background: #fff;
+      padding: 1rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    hr {
+      border: none;
+      border-bottom: 1px solid #ccc;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+    header nav a {
+      margin-right: 12px;
+      text-decoration: none;
+      font-weight: 600;
+      color: #1e88e5;
+      transition: color 0.3s;
+    }
+    header nav a:hover {
+      color: #1565c0;
+    }
+   
+   #startScreen button:hover {
+  background: #2e7d32;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+#startScreen {
+  animation: fadeIn 1s ease-in-out;
+}
+
+ @keyframes countdownScale {
+  0% { transform: scale(0.5); opacity: 0.2; }
+  50% { transform: scale(1.3); opacity: 1; }
+  100% { transform: scale(1); opacity: 0.8; }
+}
+
+#countdownText {
+  animation: countdownScale 1s ease-in-out;
+}
+
+details {
+  background: #f9f9f9;
+  padding: 10px;
+  border-radius: 8px;
+}
+details summary {
+  font-weight: bold;
+  cursor: pointer;
+}
+
+
+  </style>
+</head>
+<body>
+  <header style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+  <div>
+    <strong>📰Static GK Quiz</strong><br>
+    <button onclick="confirmQuizInterrupt(viewHistory)" style="background:#6d4c41; margin-top: 6px;">📜 View History</button>
+    <button onclick="confirmQuizInterrupt(showLeaderboard)" style="background:#00897b; margin-top: 6px;">🏆 View Leaderboard</button>
+  </div>
+  <nav>
+    <a href="festivalspart1.html">🏠 Home</a>
+    <a href="festivalspart1.html">📅 Static GK</a>
+  </nav>
+</header>
+
+<div id="userInfo">👤 <span id="userDisplayName"></span></div>
+  <div style="float: right; display: flex; gap: 10px; align-items: center; margin-bottom: 10px;">
+  <span id="userInfo">👤 <span id="userDisplayName"></span></span>
+  <button onclick="confirmQuizInterrupt(logoutUser)" style="background:#e53935;">🚪 Logout</button>
+</div>
+<h2><span id="quizTitle"></span> <span id="timer"></span></h2>
+
+<div id="startScreen">
+  <h2>🧠 Welcome </h2>
+  <p id="totalQuestions"></p>
+
+  <div id="quizInfoBox">
+    <div style="
+      background: #ffffff;
+      padding: 1rem 1.5rem;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      margin: 20px 0;
+      max-width: 500px;
+    ">
+      <h3 style="margin: 0 0 10px 0;">📋 Quiz Info</h3>
+      <ul style="text-align: left; padding-left: 20px; color: #444; line-height: 1.6;">
+        <li>30 seconds per question</li>
+        <li>Auto-skip on timeout</li>
+        <li>Leaderboard ranks by score + speed</li>
+        <li>Answer explanations after submission</li>
+      </ul>
+    </div>
+  </div>
+
+  <div id="startContent">
+    <button id="startBtn"  style="
+      padding: 12px 24px;
+      font-size: 1.25rem;
+      border-radius: 10px;
+      background: #43a047;
+      font-weight: bold;
+    ">▶️ Start Quiz</button>
+  </div>
+</div>
+
+
+<div id="quizScreen" class="hidden">
+
+  <div id="flashcard" class="flashcard"></div>
+  <div id="navBtns">
+    <button onclick="skipQuestion()">⏭ Skip</button>
+  </div>
+  <button onclick="submitQuiz()">Submit Quiz</button>
+</div>
+
+<div id="resultScreen" class="hidden">
+  <div id="resultContainer">
+    <h2>Quiz Result: <span id="quizTitleResult"></span></h2>
+    <p><strong>Correct:</strong> <span id="correctQ"></span></p>
+    <p><strong>Incorrect:</strong> <span id="incorrectQ"></span></p>
+    <p><strong>Skipped:</strong> <span id="skippedQ"></span></p>
+    <p><strong>Time Taken:</strong> <span id="timeTaken"></span></p>
+    <h3>Review:</h3>
+    <div id="finalList"></div>
+  </div>
+  <button onclick="downloadResult()">📥 Download PNG</button>
+  <button onclick="viewHistory()">📜 View History</button>
+  <button onclick="showLeaderboard()">🏆 View Leaderboard</button>
+</div>
+
+<div id="historyScreen" class="hidden">
+  <h2>📚 Quiz History (<span id="historyTitle"></span>)</h2>
+  <div id="historyList"></div>
+  <button onclick="backToResults()">🔙 Back</button>
+</div>
+
+<div id="leaderboard" class="hidden">
+  <h2>🏆 Leaderboard</h2>
+  <div id="leaderboardList"></div>
+  <button onclick="backToResults()">🔙 Back</button>
+</div>
+
+<script>
+let hasAnswered = false;
+
+function retryQuiz() {
+  window.scrollTo(0, 0);
+  startQuiz(); // or just reload if you want to reset everything: window.location.reload();
+}
+
+
+function confirmQuizInterrupt(actionFn) {
+  const quizScreen = document.getElementById("quizScreen");
+  const startScreen = document.getElementById("startScreen");
+
+  const quizInProgress = !quizScreen.classList.contains("hidden") && startScreen.classList.contains("hidden");
+
+  if (quizInProgress) {
+    const proceed = confirm("⚠️ This will submit your current quiz. Are you sure?");
+    if (proceed) {
+      submitQuiz(); // Submit quiz first
+      setTimeout(actionFn, 500); // Run the action after quiz is submitted
+    }
+  } else {
+    // No quiz running — proceed freely
+    actionFn();
+  }
+}
+
+  const quizTitle = "Festival Quiz No. 1 ";
+  const quizId = quizTitle.replace(/[^a-zA-Z0-9]/g, "_");
+
+  document.getElementById("quizTitle").innerText = quizTitle;
+  document.getElementById("quizTitleResult").innerText = quizTitle;
+  document.getElementById("historyTitle").innerText = quizTitle;
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCGiOMRZHI_PdbuzIkQK8Kk4YcFXHBWtpc",
+    authDomain: "mathsquiz-5a3b7.firebaseapp.com",
+    projectId: "mathsquiz-5a3b7",
+    storageBucket: "mathsquiz-5a3b7.appspot.com",
+    messagingSenderId: "127657807004",
+    appId: "1:127657807004:web:ef17beddcbb04c5de0f159",
+    measurementId: "G-Q73EQ54DPG"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+  const auth = firebase.auth();
+
+  let userName = localStorage.getItem("quizUserName") || "";
+  if (!userName) {
+    userName = prompt("Enter your name:");
+    localStorage.setItem("quizUserName", userName);
+  }
+  document.getElementById("userDisplayName").innerText = userName;
+
+  auth.signInAnonymously().catch(console.error);
+
+  let currentUserId = "";
+  auth.onAuthStateChanged(user => {
+    if (user) {
+      currentUserId = user.uid;
+    }
+  });
+
+const pending = JSON.parse(localStorage.getItem("pendingSubmission"));
+if (pending) {
+const timestamp = firebase.firestore.Timestamp.fromDate(new Date(pending.timestamp));
+db.collection("vocabularyQuizHistory").add({ 
+  title: quizTitle,
+  name: pending.name,
+  correct: pending.correct,
+  incorrect: pending.incorrect,
+  skipped: pending.skipped,
+  timeTaken: pending.timeTaken,
+  timestamp
+});
+
+
+  const lbRef = db.collection("vocabLeaderboard_" + quizId).doc(pending.name);
+  lbRef.get().then(doc => {
+    const data = doc.data();
+    const attempts = (data?.attempts || 0) + 1;
+    if (!doc.exists || data.score < pending.correct || (data.score === pending.correct && data.timeTakenInSeconds > pending.timeTakenInSeconds)) {
+      lbRef.set({
+        name: pending.name,
+        score: pending.correct,
+        timeTaken: pending.timeTaken,
+        timeTakenInSeconds: pending.timeTakenInSeconds,
+        attempts
+      });
+    } else {
+      lbRef.update({ attempts });
+    }
+    localStorage.removeItem("pendingSubmission");
+  });
+}
+
+
+  
+    const allQuizzes = {
+  A:  [
+       {
+    "question": "Which festival marks the beginning of the Telugu New Year in Andhra Pradesh?",
+    "options": ["Sankranti", "Ugadi", "Visakha Utsav", "Yellama Jatara"],
+    "answer": "Ugadi",
+    "explanation": "Ugadi marks the beginning of the Telugu New Year and is based on the Hindu lunisolar calendar."
+  },
+  {
+    "question": "Tirupati Brahmotsavam is celebrated for how many days?",
+    "options": ["5 days", "7 days", "9 days", "11 days"],
+    "answer": "9 days",
+    "explanation": "Tirupati Brahmotsavam is an annual nine-day festival dedicated to Lord Venkateswara at Tirumala."
+  },
+  {
+    "question": "The Tirupati Brahmotsavam is associated with which deity?",
+    "options": ["Lord Shiva", "Lord Krishna", "Lord Venkateswara", "Goddess Durga"],
+    "answer": "Lord Venkateswara",
+    "explanation": "Tirupati Brahmotsavam is celebrated in honor of Lord Venkateswara at the sacred hill of Tirumala."
+  },
+  {
+    "question": "During which occasion is the Durgamma Festival celebrated in Andhra Pradesh?",
+    "options": ["Ugadi", "Diwali", "Durga Pooja", "Sankranti"],
+    "answer": "Durga Pooja",
+    "explanation": "The Durgamma Festival is celebrated during the Durga Pooja festival in Andhra Pradesh."
+  },
+  {
+    "question": "In which month is the Visakha Utsav held?",
+    "options": ["January", "April", "August", "December"],
+    "answer": "December",
+    "explanation": "Visakha Utsav is a cultural festival held in December in Andhra Pradesh."
+  },
+  {
+    "question": "What is another name for Sankranti celebrated in Andhra Pradesh?",
+    "options": ["Ugadi", "Pedda Panduga", "Bihu", "Onam"],
+    "answer": "Pedda Panduga",
+    "explanation": "In Andhra Pradesh, Sankranti is also known as Pedda Panduga, a major harvest festival."
+  },
+  {
+    "question": "Which of the following festivals is traditionally a bullock-cart and folk-based celebration in Andhra Pradesh?",
+    "options": ["Yellama Jatara", "Diwali", "Baisakhi", "Navratri"],
+    "answer": "Yellama Jatara",
+    "explanation": "Yellama Jatara is a traditional folk and religious festival in Andhra Pradesh, often marked by rituals and local festivities."
+  },
+  {
+    "question": "How many times a year is Bihu celebrated in Assam?",
+    "options": ["Once", "Twice", "Thrice", "Four times"],
+    "answer": "Thrice",
+    "explanation": "Bihu is celebrated thrice in Assam — Rongali/Bohag Bihu (April), Kati/Kongali Bihu (Oct-Nov), and Bhogali/Magh Bihu (January)."
+  },
+  {
+    "question": "Which Bihu marks the beginning of Assam's New Year?",
+    "options": ["Kati Bihu", "Bhogali Bihu", "Rongali Bihu", "Magh Bihu"],
+    "answer": "Rongali Bihu",
+    "explanation": "Rongali Bihu, also known as Bohag Bihu, is celebrated in April and marks the beginning of Assam’s New Year."
+  },
+  {
+    "question": "Baikho festival is celebrated by which community in Assam?",
+    "options": ["Bodo Tribe", "Rabha Community", "Karbi Tribe", "Mishing Tribe"],
+    "answer": "Rabha Community",
+    "explanation": "Baikho is a pre-harvest festival celebrated by the Rabha community in Assam."
+  },
+  {
+    "question": "The Baishagu festival is associated with which tribal group?",
+    "options": ["Karbi Tribe", "Mishing Tribe", "Bodo Tribe", "Rabha Tribe"],
+    "answer": "Bodo Tribe",
+    "explanation": "Baishagu festival is celebrated by the Bodo tribe and is known for its music, dance, and festivity."
+  },
+  {
+    "question": "Where is the Dehing Patkai festival held annually?",
+    "options": ["Majuli", "Dispur", "Tinsukia", "Dibrugarh"],
+    "answer": "Tinsukia",
+    "explanation": "Dehing Patkai is a 3-day festival held at Lekhapani in Tinsukia district, Assam, every January."
+  },
+  {
+    "question": "Ali Ai Ligang is a harvest festival of which community?",
+    "options": ["Mishing Tribe", "Karbi Tribe", "Rabha Tribe", "Bodo Tribe"],
+    "answer": "Mishing Tribe",
+    "explanation": "Ali Ai Ligang is the harvest festival of the Mishing tribe of Assam."
+  },
+  {
+    "question": "Ambubachi Mela is held at which famous temple?",
+    "options": ["Kamakhya Temple", "Mahadev Temple", "Shiva Dham", "Tara Devi Temple"],
+    "answer": "Kamakhya Temple",
+    "explanation": "Ambubachi Mela is held at Kamakhya Temple in Assam and marks the menstruation phase of Goddess Kamakhya."
+  },
+  {
+    "question": "What is another name for the Ambubachi Mela?",
+    "options": ["Ali Mela", "Tantric Fertility Festival", "New Year Festival", "River Goddess Mela"],
+    "answer": "Tantric Fertility Festival",
+    "explanation": "Ambubachi Mela is also known as the Ameti or Tantric Fertility Festival and is rooted in tantric rituals."
+  },
+  {
+    "question": "Majuli festival is celebrated in which month?",
+    "options": ["January", "February", "August", "November"],
+    "answer": "November",
+    "explanation": "Majuli is a 3-day cultural festival celebrated in November on the world’s largest river island, Majuli."
+  },
+  {
+    "question": "Which tribe celebrates the Rongker Festival in Assam?",
+    "options": ["Karbi Tribe", "Bodo Tribe", "Rabha Tribe", "Mishing Tribe"],
+    "answer": "Karbi Tribe",
+    "explanation": "The Rongker Festival is a traditional ceremony of the Karbi Tribe of Assam."
+  },
+  {
+    "question": "What is unique about the Junbeel Mela?",
+    "options": ["It's a music festival", "It uses barter system", "It is for boat racing", "It celebrates New Year"],
+    "answer": "It uses barter system",
+    "explanation": "Junbeel Mela is notable for its ancient practice of barter trade, where people exchange goods without using money."
+  },
+    {
+    "question": "Sangken, a 3-day festival celebrated in April, is associated with which Indian state?",
+    "options": ["Sikkim", "Assam", "Arunachal Pradesh", "Nagaland"],
+    "answer": "Arunachal Pradesh",
+    "explanation": "Sangken is a 3-day water festival celebrated in April, mostly by the Theravada Buddhist communities in Arunachal Pradesh."
+  },
+  {
+    "question": "Which tribe celebrates the 10-day harvest festival Solung in Arunachal Pradesh?",
+    "options": ["Monpa Tribe", "Apatani Tribe", "Adi Tribe", "Galo Tribe"],
+    "answer": "Adi Tribe",
+    "explanation": "Solung is a 10-day harvest festival celebrated by the Adi Tribe in Arunachal Pradesh."
+  },
+  {
+    "question": "The Dree Festival is primarily celebrated by which tribe in Arunachal Pradesh?",
+    "options": ["Nyishi Tribe", "Apatani Tribe", "Nocte Tribe", "Adi Tribe"],
+    "answer": "Apatani Tribe",
+    "explanation": "The Dree Festival, held in July, is celebrated by the Apatani tribe to ensure good harvest and prosperity."
+  },
+  {
+    "question": "Chalo Loku is a festival of which tribal group in Arunachal Pradesh?",
+    "options": ["Adi Tribe", "Galo Tribe", "Nocte Tribe", "Monpa Tribe"],
+    "answer": "Nocte Tribe",
+    "explanation": "Chalo Loku is celebrated by the Nocte tribe in July/August and marks the end of harvesting season."
+  },
+  {
+    "question": "Losar, the New Year festival of Tibetan Buddhism, is celebrated by which tribe in Arunachal Pradesh?",
+    "options": ["Apatani Tribe", "Nyishi Tribe", "Monpa Tribe", "Galo Tribe"],
+    "answer": "Monpa Tribe",
+    "explanation": "Losar is celebrated by the Monpa tribe and marks the first day of the Tibetan calendar."
+  },
+  {
+    "question": "Which Arunachal Pradesh festival is celebrated by the Galo tribe in April?",
+    "options": ["Dree", "Solung", "Mopin", "Losar"],
+    "answer": "Mopin",
+    "explanation": "Mopin is celebrated in April by the Galo tribe and is associated with agricultural prosperity and community joy."
+  },
+  {
+    "question": "The Pangsau Festival commemorates which historical event?",
+    "options": ["Kargil War", "Indo-China War", "World War I", "World War II"],
+    "answer": "World War II",
+    "explanation": "Pangsau festival is held in honour of the war heroes who died in World War II."
+  },
+  {
+    "question": "Which festival was founded in 2012 and is known for its musical celebration in Arunachal Pradesh?",
+    "options": ["Solung", "Ziro Festival", "Dree Festival", "Mopin"],
+    "answer": "Ziro Festival",
+    "explanation": "The Ziro Festival, founded in 2012, is a prominent music festival held in Arunachal Pradesh featuring independent music acts."
+  },
+  {
+    "question": "Which tribe celebrates the Boori-Boot festival in Arunachal Pradesh?",
+    "options": ["Galo Tribe", "Nyishi Tribe", "Monpa Tribe", "Nocte Tribe"],
+    "answer": "Nyishi Tribe",
+    "explanation": "Boori-Boot is a post-harvest festival celebrated by the Nyishi Tribe in Arunachal Pradesh."
+  },
+     {
+    "question": "Which of the following is considered one of Asia’s largest cattle fairs and is held in Bihar?",
+    "options": ["Pushkar Fair", "Sonepur Cattle Fair", "Nagaur Cattle Fair", "Haryana Livestock Fair"],
+    "answer": "Sonepur Cattle Fair",
+    "explanation": "The Sonepur Cattle Fair, held in November in Bihar, is one of Asia’s largest cattle fairs."
+  },
+  {
+    "question": "The Sama Chakeva festival originates from which region of Bihar?",
+    "options": ["Magadh region", "Champaran region", "Mithila region", "Kosi region"],
+    "answer": "Mithila region",
+    "explanation": "Sama Chakeva is a traditional festival celebrated in the Mithila region of Bihar."
+  },
+  {
+    "question": "Which Bihar festival is celebrated to honour the Sun God and Chhathi Maiya?",
+    "options": ["Sama Chakeva", "Bihula", "Chhath Pooja", "Rajgir Festival"],
+    "answer": "Chhath Pooja",
+    "explanation": "Chhath Pooja is an important festival in Bihar that honours the Sun God and Chhathi Maiya, celebrated in the month of Kartika."
+  },
+  {
+    "question": "Which Bihar festival involves prayers to the Serpent Goddess Mansa?",
+    "options": ["Chhath Pooja", "Sama Chakeva", "Rajgir Festival", "Bihula"],
+    "answer": "Bihula",
+    "explanation": "Bihula is celebrated in August where devotees pray to the Serpent Goddess Mansa for the well-being of their families."
+  },
+  {
+    "question": "Which festival in Bihar was started in 1986 and is observed as a 3-day cultural event?",
+    "options": ["Rajgir Festival", "Bihula", "Sonepur Cattle Fair", "Sama Chakeva"],
+    "answer": "Rajgir Festival",
+    "explanation": "Rajgir Festival is a 3-day event that started in 1986, celebrated with cultural programs and performances in Bihar."
+  },
+    {
+    "question": "The Madai festival, celebrated by the Gond tribe, is associated with which Indian state?",
+    "options": ["Jharkhand", "Chhattisgarh", "Odisha", "Madhya Pradesh"],
+    "answer": "Chhattisgarh",
+    "explanation": "Madai is a traditional tribal festival celebrated by the Gond tribe in Chhattisgarh."
+  },
+  {
+    "question": "Which Chhattisgarh festival is known as the chariot festival of the tribes of Bastar and lasts for 9 days?",
+    "options": ["Madai", "Goncha", "Pola", "Hareli"],
+    "answer": "Goncha",
+    "explanation": "Goncha is a 9-day-long chariot festival celebrated by tribes in Bastar district of Chhattisgarh."
+  },
+  {
+    "question": "Pola is a thanksgiving festival in Chhattisgarh. What does it primarily honour?",
+    "options": ["Karam Tree", "Bulls and Oxen", "Rain God", "River Narmada"],
+    "answer": "Bulls and Oxen",
+    "explanation": "Pola is a thanksgiving festival in Chhattisgarh and Maharashtra to acknowledge the importance of bulls and oxen."
+  },
+  {
+    "question": "Which harvest festival in Chhattisgarh is celebrated during the Shravan month (July/August)?",
+    "options": ["Goncha", "Pola", "Hareli", "Madai"],
+    "answer": "Hareli",
+    "explanation": "Hareli is a harvest festival celebrated in the month of Shravan (July/August) in Chhattisgarh."
+  },
+  {
+    "question": "Bastar Dussehra is celebrated in Chhattisgarh to honour which deity?",
+    "options": ["Goddess Kali", "Goddess Durga", "Goddess Danteshwari", "Goddess Parvati"],
+    "answer": "Goddess Danteshwari",
+    "explanation": "Bastar Dussehra in Chhattisgarh is celebrated to honour Goddess Danteshwari, a revered tribal deity."
+  },
+  {
+    "question": "Which of the following is a harvest festival that pays tribute to the Karam tree in Chhattisgarh?",
+    "options": ["Hareli", "Karam", "Madai", "Pola"],
+    "answer": "Karam",
+    "explanation": "Karam is a harvest festival in Chhattisgarh celebrated as a tribute to the sacred Karam tree."
+  },
+  {
+    "question": "Champaran Mela is an annual fair held in which region of Chhattisgarh?",
+    "options": ["Raigarh", "Bilaspur", "Raipur", "Bastar"],
+    "answer": "Raipur",
+    "explanation": "Champaran Mela is an annual fair celebrated in the Champaran region of Raipur, Chhattisgarh."
+  },
+      {
+    "question": "Which festival in Gujarat is dedicated to Lord Vishnu and celebrated for 3 weeks in November?",
+    "options": ["Madhavpur Mela", "Shamlaji Melo", "Modhera Dance Festival", "Vautha Mela"],
+    "answer": "Shamlaji Melo",
+    "explanation": "Shamlaji Melo is celebrated in November for three weeks and is dedicated to Lord Vishnu in Gujarat."
+  },
+  {
+    "question": "Madhavpur Mela in Gujarat celebrates the marriage of which divine couple?",
+    "options": ["Shiva and Parvati", "Rama and Sita", "Krishna and Rukmini", "Vishnu and Lakshmi"],
+    "answer": "Krishna and Rukmini",
+    "explanation": "Madhavpur Mela in Gujarat celebrates the divine marriage of Lord Krishna and Rukmini in Porbandar district."
+  },
+  {
+    "question": "Where is the Modhera Dance Festival held in Gujarat?",
+    "options": ["Porbandar", "Kutch", "Mehsana", "Junagadh"],
+    "answer": "Mehsana",
+    "explanation": "Modhera Dance Festival is celebrated at the Sun Temple in Mehsana district of Gujarat."
+  },
+  {
+    "question": "Which animal trading festival is held in Gujarat?",
+    "options": ["Rann Utsav", "Bhavnath Fair", "Vautha Mela", "Dang Darbar"],
+    "answer": "Vautha Mela",
+    "explanation": "Vautha Mela is a major animal trading festival in Gujarat."
+  },
+  {
+    "question": "Rann Utsav, also known as the White Desert Festival, takes place in which region of Gujarat?",
+    "options": ["Rann of Kutch", "Gir Forest", "Mehsana", "Saputara"],
+    "answer": "Rann of Kutch",
+    "explanation": "Rann Utsav is held in the Great Rann of Kutch and continues for 3 months. It is also called the White Desert Festival."
+  },
+  {
+    "question": "What is Dang Darbar known for?",
+    "options": ["Marriage celebration", "Dance performances", "Tribal gathering before Holi", "Temple rituals"],
+    "answer": "Tribal gathering before Holi",
+    "explanation": "Dang Darbar is a tribal festival in Gujarat celebrated just before Holi."
+  },
+  {
+    "question": "Which of the following festivals is held at the Sun Temple in January?",
+    "options": ["Shamlaji Melo", "Bhavnath Fair", "Modhera Dance Festival", "Chitra Vichitra Fair"],
+    "answer": "Modhera Dance Festival",
+    "explanation": "Modhera Dance Festival is celebrated at the Modhera Sun Temple in the third week of January."
+  },
+      {
+    "question": "Which festival in Goa is also known as the Epiphany festival?",
+    "options": ["Feast of Saint Francis Xavier", "3 Kings Festival", "Carnival", "Sao Jao"],
+    "answer": "3 Kings Festival",
+    "explanation": "The 3 Kings Festival in Goa is also known as the Epiphany festival."
+  },
+  {
+    "question": "On which date is the Feast of Saint Francis Xavier celebrated?",
+    "options": ["25th December", "3rd December", "6th January", "4th Saturday of August"],
+    "answer": "3rd December",
+    "explanation": "The Feast of Saint Francis Xavier is celebrated on 3rd December, marking his death anniversary."
+  },
+  {
+    "question": "What is the name of the festival in Goa known for music and entertainment that attracts global crowds?",
+    "options": ["Sunburn", "Shigmo", "Grapes Escapade", "Chikal Kalo"],
+    "answer": "Sunburn",
+    "explanation": "Sunburn is a popular music and entertainment festival held in Goa, attracting international audiences."
+  },
+  {
+    "question": "Which Goa festival involves a celebration of wine and culinary delights?",
+    "options": ["Sao Jao", "Bonderam", "Grapes Escapade", "Carnival"],
+    "answer": "Grapes Escapade",
+    "explanation": "Grapes Escapade is a wine and food festival celebrated in Goa."
+  },
+  {
+    "question": "Which festival in Goa is held on the 4th Saturday of August at Divar Island?",
+    "options": ["Shigmo", "Sao Jao", "Bonderam", "Chikal Kalo"],
+    "answer": "Bonderam",
+    "explanation": "Bonderam is celebrated on the 4th Saturday of every August in Divar Island, Goa."
+  },
+  {
+    "question": "Shigmo or Shigmostav is celebrated in which month of the Hindu calendar?",
+    "options": ["Chaitra", "Falgun", "Ashwin", "Shravan"],
+    "answer": "Falgun",
+    "explanation": "Shigmo or Shigmostav is a spring festival celebrated in the Falgun month of the Hindu calendar."
+  },
+  {
+    "question": "Which mud festival in Goa celebrates the childhood of Lord Krishna?",
+    "options": ["Shigmo", "Chikal Kalo", "Bonderam", "Carnival"],
+    "answer": "Chikal Kalo",
+    "explanation": "Chikal Kalo is a mud festival held in Goa that celebrates Lord Krishna's childhood at the Devaki Krishna Temple in Marcel."
+  },
+     {
+    "question": "Which festival in Himachal Pradesh is also known as the Horse Festival?",
+    "options": ["Halda", "Pori", "Phulaich", "Sazo"],
+    "answer": "Pori",
+    "explanation": "Pori, also known as the Horse Festival, is celebrated in Himachal Pradesh."
+  },
+  {
+    "question": "Halda festival is celebrated in which region of Himachal Pradesh?",
+    "options": ["Chamba", "Kinnaur Valley", "Lahaul Spiti Valley", "Kullu"],
+    "answer": "Lahaul Spiti Valley",
+    "explanation": "The Halda festival is celebrated in the Lahaul Spiti Valley of Himachal Pradesh."
+  },
+  {
+    "question": "Phulaich or Ukyam Festival is celebrated as a festival of what?",
+    "options": ["Harvest", "Horses", "Flowers", "Fire"],
+    "answer": "Flowers",
+    "explanation": "Phulaich, also known as Ukyam Festival, is a festival of flowers celebrated in Himachal Pradesh."
+  },
+  {
+    "question": "Sazo Festival is celebrated in which valley of Himachal Pradesh?",
+    "options": ["Kullu Valley", "Kinnaur Valley", "Parvati Valley", "Lahaul Valley"],
+    "answer": "Kinnaur Valley",
+    "explanation": "Sazo is a traditional festival celebrated in the Kinnaur Valley of Himachal Pradesh."
+  },
+  {
+    "question": "Where is the Minjar Fair held in Himachal Pradesh?",
+    "options": ["Shimla", "Kullu", "Chamba", "Dharamshala"],
+    "answer": "Chamba",
+    "explanation": "The Minjar Fair is held in the town of Chamba in Himachal Pradesh for one week."
+  },
+     {
+    "question": "Where is the Surajkund Festival held in Haryana?",
+    "options": ["Gurugram", "Panipat", "Faridabad", "Rohtak"],
+    "answer": "Faridabad",
+    "explanation": "The Surajkund Festival is held in Faridabad, Haryana, and is known for its vibrant showcase of crafts and culture."
+  },
+  {
+    "question": "Which festival in Haryana is dedicated to Gugga Pir and involves the worship of snakes?",
+    "options": ["Gangaur", "Surajkund Festival", "Gugga Navami", "Pinjore Festival"],
+    "answer": "Gugga Navami",
+    "explanation": "Gugga Navami is a traditional festival in Haryana dedicated to Gugga Pir, who is worshipped for protection against snake bites."
+  },
+  {
+    "question": "Gangaur Festival is dedicated to which goddess?",
+    "options": ["Goddess Saraswati", "Goddess Kali", "Goddess Gauri or Parvati", "Goddess Durga"],
+    "answer": "Goddess Gauri or Parvati",
+    "explanation": "Gangaur Festival is dedicated to Goddess Gauri or Parvati and is also celebrated in Rajasthan and Madhya Pradesh."
+  },
+  {
+    "question": "Which place in Haryana is known for the historic Pinjore Gardens?",
+    "options": ["Ambala", "Pinjore", "Hisar", "Karnal"],
+    "answer": "Pinjore",
+    "explanation": "Pinjore, located in Haryana, is known for its beautiful Mughal-style gardens and hosts various cultural events."
+  }
+]
+
+
+
+
+
+};
+
+
+
+  const questions = allQuizzes.A;
+  let answers = Array(questions.length).fill(null);
+  let current = 0;
+  let startTime = Date.now();
+  let timerInterval;
+  let timePerQuestion = 30;
+  let timeLeft = timePerQuestion;
+
+  function shuffleArray(array) {
+    return array.map(value => ({ value, sort: Math.random() }))
+                .sort((a, b) => a.sort - b.sort)
+                .map(({ value }) => value);
+  }
+
+function startQuiz() {
+  // Hide only quiz info and button, not the whole screen
+  document.getElementById("quizInfoBox").classList.add("hidden");
+  document.getElementById("startContent").classList.add("hidden");
+
+document.getElementById("historyScreen").classList.add("hidden");
+  document.getElementById("leaderboard").classList.add("hidden");
+  document.getElementById("resultScreen").classList.add("hidden");
+  document.getElementById("countdownOverlay").classList.remove("hidden");
+
+  let count = 3;
+  const countdownText = document.getElementById("countdownText");
+  countdownText.innerText = count;
+
+  const countdownInterval = setInterval(() => {
+    count--;
+    if (count > 0) {
+      countdownText.innerText = count;
+      countdownText.style.animation = "none";
+      void countdownText.offsetWidth;
+      countdownText.style.animation = "countdownScale 1s ease-in-out";
+    } else {
+      countdownText.innerText = "🚀 Go!";
+      clearInterval(countdownInterval);
+      setTimeout(() => {
+        document.getElementById("countdownOverlay").classList.add("hidden");
+        document.getElementById("quizScreen").classList.remove("hidden");
+        document.getElementById("startScreen").classList.add("hidden"); // now hide full start screen
+        renderQuestion();
+      }, 700);
+    }
+  }, 1000);
+}
+
+
+  function renderQuestion() {
+    hasAnswered = false; // Reset the flag
+    clearInterval(timerInterval);
+    timeLeft = timePerQuestion;
+    document.getElementById("timer").innerText = `⏳ ${timeLeft}s`;
+    timerInterval = setInterval(() => {
+      timeLeft--;
+      document.getElementById("timer").innerText = `⏳ ${timeLeft}s`;
+      if (timeLeft <= 0) {
+        clearInterval(timerInterval);
+        skipQuestion();
+      }
+    }, 1000);
+
+    const q = questions[current];
+    const flash = document.getElementById("flashcard");
+    const shuffledOptions = shuffleArray(q.options);
+    flash.innerHTML = `<strong>Q${current + 1}: ${q.question}</strong><br>` +
+      shuffledOptions.map((opt, i) => {
+        const letter = String.fromCharCode(65 + i);
+        return `<label class="option">
+          <input type="radio" name="q${current}" value="${opt}" onclick="selectOption(&quot;${opt.replace(/"/g, '&quot;').replace(/'/g, "\\'")}&quot;)"
+
+          ${answers[current] === opt ? 'checked' : ''}> ${letter}. ${opt}
+        </label>`;
+      }).join('');
+  }
+
+function selectOption(opt) {
+  if (hasAnswered) return;  // Prevent double-trigger
+  hasAnswered = true;
+
+  answers[current] = opt;
+  clearInterval(timerInterval);
+
+  if (current < questions.length - 1) {
+    current++;
+    renderQuestion();
+  } else {
+    document.getElementById("timer").innerText = ""; // clear timer visually
+  }
+}
+
+
+function skipQuestion() {
+  if (hasAnswered) return;
+  hasAnswered = true;
+
+  answers[current] = null;
+  clearInterval(timerInterval);
+
+  if (current < questions.length - 1) {
+    current++;
+    renderQuestion();
+  } else {
+    document.getElementById("timer").innerText = "";
+  }
+}
+
+
+  function submitQuiz() {
+    clearInterval(timerInterval);
+    const timeTakenSec = Math.floor((Date.now() - startTime) / 1000);
+    const timeStr = `${Math.floor(timeTakenSec/60)}m ${timeTakenSec%60}s`;
+
+    let correct = 0, incorrect = 0, skipped = 0;
+    const finalList = document.getElementById("finalList");
+    finalList.innerHTML = "";
+
+    answers.forEach((ans, i) => {
+      const q = questions[i];
+      let resultClass = "", message = "";
+
+      if (ans === null) {
+        skipped++;
+        resultClass = "result-skipped";
+        message = `Skipped. Correct: <b>${q.answer}</b><br>${q.explanation}`;
+      } else if (ans === q.answer) {
+        correct++;
+        resultClass = "result-correct";
+        message = `Correct! <br>${q.explanation}`;
+      } else {
+        incorrect++;
+        resultClass = "result-incorrect";
+        message = `Incorrect. You chose: <b>${ans}</b><br>Correct: <b>${q.answer}</b><br>${q.explanation}`;
+      }
+
+      const div = document.createElement("div");
+      div.innerHTML = `<div class="${resultClass}"><b>Q${i+1}:</b> ${q.question}<br>${message}</div><hr>`;
+      finalList.appendChild(div);
+    });
+
+    document.getElementById("correctQ").innerText = correct;
+    document.getElementById("incorrectQ").innerText = incorrect;
+    document.getElementById("skippedQ").innerText = skipped;
+    document.getElementById("timeTaken").innerText = timeStr;
+
+    document.getElementById("quizScreen").classList.add("hidden");
+    document.getElementById("resultScreen").classList.remove("hidden");
+
+    const timestamp = firebase.firestore.Timestamp.now();
+
+
+const submissionData = {
+  title: quizTitle,
+  correct,
+  incorrect,
+  skipped,
+  timeTaken: timeStr,
+  timeTakenInSeconds: timeTakenSec,
+  timestamp: firebase.firestore.Timestamp.now(),
+  name: userName,
+  answers,
+  questions: questions.map(q => ({
+    question: q.question,
+    answer: q.answer,
+    explanation: q.explanation
+  }))
+};
+
+db.collection("vocabularyQuizHistory").add(submissionData);
+
+
+    const lbRef = db.collection("vocabLeaderboard_" + quizId).doc(userName);
+    lbRef.get().then(doc => {
+      const data = doc.data();
+      const attempts = (data?.attempts || 0) + 1;
+      if (!doc.exists || data.score < correct || (data.score === correct && data.timeTakenInSeconds > timeTakenSec)) {
+        lbRef.set({ name: userName, score: correct, timeTaken: timeStr, timeTakenInSeconds: timeTakenSec, attempts });
+      } else {
+        lbRef.update({ attempts });
+      }
+    });
+  }     // end of submitQuiz function
+
+function autoSubmitQuizBeforeUnload() {
+  const quizScreen = document.getElementById("quizScreen");
+  const startScreen = document.getElementById("startScreen");
+
+  const quizInProgress = !quizScreen.classList.contains("hidden") && startScreen.classList.contains("hidden");
+
+  if (!quizInProgress) return;
+
+  const timeTakenSec = Math.floor((Date.now() - startTime) / 1000);
+  const timeStr = `${Math.floor(timeTakenSec/60)}m ${timeTakenSec%60}s`;
+
+  let correct = 0, incorrect = 0, skipped = 0;
+
+  const submissionData = {
+    title: quizTitle,
+    timeTaken: timeStr,
+    timeTakenInSeconds: timeTakenSec,
+    timestamp: Date.now(),
+    name: userName,
+    answers: answers,
+    questions: questions
+  };
+
+  answers.forEach((ans, i) => {
+    if (ans === null) skipped++;
+    else if (ans === questions[i].answer) correct++;
+    else incorrect++;
+  });
+
+  submissionData.correct = correct;
+  submissionData.incorrect = incorrect;
+  submissionData.skipped = skipped;
+
+  localStorage.setItem("pendingSubmission", JSON.stringify(submissionData));
+}
+
+
+
+  function downloadResult() {
+    html2canvas(document.getElementById("resultContainer")).then(canvas => {
+      const link = document.createElement('a');
+      link.download = `${quizTitle}.png`;
+      link.href = canvas.toDataURL();
+      link.click();
+    });
+  }
+
+function viewHistory() {
+  document.getElementById("resultScreen").classList.add("hidden");
+  document.getElementById("historyScreen").classList.remove("hidden");
+  const list = document.getElementById("historyList");
+  list.innerHTML = "Loading...";
+
+  db.collection("vocabularyQuizHistory")
+    .where("title", "==", quizTitle)
+    .orderBy("timestamp", "desc")
+    .get().then(snapshot => {
+      list.innerHTML = "";
+      if (snapshot.empty) {
+        list.innerHTML = "No history found for this quiz.";
+        return;
+      }
+    
+    snapshot.forEach(doc => {
+  const d = doc.data();
+  const entry = document.createElement("div");
+  entry.innerHTML = `<b>${d.name || "Anonymous"}</b> — ${d.timestamp.toDate().toLocaleString()}<br>
+  ✅ Correct: ${d.correct}, ❌ Incorrect: ${d.incorrect}, ⚪ Skipped: ${d.skipped}<br>🕒 Time: ${d.timeTaken}`;
+
+  // 🔽 Highlight if this entry belongs to the current user
+  if (d.name === userName) {
+    entry.style.borderLeftColor = "#43a047"; // green
+    entry.style.background = "#e8f5e9"; // light green background
+  }
+
+  list.appendChild(entry);
+      });
+});
+}
+
+
+
+
+  function showLeaderboard() {
+    document.getElementById("resultScreen").classList.add("hidden");
+    document.getElementById("leaderboard").classList.remove("hidden");
+    const board = document.getElementById("leaderboardList");
+    board.innerHTML = "Loading...";
+
+    db.collection("vocabLeaderboard_" + quizId).get().then(snapshot => {
+      const data = [];
+      snapshot.forEach(doc => data.push(doc.data()));
+      data.sort((a, b) => b.score - a.score || a.timeTakenInSeconds - b.timeTakenInSeconds);
+      board.innerHTML = "";
+      data.forEach((u, i) => {
+        const row = document.createElement("div");
+        row.innerHTML = `#${i+1}. <b>${u.name}</b> (${u.attempts}) — ✅ ${u.score} | 🕒 ${u.timeTaken}`;
+        board.appendChild(row);
+      });
+    });
+  }
+
+  function backToResults() {
+    document.getElementById("historyScreen").classList.add("hidden");
+    document.getElementById("leaderboard").classList.add("hidden");
+    document.getElementById("resultScreen").classList.remove("hidden");
+  }
+
+  
+
+  function logoutUser() {
+  firebase.auth().signOut().then(() => {
+    localStorage.removeItem("quizUserName");
+    window.location.href = "index.html"; // or any other page you'd like
+  }).catch(error => {
+    alert("Error signing out: " + error.message);
+  });
+}
+
+
+
+
+
+
+window.addEventListener("beforeunload", function (e) {
+  const quizScreen = document.getElementById("quizScreen");
+  const startScreen = document.getElementById("startScreen");
+
+  const quizInProgress = !quizScreen.classList.contains("hidden") && startScreen.classList.contains("hidden");
+
+  if (quizInProgress) {
+    autoSubmitQuizBeforeUnload();
+    e.preventDefault();
+    e.returnValue = "⚠️ You have an active quiz. Leaving will submit it.";
+  }
+});
+
+document.getElementById("startBtn").addEventListener("click", startQuiz);
+
+
+</script>
+<div id="countdownOverlay" class="hidden" style="
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.85);
+  color: white;
+  font-size: 4rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  font-weight: bold;
+  flex-direction: column;
+">
+  <div id="countdownText">3</div>
+</div>
+
+</body>
+</html>
