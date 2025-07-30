@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Milk Tally Tracker</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-b from-green-100 to-white min-h-screen flex flex-col items-center sm:px-4 px-2 py-6">
+
+  <!-- Login Section -->
+<div id="login-section" class="w-full max-w-md bg-white p-6 rounded-2xl shadow-lg sm:mt-10 mt-4 transition-all duration-300">
+    <h2 class="text-xl font-bold mb-4 text-center">Login</h2>
+    <input id="email" type="email" placeholder="Email" class="w-full mb-3 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"/>
+    <input id="password" type="password" placeholder="Password" class="w-full mb-3 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"/>
+    <button id="login-btn"  class="bg-green-500 hover:bg-green-600 text-white font-semibold w-full py-3 rounded-lg shadow-md transition-all duration-200">Login</button>
+  </div>
+
+  <!-- Main App Section -->
+<div id="app-section" class="hidden w-full max-w-md bg-white p-6 rounded-2xl shadow-lg sm:mt-10 mt-4 transition-all duration-300">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-xl font-bold">Milk Tally</h2>
+      <button id="logout-btn" class="text-sm text-red-600 underline">Logout</button>
+    </div>
+    
+    <input id="date" type="date" class="w-full mb-3 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"/>
+    <input id="morning" type="number" placeholder="Morning Milk (L)" class="w-full mb-3 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"/>
+    <input id="evening" type="number" placeholder="Evening Milk (L)" class="w-full mb-3 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"/>
+    
+    <button id="save-btn"  class="bg-green-500 hover:bg-green-600 text-white font-semibold w-full py-3 rounded-lg shadow-md transition-all duration-200">Save</button>
+
+    <h3 class="text-lg font-semibold mb-2">History</h3>
+    <div id="history" class="max-h-60 overflow-y-auto border p-2 rounded text-sm bg-gray-50"></div>
+
+    <h3 class="text-lg font-semibold mt-4 mb-2">Summary</h3>
+    <div id="summary" class="text-sm text-gray-700"></div>
+  </div>
+<div class="mt-6 overflow-x-auto rounded-xl shadow border w-full">
+  <table class="min-w-full text-sm text-center bg-white rounded-xl overflow-hidden">
+    <thead class="bg-green-100 text-gray-800 font-semibold">
+      <tr>
+        <th class="border px-3 py-2">Date</th>
+        <th class="border px-3 py-2">Morning</th>
+        <th class="border px-3 py-2">Evening</th>
+        <th class="border px-3 py-2">Total</th>
+      </tr>
+    </thead>
+    <tbody id="milk-table-body" class="bg-white">
+      <!-- Populated by JS -->
+    </tbody>
+  </table>
+</div>
+
+
+  <!-- Firebase Module Script -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+    import { getFirestore, doc, setDoc, collection, query, where, getDocs, Timestamp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBuwuNyWXSrxFM6C-bhHQTbWkzVuJduNGc",
+      authDomain: "personaluse-39831.firebaseapp.com",
+      projectId: "personaluse-39831",
+      storageBucket: "personaluse-39831.appspot.com", // Fixed here!
+      messagingSenderId: "158674351052",
+      appId: "1:158674351052:web:df547b291fc2058ba7a369",
+      measurementId: "G-QQ99DWQ71P"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const loginSection = document.getElementById("login-section");
+    const appSection = document.getElementById("app-section");
+
+    const dateInput = document.getElementById("date");
+    dateInput.value = new Date().toISOString().slice(0, 10);
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        loginSection.classList.add("hidden");
+        appSection.classList.remove("hidden");
+        loadTally(user.uid);
+      } else {
+        loginSection.classList.remove("hidden");
+        appSection.classList.add("hidden");
+      }
+    });
+
+    document.getElementById("login-btn").onclick = async () => {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+      } catch (e) {
+        alert("Login Failed: " + e.message);
+      }
+    };
+
+    document.getElementById("logout-btn").onclick = () => {
+      signOut(auth);
+    };
+
+    document.getElementById("save-btn").onclick = async () => {
+      const uid = auth.currentUser.uid;
+      const date = dateInput.value;
+      const morning = parseFloat(document.getElementById("morning").value) || 0;
+      const evening = parseFloat(document.getElementById("evening").value) || 0;
+      const total = morning + evening;
+
+      try {
+        await setDoc(doc(db, "milkTally", `${uid}_${date}`), {
+          uid,
+          date,
+          morning,
+          evening,
+          total,
+          timestamp: Timestamp.now()
+        });
+        alert("Saved!");
+        loadTally(uid);
+      } catch (e) {
+        alert("Error saving: " + e.message);
+      }
+    };
+
+    async function loadTally(uid) {
+      const historyDiv = document.getElementById("history");
+      const summaryDiv = document.getElementById("summary");
+      historyDiv.innerHTML = "";
+      summaryDiv.innerHTML = "";
+
+      const q = query(collection(db, "milkTally"), where("uid", "==", uid));
+      const snapshot = await getDocs(q);
+
+      const now = new Date();
+      let weekly = 0, monthly = 0;
+
+      const entries = [];
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        const entryDate = new Date(data.date);
+        const daysAgo = (now - entryDate) / 86400000;
+        if (daysAgo <= 7) weekly += data.total;
+        if (daysAgo <= 30) monthly += data.total;
+        dataMap[data.date] = { morning: data.morning, evening: data.evening };
+        entries.push(data);
+
+      });
+
+      entries.sort((a, b) => b.date.localeCompare(a.date));
+      for (const e of entries) {
+        historyDiv.innerHTML += `
+          <div class="flex justify-between py-1 border-b">
+            <span>${e.date}</span>
+            <span>${e.morning} + ${e.evening} = ${e.total}L</span>
+          </div>`;
+      }
+        const tableDiv = document.getElementById("milk-table-body");
+if (tableDiv) {
+  tableDiv.innerHTML = "";
+  let totalMorning = 0, totalEvening = 0;
+
+  for (const e of entries) {
+    const morning = Number(e.morning || 0);
+    const evening = Number(e.evening || 0);
+    const total = morning + evening;
+    totalMorning += morning;
+    totalEvening += evening;
+
+    tableDiv.innerHTML += `
+      <tr>
+        <td class="border px-4 py-2">${e.date}</td>
+        <td class="border px-4 py-2">${morning}</td>
+        <td class="border px-4 py-2">${evening}</td>
+        <td class="border px-4 py-2 font-semibold">${total}</td>
+      </tr>`;
+  }
+
+  tableDiv.innerHTML += `
+    <tr class="bg-gray-100 font-bold">
+      <td class="border px-4 py-2">Total</td>
+      <td class="border px-4 py-2">${totalMorning}</td>
+      <td class="border px-4 py-2">${totalEvening}</td>
+      <td class="border px-4 py-2">${totalMorning + totalEvening}</td>
+    </tr>`;
+}
+
+      summaryDiv.innerHTML = `
+        <div>🗓️ Weekly Total: <strong>${weekly} L</strong></div>
+        <div>📆 Monthly Total: <strong>${monthly} L</strong></div>
+      `;
+    }
+     let dataMap = {};
+
+  dateInput.onchange = () => {
+    const selected = dateInput.value;
+    const entry = dataMap[selected];
+    if (entry) {
+      document.getElementById("morning").value = entry.morning;
+      document.getElementById("evening").value = entry.evening;
+    } else {
+      document.getElementById("morning").value = "";
+      document.getElementById("evening").value = "";
+    }
+  };
+  </script>
+</body>
+</html>
