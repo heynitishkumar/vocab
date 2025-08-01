@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,6 +6,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Milk Tally Tracker</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        animation: {
+          fadeIn: "fadeIn 0.5s ease-out"
+        },
+        keyframes: {
+          fadeIn: {
+            '0%': { opacity: 0 },
+            '100%': { opacity: 1 }
+          }
+        }
+      }
+    }
+  }
+</script>
+
 </head>
 <body class="bg-gradient-to-b from-green-100 to-white min-h-screen flex flex-col items-center sm:px-4 px-2 py-6">
 
@@ -17,7 +36,7 @@
   </div>
 
   <!-- Main App Section -->
-<div id="app-section" class="hidden w-full max-w-md bg-white p-6 rounded-2xl shadow-lg sm:mt-10 mt-4 transition-all duration-300">
+ <div id="app-section" class="hidden w-full max-w-md bg-white p-6 rounded-2xl shadow-lg sm:mt-10 mt-4 transition-all duration-300 animate-fadeIn">
     <div class="flex justify-between items-center mb-4">
       <h2 class="text-xl font-bold">Milk Tally</h2>
       <button id="logout-btn" class="text-sm text-red-600 underline">Logout</button>
@@ -35,6 +54,16 @@
     <h3 class="text-lg font-semibold mt-4 mb-2">Summary</h3>
     <div id="summary" class="text-sm text-gray-700"></div>
   </div>
+<div class="w-full max-w-md bg-white p-4 mt-6 rounded-xl shadow">
+  <h3 class="text-lg font-bold mb-2">Miscellaneous Expenses</h3>
+  <input id="expense-date" type="date" class="w-full mb-2 p-2 border rounded" />
+  <input id="expense-item" type="text" placeholder="Commodity Name" class="w-full mb-2 p-2 border rounded" />
+  <input id="expense-price" type="number" placeholder="Price" class="w-full mb-2 p-2 border rounded" />
+  <button id="add-expense-btn" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 rounded mb-4">Add Expense</button>
+
+  <div id="expense-list" class="text-sm text-gray-700 max-h-40 overflow-y-auto border p-2 bg-gray-50 rounded"></div>
+</div>
+
 <div class="mt-6 overflow-x-auto rounded-xl shadow border w-full">
   <table class="min-w-full text-sm text-center bg-white rounded-xl overflow-hidden">
     <thead class="bg-green-100 text-gray-800 font-semibold">
@@ -71,6 +100,7 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
+    const START_DATE = new Date("2025-07-21"); // set your desired start date
 
     const loginSection = document.getElementById("login-section");
     const appSection = document.getElementById("app-section");
@@ -82,7 +112,8 @@
       if (user) {
         loginSection.classList.add("hidden");
         appSection.classList.remove("hidden");
-        loadTally(user.uid);
+loadTally(user.uid);
+loadExpenses(user.uid); // Add this line
       } else {
         loginSection.classList.remove("hidden");
         appSection.classList.add("hidden");
@@ -126,47 +157,66 @@
       }
     };
 
-    async function loadTally(uid) {
-      const historyDiv = document.getElementById("history");
-      const summaryDiv = document.getElementById("summary");
-      historyDiv.innerHTML = "";
-      summaryDiv.innerHTML = "";
 
-      const q = query(collection(db, "milkTally"), where("uid", "==", uid));
-      const snapshot = await getDocs(q);
+let dataMap = {};
 
-      const now = new Date();
-      let weekly = 0, monthly = 0;
+async function loadTally(uid) {
+  const historyDiv = document.getElementById("history");
+  const summaryDiv = document.getElementById("summary");
+  const tableDiv = document.getElementById("milk-table-body");
 
-      const entries = [];
-      snapshot.forEach(doc => {
-        const data = doc.data();
-        const entryDate = new Date(data.date);
-        const daysAgo = (now - entryDate) / 86400000;
-        if (daysAgo <= 7) weekly += data.total;
-        if (daysAgo <= 30) monthly += data.total;
-        dataMap[data.date] = { morning: data.morning, evening: data.evening };
-        entries.push(data);
-
-      });
-
-      entries.sort((a, b) => b.date.localeCompare(a.date));
-      for (const e of entries) {
-        historyDiv.innerHTML += `
-          <div class="flex justify-between py-1 border-b">
-            <span>${e.date}</span>
-            <span>${e.morning} + ${e.evening} = ${e.total}L</span>
-          </div>`;
-      }
-        const tableDiv = document.getElementById("milk-table-body");
-if (tableDiv) {
+  historyDiv.innerHTML = "";
+  summaryDiv.innerHTML = "";
   tableDiv.innerHTML = "";
+
+  const q = query(collection(db, "milkTally"), where("uid", "==", uid));
+  const snapshot = await getDocs(q);
+
+  const now = new Date();
+  let weekly = 0, monthly = 0;
   let totalMorning = 0, totalEvening = 0;
+  let subtotalMorning = 0, subtotalEvening = 0;
+  let lastGroup = null;
+
+  const entries = [];
+  snapshot.forEach(doc => {
+    const data = doc.data();
+    const entryDate = new Date(data.date);
+    const daysAgo = (now - entryDate) / 86400000;
+
+    if (daysAgo <= 7) weekly += data.total;
+    if (daysAgo <= 30) monthly += data.total;
+
+    dataMap[data.date] = { morning: data.morning, evening: data.evening };
+    entries.push(data);
+  });
+
+  // Sort by date descending
+  entries.sort((a, b) => new Date(a.date) - new Date(b.date));
+
 
   for (const e of entries) {
+    const eDate = new Date(e.date);
+    const group = Math.floor((eDate - START_DATE) / (1000 * 60 * 60 * 24) / 10);
+
+    // Check for new group and add subtotal row
+    if (lastGroup !== null && group !== lastGroup) {
+      tableDiv.innerHTML += `
+        <tr class="bg-yellow-100 font-bold">
+          <td colspan="1" class="border px-4 py-2 text-right">10-Day Subtotal</td>
+          <td class="border px-4 py-2">${subtotalMorning}</td>
+          <td class="border px-4 py-2">${subtotalEvening}</td>
+          <td class="border px-4 py-2">${subtotalMorning + subtotalEvening}</td>
+        </tr>`;
+      subtotalMorning = subtotalEvening = 0;
+    }
+
     const morning = Number(e.morning || 0);
     const evening = Number(e.evening || 0);
     const total = morning + evening;
+
+    subtotalMorning += morning;
+    subtotalEvening += evening;
     totalMorning += morning;
     totalEvening += evening;
 
@@ -177,8 +227,26 @@ if (tableDiv) {
         <td class="border px-4 py-2">${evening}</td>
         <td class="border px-4 py-2 font-semibold">${total}</td>
       </tr>`;
+
+    historyDiv.innerHTML += `
+      <div class="flex justify-between py-1 border-b">
+        <span>${e.date}</span>
+        <span>${morning} + ${evening} = ${total}L</span>
+      </div>`;
+
+    lastGroup = group;
   }
 
+  // Final subtotal
+  tableDiv.innerHTML += `
+    <tr class="bg-yellow-100 font-bold">
+      <td colspan="1" class="border px-4 py-2 text-right">10-Day Subtotal</td>
+      <td class="border px-4 py-2">${subtotalMorning}</td>
+      <td class="border px-4 py-2">${subtotalEvening}</td>
+      <td class="border px-4 py-2">${subtotalMorning + subtotalEvening}</td>
+    </tr>`;
+
+  // Final total row
   tableDiv.innerHTML += `
     <tr class="bg-gray-100 font-bold">
       <td class="border px-4 py-2">Total</td>
@@ -186,26 +254,64 @@ if (tableDiv) {
       <td class="border px-4 py-2">${totalEvening}</td>
       <td class="border px-4 py-2">${totalMorning + totalEvening}</td>
     </tr>`;
+
+  summaryDiv.innerHTML = `
+    <div>🗓️ Weekly Total: <strong>${weekly} L</strong></div>
+    <div>📆 Monthly Total: <strong>${monthly} L</strong></div>`;
 }
 
-      summaryDiv.innerHTML = `
-        <div>🗓️ Weekly Total: <strong>${weekly} L</strong></div>
-        <div>📆 Monthly Total: <strong>${monthly} L</strong></div>
-      `;
-    }
-     let dataMap = {};
+// Handle expense submission
+document.getElementById("add-expense-btn").onclick = async () => {
+  const uid = auth.currentUser.uid;
+  const date = document.getElementById("expense-date").value;
+  const item = document.getElementById("expense-item").value;
+  const price = parseFloat(document.getElementById("expense-price").value);
 
-  dateInput.onchange = () => {
-    const selected = dateInput.value;
-    const entry = dataMap[selected];
-    if (entry) {
-      document.getElementById("morning").value = entry.morning;
-      document.getElementById("evening").value = entry.evening;
-    } else {
-      document.getElementById("morning").value = "";
-      document.getElementById("evening").value = "";
-    }
-  };
+  if (!date || !item || isNaN(price)) return alert("Fill all fields");
+
+  try {
+    await setDoc(doc(db, "miscExpenses", `${uid}_${date}_${item}`), {
+      uid,
+      date,
+      item,
+      price,
+      timestamp: Timestamp.now()
+    });
+    loadExpenses(uid);
+  } catch (e) {
+    alert("Error saving expense: " + e.message);
+  }
+};
+
+// Auto-fill entry on date change
+document.getElementById("dateInput").onchange = () => {
+  const selected = document.getElementById("dateInput").value;
+  const entry = dataMap[selected];
+  document.getElementById("morning").value = entry ? entry.morning : "";
+  document.getElementById("evening").value = entry ? entry.evening : "";
+};
+
+
+async function loadExpenses(uid) {
+  const expenseList = document.getElementById("expense-list");
+  expenseList.innerHTML = "";
+
+  const q = query(collection(db, "miscExpenses"), where("uid", "==", uid));
+  const snapshot = await getDocs(q);
+  let total = 0;
+
+  snapshot.forEach(doc => {
+    const d = doc.data();
+    total += d.price;
+    expenseList.innerHTML += `<div class="flex justify-between border-b py-1">
+      <span>${d.date} - ${d.item}</span>
+      <span>₹${d.price}</span>
+    </div>`;
+  });
+
+  expenseList.innerHTML += `<div class="font-bold mt-2">Total: ₹${total}</div>`;
+}
+
   </script>
 </body>
 </html>
