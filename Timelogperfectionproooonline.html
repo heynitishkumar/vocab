@@ -1,0 +1,2443 @@
+
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Multi Timer Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+  * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: 'Segoe UI', Roboto, sans-serif;
+      background: radial-gradient(circle at top, #121212, #1e1e1e);
+      color: #eee;
+      min-height: 100vh;
+    }
+    h1 {
+      text-align: center;
+      color: #00bcd4;
+      font-size: 2.5rem;
+      margin-bottom: 30px;
+    }
+    .session-selection {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 30px;
+    }
+    .session-selection button {
+      padding: 12px 20px;
+      font-size: 1em;
+      font-weight: 600;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(to right, #00c6ff, #0072ff);
+      color: white;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .session-selection button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+    }
+    .top-buttons {
+      display: none;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .top-buttons button {
+      margin: 8px;
+      padding: 10px 18px;
+      font-size: 0.95em;
+      border-radius: 10px;
+      border: none;
+      background: linear-gradient(to right, #673ab7, #512da8);
+      color: white;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.2s;
+    }
+    .top-buttons button:hover {
+      background: linear-gradient(to right, #4527a0, #311b92);
+      transform: scale(1.05);
+    }
+    .card-container {
+      display: none;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 30px;
+    }
+    .card {
+      background: #222;
+      border-radius: 25px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.4);
+      padding: 20px;
+      width: 320px;
+      position: relative;
+      transition: transform 0.3s ease-in-out;
+    }
+    .card:hover {
+      transform: translateY(-10px);
+    }
+    .reset-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 1.3em;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      color: #f44336;
+    }
+    .card h3 {
+      text-align: center;
+      margin: 10px 0;
+      color: #00bcd4;
+      font-size: 1.3em;
+    }
+    .circular-timer {
+      position: relative;
+      width: 120px;
+      height: 120px;
+      margin: 0 auto 10px;
+    }
+    .progress-ring {
+      width: 100%;
+      height: 100%;
+      transform: rotate(-90deg);
+    }
+    .ring-bg {
+      fill: none;
+      stroke: #444;
+      stroke-width: 8;
+    }
+    .ring-fill {
+      fill: none;
+      stroke: #00bcd4;
+      stroke-width: 8;
+      stroke-linecap: round;
+      stroke-dasharray: 283;
+      stroke-dashoffset: 283;
+      transition: stroke-dashoffset 0.3s linear;
+    }
+    .circular-timer .timer {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 1.4em;
+      font-weight: bold;
+      color: #fff;
+    }
+    .btn-group {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+    .btn-group button i {
+      margin: 0;
+    }
+    .save-btn {
+      display: block;
+      margin: 15px auto 5px;
+      background: linear-gradient(to right, #4caf50, #2e7d32);
+    }
+    button {
+      padding: 10px 16px;
+      font-size: 1em;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(to right, #2196f3, #1976d2);
+      color: white;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.2s;
+    }
+    button:hover {
+      background: linear-gradient(to right, #1565c0, #0d47a1);
+      transform: translateY(-2px);
+    }
+    .records {
+      background: rgba(255, 255, 255, 0.05);
+      border-left: 4px solid #00bcd4;
+      padding: 10px 12px;
+      margin-top: 10px;
+      font-size: 0.85em;
+      border-radius: 10px;
+      max-height: 150px;
+      overflow-y: auto;
+      color: #ccc;
+    }
+    .totals {
+      font-weight: bold;
+      margin-top: 10px;
+      font-size: 0.95em;
+      color: #8bc34a;
+      text-align: center;
+    }
+    @media screen and (max-width: 768px) {
+      .card-container {
+        flex-direction: column;
+        align-items: center;
+      }
+      .card {
+        width: 90%;
+      }
+    }
+
+  .card.fullscreen {
+  position: fixed !important;
+  top: 0;
+  left: 0;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: 9999;
+  padding: 60px 20px;
+  background: radial-gradient(circle at center, #0d0d0d, #1b1b1b);
+  border-radius: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+/* Hide extra content in fullscreen */
+.card.fullscreen .reset-btn,
+.card.fullscreen .extras,
+.card.fullscreen canvas,
+.card.fullscreen .save-btn,
+.card.fullscreen .records,
+.card.fullscreen .totals {
+  display: none !important;
+}
+
+.card.fullscreen h3 {
+  font-size: 2.5rem;
+  margin-bottom: 40px;
+  color: #00e5ff;
+}
+
+/* Make the timer much larger */
+.card.fullscreen .circular-timer {
+  width: 280px;
+  height: 280px;
+  margin-bottom: 30px;
+}
+
+.card.fullscreen .timer {
+  font-size: 3em;
+  font-weight: bold;
+  color: #fff;
+}
+
+/* Enlarge the control buttons */
+.card.fullscreen .btn-group {
+  gap: 20px;
+  margin-top: 30px;
+}
+.card.fullscreen .btn-group button {
+  font-size: 1.8em;
+  padding: 16px 22px;
+  border-radius: 50%;
+  width: 70px;
+  height: 70px;
+}
+ 
+.card.fullscreen canvas {
+  display: none !important;
+  height: 0 !important;
+  width: 0 !important;
+}
+
+.record-card {
+  display: flex;
+  align-items: flex-start;
+  background: #2a2a2a;
+  border-left: 4px solid #00bcd4;
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+  animation: fadeIn 0.4s ease-in-out;
+  box-shadow: 0 2px 8px rgba(0, 188, 212, 0.15);
+}
+
+.record-icon {
+  font-size: 1.5em;
+  margin-right: 10px;
+  margin-top: 2px;
+}
+
+.record-details {
+  flex-grow: 1;
+}
+
+.record-time {
+  font-weight: bold;
+  color: #8bc34a;
+  font-size: 1.1em;
+}
+
+.record-date {
+  font-size: 0.85em;
+  color: #aaa;
+}
+
+
+
+/* Optional: Stylish custom scrollbar for WebKit browsers */
+.record-note::-webkit-scrollbar {
+  width: 6px;
+}
+.record-note::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 3px;
+}
+.record-note::-webkit-scrollbar-track {
+  background: #333;
+}
+
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.records {
+  background: rgba(255, 255, 255, 0.05);
+  border-left: 4px solid #00bcd4;
+  padding: 10px 12px;
+  margin-top: 10px;
+  font-size: 0.85em;
+  border-radius: 10px;
+  max-height: 150px;
+  overflow-y: auto;
+  overflow-x: hidden; /* 💡 prevents side-scroll */
+  color: #ccc;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Individual card inside */
+.record-card {
+  display: block; /* ⬅️ was: flex */
+  background: #2a2a2a;
+  border-left: 3px solid #00bcd4;
+  border-radius: 10px;
+  padding: 8px 10px;
+  box-shadow: 0 2px 5px rgba(0, 188, 212, 0.15);
+}
+
+
+.record-icon {
+  font-size: 1.3em;
+  margin-right: 10px;
+  margin-bottom: 4px;
+}
+
+.record-details {
+  margin-left: 0; /* since not using flex now */
+}
+
+.record-time {
+  font-weight: bold;
+  color: #8bc34a;
+  font-size: 1.1em;
+  display: block;
+}
+
+.record-date {
+  font-size: 0.85em;
+  color: #aaa;
+  display: block;
+}
+
+.record-note {
+  margin-top: 8px;
+  color: #ffc107;
+  font-size: 0.95em;
+  padding-left: 16px;
+}
+.record-note ul {
+  margin: 4px 0 0 0;
+  padding-left: 16px;
+}
+
+.record-note::-webkit-scrollbar {
+  width: 6px;
+}
+.record-note::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 3px;
+}
+
+.floating-log-panel {
+  position: fixed;
+  top: 100px;
+  right: 30px;
+  width: 300px;
+  max-height: 80vh;
+  overflow-y: auto;
+  background: #1f1f1f;
+  color: #eee;
+  border-radius: 15px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+  padding: 16px 16px 20px;
+  z-index: 999;
+  border-left: 4px solid #00bcd4;
+}
+
+.floating-log-panel h3 {
+  margin-top: 0;
+  color: #00bcd4;
+  text-align: center;
+  font-size: 1.2em;
+}
+
+.close-floating-log {
+  position: absolute;
+  top: 6px;
+  right: 10px;
+  background: #f44336;
+  color: white;
+  border: none;
+  padding: 4px 8px;
+  font-size: 1em;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.floating-log-content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 0.9em;
+}
+
+.floating-log-content .record-card {
+  background: #2a2a2a;
+  border-left: 3px solid #00bcd4;
+  border-radius: 10px;
+  padding: 8px 10px;
+  box-shadow: 0 2px 5px rgba(0, 188, 212, 0.15);
+}
+
+.floating-log-content .record-note {
+  margin-top: 4px;
+  color: #ffc107;
+  font-size: 0.9em;
+  padding-right: 5px;
+}
+
+.heatmap-wrapper::-webkit-scrollbar {
+  height: 6px;
+}
+.heatmap-wrapper::-webkit-scrollbar-thumb {
+  background: #555;
+  border-radius: 3px;
+}
+
+  </style>
+<style>
+ #myRemind-widget {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 320px;
+  background: rgba(255, 251, 234, 0.95); /* semi-transparent yellowish */
+  backdrop-filter: blur(8px);
+  border: 1px solid #facc15;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  z-index: 9999;
+  padding: 16px;
+  cursor: move;
+  transition: all 0.3s ease;
+  font-family: "Segoe UI", sans-serif;
+}
+
+#myRemind-header {
+  margin-bottom: 10px;
+  text-align: center;
+  font-size: 20px;
+  font-weight: bold;
+  color: #92400e;
+  cursor: grab;
+  user-select: none;
+}
+
+#myRemind-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+
+#myRemind-input {
+  flex-grow: 1;
+  padding: 10px;
+  font-size: 14px;
+  border: 2px solid #facc15;
+  border-radius: 10px;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+#myRemind-input:focus {
+  border-color: #f59e0b;
+  box-shadow: 0 0 5px #facc15;
+}
+
+#myRemind-add-btn {
+  background: linear-gradient(to right, #10b981, #34d399);
+  color: white;
+  padding: 10px 12px;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+#myRemind-add-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+}
+
+#myRemind-list {
+  max-height: 250px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-right: 4px;
+}
+
+/* Task item */
+.myRemind-task {
+  background: #fffde7;
+  padding: 12px 32px;
+  border-left: 5px solid #fbbf24;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 500;
+  color: #1f2937;
+  position: relative;
+  transition: background 0.3s ease;
+}
+.myRemind-task:hover {
+  background: #fef9c3;
+}
+
+.myRemind-task.done {
+  text-decoration: line-through;
+  color: #9ca3af;
+  background: #f3f4f6;
+}
+
+/* Action buttons */
+.myRemind-del-btn,
+.myRemind-done-btn {
+  position: absolute;
+  top: 8px;
+  width: 22px;
+  height: 22px;
+  font-size: 12px;
+  border: none;
+  border-radius: 50%;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.myRemind-del-btn {
+  right: 8px;
+  background: #ef4444;
+  transition: background 0.2s;
+}
+.myRemind-del-btn:hover {
+  background: #dc2626;
+}
+.myRemind-done-btn {
+  left: 8px;
+  background: #4ade80;
+  transition: background 0.2s;
+}
+.myRemind-done-btn:hover {
+  background: #22c55e;
+}
+
+/* Close button */
+#myRemind-close-btn {
+  position: absolute;
+  top: 8px;
+  right: 32px;
+  background: transparent;
+  color: #555;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+#myRemind-close-btn:hover {
+  color: #000;
+}
+
+/* Minimized pea button */
+#myRemind-mini {
+  display: none;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: #facc15;
+  color: #78350f;
+  font-weight: bold;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+  z-index: 9999;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+#myRemind-mini:hover {
+  transform: scale(1.1);
+}
+
+#myRemind-time {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  background-color: #f9f9f9;
+  color: #333;
+  box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.1);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+#myRemind-time:focus {
+  border-color: #5b9bd5;
+  outline: none;
+  box-shadow: 0 0 5px rgba(91, 155, 213, 0.5);
+}
+
+#myRemind-time::-webkit-calendar-picker-indicator {
+  filter: invert(0.5); /* Optional: stylize the calendar icon */
+}
+
+/* 🔥 Neon Loader */
+#neon-loader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 18px;
+  z-index: 999999;
+  animation: fadeOut 1.4s ease-out forwards;
+  animation-delay: 1.4s;
+}
+
+#neon-loader i {
+  font-size: 60px;
+  color: #00e5ff;
+  animation: neonGlow 1.5s infinite alternate ease-in-out;
+}
+
+#neon-loader p {
+  font-size: 1.4rem;
+  color: #00e5ff;
+  font-weight: 600;
+  letter-spacing: 1px;
+  animation: neonGlow 1.5s infinite alternate ease-in-out;
+}
+
+@keyframes neonGlow {
+  0% {
+    text-shadow: 0 0 5px #00e5ff, 0 0 10px #00e5ff;
+    opacity: 0.6;
+  }
+  100% {
+    text-shadow: 0 0 15px #00e5ff, 0 0 30px #00e5ff;
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+</style>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+</head>
+<body>
+<div id="neon-loader">
+  <i class="fa-solid fa-rocket"></i>
+  <p>Launching Your Focus Mode…</p>
+</div>
+
+<h1>📋 Multi-Subject Timer Dashboard</h1>
+<div style="text-align: center; margin-bottom: 20px;">
+
+<button onclick="openPrintableReportTab()" style="padding: 10px 18px; font-size: 1em; border-radius: 10px; border: none; background: linear-gradient(to right, #03a9f4, #0288d1); color: white; cursor: pointer;">
+  🗂️ Open Full Report in New Tab
+</button>
+<button onclick="showChronologicalLogs()">🧾 Your Logs</button>
+
+  <button onclick="toggleLogBox()" style="padding: 10px 18px; font-size: 1em; border-radius: 10px; border: none; background: linear-gradient(to right, #ff9800, #f44336); color: white; cursor: pointer;">📚 See Past Logs</button>
+     
+<button onclick="openConsistencyModal()">📊 Consistency Tracker</button>
+
+  <select id="subjectFilter" onchange="loadCombinedLogs()" style="margin-left: 10px; padding: 8px; border-radius: 8px; font-size: 0.95em;">
+    <option value="all">🔍 All Subjects</option>
+    <option value="ArtandCulture">Art and Culture</option>
+    <option value="CurrentAffairs">Current Affairs</option>
+    <option value="Ecology">Ecology</option>
+
+    <option value="Economics">Economics</option>
+    <option value="English">English</option>
+    <option value="Geography">Geography</option>
+    <option value="GS">General Knowledge</option>
+
+    <option value="History">History</option>
+    <option value="Math">Math</option>
+    <option value="Mock">Mock</option>
+    <option value="NeonRainbow">The Neon Rainbow</option>
+    <option value="NewsPaper">News Paper</option>
+
+    <option value="Polity">Polity</option>
+    
+    <option value="Reasoning">Reasoning</option>
+    <option value="Science">Science</option>
+
+  </select>
+
+  <div style="display: inline-block; position: relative;">
+    <button onclick="toggleSummaryDropdown()" style="padding: 10px 18px; font-size: 1em; border-radius: 10px; border: none; background: linear-gradient(to right, #4caf50, #2e7d32); color: white; cursor: pointer;">
+      🧭 View Summary ▼
+    </button>
+    <div id="summaryDropdown" style="display:none; position:absolute; left:0; top:110%; background:#1f1f1f; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.3); z-index:999; padding:10px;">
+      <button onclick="setSummaryMode('daily')" style="display:block; width:100%; margin-bottom:6px;">📅 Daily Summary</button>
+      <button onclick="setSummaryMode('weekly')" style="display:block; width:100%; margin-bottom:6px;">📆 Weekly Summary</button>
+      <button onclick="setSummaryMode('monthly')" style="display:block; width:100%; margin-bottom:6px;">🧭 Monthly Summary</button>
+      <button onclick="setSummaryMode('yearly')" style="display:block; width:100%; margin-bottom:6px;">📅 Yearly Summary</button>
+      <button onclick="setSummaryMode('custom')" style="display:block; width:100%;">🛠️ Custom Range</button>
+    </div>
+  </div>
+</div>
+
+
+<div id="monthlyCircularWrapper" style="display:none; margin: 20px auto; max-width: 800px; background:#111; border-radius:12px; padding:20px; position:relative;">
+  <button onclick="hideMonthlyCircular()" style="position:absolute; top:10px; right:10px; background:#f44336; color:#fff; border:none; border-radius:6px; padding:4px 8px; cursor:pointer;">✖</button>
+  
+<div style="text-align:center; margin-bottom:10px;">
+  <button onclick="navigateSummary(-1)" style="margin-right:10px;">⬅️</button>
+  <span id="monthlySummaryLabel" style="color:#00e5ff; font-size:1.2em;">🧭 Monthly Time Breakdown</span>
+  <button onclick="navigateSummary(1)" style="margin-left:10px;">➡️</button>
+</div>
+  <canvas id="monthlyDonutChart" width="300" height="300" style="margin:auto;"></canvas>
+  <div id="monthlyTotalCenter" style="text-align:center; margin-top:10px; font-size:1.2em; color:#8bc34a;"></div>
+
+  <div id="monthlySubjectDetails" style="margin-top:20px; display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:15px;"></div>
+</div>
+
+<div id="logBox" style="display:none; background:#333; color:#fff; border-radius:12px; padding:20px; max-width:700px; margin:0 auto 20px; text-align:left;">
+  <div style="text-align: center; margin-bottom: 10px;">
+    <button onclick="navigateLogs(-1)">⬅️</button>
+    <strong id="logDateLabel"></strong>
+    <button onclick="navigateLogs(1)">➡️</button>
+  </div>
+
+
+  <div id="logContent"></div>
+</div>
+
+<div id="sessionPrompt">
+  <h2 style="text-align: center; color: #1976d2;">Which session do you want to start?</h2>
+  <div class="session-selection" id="sessionButtons"></div>
+</div>
+<div class="top-buttons">
+  <button onclick="showGlobalTodaysTotal()"><i class="fa-solid fa-calendar-day"></i> Today’s Overall Total</button>
+  <button onclick="showGlobalMonthlyTotal()"><i class="fa-solid fa-calendar-week"></i> Monthly Overall Total</button>
+ 
+ <button onclick="goBackToSelection()"><i class="fa-solid fa-arrow-left"></i> Back</button>
+ 
+
+ <div class="totals" id="globalTotalDisplay"></div>
+  <div id="globalChartWrapper" style="display:none; margin: 20px auto; max-width: 90%; background:#111; border-radius:10px; padding:10px; position:relative;">
+  <button onclick="hideGlobalChart()" style="position:absolute; top:8px; right:8px; background:#f44336; color:#fff; border:none; border-radius:6px; padding:4px 8px; cursor:pointer;">✖</button>
+  <canvas id="globalChart" width="600" height="250"></canvas>
+</div>
+
+
+</div>
+<div id="floatingLogPanel" class="floating-log-panel" style="display:none;">
+  <button onclick="hideFloatingLog()" class="close-floating-log">✖</button>
+  <h3>📜 Past Records</h3>
+  <div id="floatingLogContent" class="floating-log-content">Loading...</div>
+</div>
+
+<div class="card-container" id="cardContainer"></div>
+
+<script>
+let dayOffset = 0;
+let monthOffset = 0;
+let weekOffset = 0;
+let yearOffset = 0;
+let summaryMode = 'monthly';
+  
+const subjects = [
+  "Art and Culture", "Current Affairs", "Ecology", "Economics", "English", "Geography", "GS", "History", "Math", "Mock",  
+   "NeonRainbow", "News Paper", "Polity", "Reasoning", "Science"
+];
+
+const state = {};
+
+function msToTime(ms) {
+  const hrs = String(Math.floor(ms / 3600000)).padStart(2, '0');
+  const mins = String(Math.floor((ms % 3600000) / 60000)).padStart(2, '0');
+  const secs = String(Math.floor((ms % 60000) / 1000)).padStart(2, '0');
+  return `${hrs}:${mins}:${secs}`;
+}
+
+function createCard(subject) {
+  const safeId = subject.replace(/\s+/g, "");
+  const localKey = `local_timer_dashboard__${safeId}`;
+  state[safeId] = { startTime: null, elapsed: 0, running: false, interval: null, pauseNote: [] };
+
+  const card = document.createElement("div");
+  card.className = "card";
+  card.id = `card-${safeId}`;
+  card.innerHTML = `
+    <button class="reset-btn" onclick="resetTimer('${safeId}')" title="Reset">🔄</button>
+    <h3>${subject}</h3>
+    <div class="circular-timer">
+  <svg viewBox="0 0 100 100" class="progress-ring">
+    <circle class="ring-bg" cx="50" cy="50" r="45" />
+    <circle class="ring-fill" id="progress-${safeId}" cx="50" cy="50" r="45" />
+  </svg>
+  <div class="timer" id="display-${safeId}">00:00:00</div>
+</div>
+
+    <div class="btn-group">
+      <button onclick="startTimer('${safeId}')" title="Start"><i class="fas fa-play"></i></button>
+      <button onclick="pauseTimer('${safeId}')" title="Pause"><i class="fas fa-pause"></i></button>
+      <button onclick="resumeTimer('${safeId}')"  title="Resume"><i class="fas fa-play-circle"></i></button>
+    </div>
+<button class="save-btn" onclick="saveProgress('${safeId}')" title="Save Progress"><i class="fas fa-save"></i></button>
+   <div class="extras extras-${safeId}">
+  
+  <button onclick="viewRecords('${safeId}')">📜 View Past Records</button>
+  <div class="records" id="recordList-${safeId}"></div>
+  <div class="totals" id="todayTotal-${safeId}"></div>
+  <div class="totals" id="cardTotal-${safeId}"></div>
+  <button onclick="showTodaysTotal('${safeId}')">📆 Today’s Total</button>
+  <button onclick="showCardTotal('${safeId}')">📊 Total Progress</button>
+  <button onclick="exportHistory('${safeId}')">📥 Export</button>
+<button onclick="document.getElementById('import-${safeId}').click()" >📤 Import</button>
+  
+<input type="file" id="import-${safeId}" accept=".json" onchange="importHistory(event, '${safeId}')" style="display: none;" />
+
+  <button onclick="printHistory('${safeId}')">🖨️ Print</button>
+
+</div>
+<canvas id="chart-${safeId}" width="300" height="120" style="margin-top: 15px;"></canvas>
+
+
+ 
+ `;
+  document.getElementById("cardContainer").appendChild(card);
+  updateDisplay(safeId);
+  renderChart(safeId);
+  renderConsistencyHeatmap(safeId, `heatmap-${safeId}`);
+
+}
+
+function resetTimer(safeId) {
+  clearInterval(state[safeId].interval);
+  state[safeId].elapsed = 0;
+  state[safeId].running = false;
+  state[safeId].startTime = null;
+  updateDisplay(safeId);
+}
+
+
+function hideGlobalChart() {
+  document.getElementById("globalChartWrapper").style.display = "none";
+}
+
+
+function goBackToSelection() {
+  document.getElementById("sessionPrompt").style.display = "block";
+  document.querySelector(".top-buttons").style.display = "none";
+  document.getElementById("cardContainer").style.display = "none";
+  document.getElementById("cardContainer").innerHTML = "";
+}
+
+function saveProgress(safeId) {
+  const now = Date.now();
+  let totalElapsed = state[safeId].elapsed;
+
+  if (state[safeId].running) {
+    totalElapsed += now - state[safeId].startTime;
+    clearInterval(state[safeId].interval);
+    state[safeId].running = false;
+    state[safeId].startTime = null;
+  }
+
+  // 🚫 Prevent saving zero-time events
+  if (totalElapsed === 0) {
+    alert("⛔ No time recorded. Timer was never started or elapsed time is zero.");
+    return;
+  }
+
+
+   // Exit fullscreen on save
+  document.getElementById(`card-${safeId}`).classList.remove("fullscreen");
+
+
+  const saveNote = prompt("Add a final note for this session:") || "";
+  const combinedNote = [...state[safeId].pauseNote, saveNote].filter(n => n).join(" | ");
+  const localKey = `local_timer_dashboard__${safeId}`;
+  document.querySelector(`#card-${safeId} .extras-${safeId}`).style.display = 'block';
+
+  const record = {
+    timestamp: new Date().toISOString(),
+    elapsedMs: totalElapsed,
+    readableTime: msToTime(totalElapsed),
+    note: combinedNote.trim()
+  };
+
+  const records = JSON.parse(localStorage.getItem(localKey) || "[]");
+  records.push(record);
+  localStorage.setItem(localKey, JSON.stringify(records));
+  alert("Progress saved!");
+  triggerConfetti();
+
+  state[safeId].elapsed = 0;
+  state[safeId].pauseNote = [];
+  document.querySelector(`#card-${safeId} .records`).style.display = 'block';
+  document.querySelector(`#todayTotal-${safeId}`).style.display = 'block';
+  document.querySelector(`#cardTotal-${safeId}`).style.display = 'block';
+  updateDisplay(safeId);
+  renderChart(safeId);
+
+}
+
+
+function pauseTimer(safeId) {
+  if (state[safeId].running) {
+    state[safeId].elapsed += Date.now() - state[safeId].startTime;
+    clearInterval(state[safeId].interval);
+    state[safeId].running = false;
+    const note = prompt("Paused. Add a note if you like:");
+    if (note) state[safeId].pauseNote.push(note.trim());
+
+   // Remove fullscreen class
+    document.getElementById(`card-${safeId}`).classList.remove("fullscreen");
+
+  }
+}
+
+function startTimer(safeId) {
+  if (!state[safeId].running) {
+    document.querySelector(`#card-${safeId} .records`).style.display = 'none';
+    document.querySelector(`#card-${safeId} .extras-${safeId}`).style.display = 'none';
+
+    document.querySelector(`#todayTotal-${safeId}`).style.display = 'none';
+    document.querySelector(`#cardTotal-${safeId}`).style.display = 'none';
+
+document.getElementById(`card-${safeId}`).classList.add("fullscreen");
+ // Add fullscreen class
+
+    state[safeId].startTime = Date.now();
+    state[safeId].running = true;
+    state[safeId].interval = setInterval(() => updateDisplay(safeId), 1000);
+  }
+}
+
+function resumeTimer(safeId) {
+  if (!state[safeId].running) {
+    state[safeId].startTime = Date.now();
+    state[safeId].running = true;
+    state[safeId].interval = setInterval(() => updateDisplay(safeId), 1000);
+
+   document.getElementById(`card-${safeId}`).classList.add("fullscreen");
+ // Add fullscreen class
+
+  }
+}
+
+function updateDisplay(safeId) {
+  const total = state[safeId].elapsed + (state[safeId].running ? Date.now() - state[safeId].startTime : 0);
+  document.getElementById(`display-${safeId}`).textContent = msToTime(total);
+
+   // Update the progress ring (1 hour = full circle)
+  const circle = document.getElementById(`progress-${safeId}`);
+  const oneHour = 3600000; // ms
+  const percent = (total % oneHour) / oneHour;
+  const offset = 283 - (283 * percent);
+  if (circle) circle.style.strokeDashoffset = offset;
+}
+
+function viewRecords(safeId) {
+  const records = JSON.parse(localStorage.getItem(`local_timer_dashboard__${safeId}`) || "[]").reverse();
+  const wrapper = document.getElementById("floatingLogPanel");
+  const content = document.getElementById("floatingLogContent");
+
+  if (records.length === 0) {
+    content.innerHTML = "<p style='color:#aaa;'>No records found.</p>";
+  } else {
+    content.innerHTML = records.slice(0, 5).map(r => `
+  <div class="record-card">
+    <div style="color:#8bc34a; font-weight:bold;">🕒 ${r.readableTime}</div>
+    <div style="color:#ccc;">${new Date(r.timestamp).toLocaleString()}</div>
+    ${r.note ? `
+      <div class="record-note">
+        <strong>📝 Notes:</strong>
+        <ul>${r.note.split('|').map(n => `<li>${n.trim()}</li>`).join('')}</ul>
+      </div>` : ''}
+  </div>
+`).join('');
+
+  }
+
+  wrapper.style.display = "block";
+}
+
+function hideFloatingLog() {
+  document.getElementById("floatingLogPanel").style.display = "none";
+}
+
+
+function showTodaysTotal(safeId) {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const records = JSON.parse(localStorage.getItem(`local_timer_dashboard__${safeId}`) || "[]");
+  const totalMs = records.filter(r => new Date(r.timestamp) >= today).reduce((sum, r) => sum + r.elapsedMs, 0);
+  document.getElementById(`todayTotal-${safeId}`).textContent = `Today’s Total: ⏱️ ${msToTime(totalMs)}`;
+}
+
+function showCardTotal(safeId) {
+  const records = JSON.parse(localStorage.getItem(`local_timer_dashboard__${safeId}`) || "[]");
+  const totalMs = records.reduce((sum, r) => sum + r.elapsedMs, 0);
+  document.getElementById(`cardTotal-${safeId}`).textContent = `Total Progress: 📊 ${msToTime(totalMs)}`;
+}
+
+function showGlobalTodaysTotal() {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  let totalMs = 0;
+
+  const globalDailyTotals = {};
+
+  subjects.forEach(subj => {
+    const safeId = subj.replace(/\s+/g, "");
+    const records = JSON.parse(localStorage.getItem(`local_timer_dashboard__${safeId}`) || "[]");
+
+    records.forEach(r => {
+      const date = new Date(r.timestamp).toLocaleDateString("en-CA"); // ✅ Local date
+      if (!globalDailyTotals[date]) globalDailyTotals[date] = 0;
+      globalDailyTotals[date] += r.elapsedMs;
+
+      const recTime = new Date(r.timestamp);
+      if (recTime >= today) {
+        totalMs += r.elapsedMs;
+      }
+    });
+  });
+
+  document.getElementById("globalTotalDisplay").textContent = `📆 Today’s Total (All Cards): ${msToTime(totalMs)}`;
+  renderGlobalChart(globalDailyTotals);
+
+ document.getElementById("globalChartWrapper").style.display = "block";
+
+}
+
+
+function showGlobalMonthlyTotal() {
+  const startOfMonth = new Date();
+  startOfMonth.setDate(1);
+  startOfMonth.setHours(0, 0, 0, 0);
+  let totalMs = 0;
+  subjects.forEach(subj => {
+    const safeId = subj.replace(/\s+/g, "");
+    const records = JSON.parse(localStorage.getItem(`local_timer_dashboard__${safeId}`) || "[]");
+    totalMs += records.filter(r => new Date(r.timestamp) >= startOfMonth).reduce((sum, r) => sum + r.elapsedMs, 0);
+  });
+  document.getElementById("globalTotalDisplay").textContent = `📅 Monthly Total (All Cards): ${msToTime(totalMs)}`;
+}
+
+subjects.forEach(subj => {
+  const btn = document.createElement("button");
+  btn.textContent = subj;
+  btn.onclick = () => {
+    document.getElementById("sessionPrompt").style.display = "none";
+    document.querySelector(".top-buttons").style.display = "block";
+    document.getElementById("cardContainer").style.display = "flex";
+    document.getElementById("cardContainer").innerHTML = "";
+    createCard(subj);
+  };
+  document.getElementById("sessionButtons").appendChild(btn);
+});
+
+function triggerConfetti() {
+  confetti({
+    particleCount: 100,
+    spread: 70,
+    origin: { y: 0.6 },
+  });
+}
+
+function exportHistory(safeId) {
+  const records = JSON.parse(localStorage.getItem(`local_timer_dashboard__${safeId}`) || "[]");
+  const blob = new Blob([JSON.stringify(records, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${safeId}_history.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+
+function importHistory(event, safeId) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (!Array.isArray(data)) throw new Error("Invalid data format");
+
+      // Save the data
+      localStorage.setItem(`local_timer_dashboard__${safeId}`, JSON.stringify(data));
+      alert("History imported successfully.");
+
+      // ✅ Update UI
+      viewRecords(safeId);
+      showTodaysTotal(safeId);   // ⬅️ Add this
+      showCardTotal(safeId);     // ⬅️ Add this
+      renderChart(safeId);       // ⬅️ (optional) Refresh the chart too
+
+    } catch (err) {
+      alert("Import failed: " + err.message);
+    }
+  };
+  reader.readAsText(file);
+}
+
+function printHistory(safeId) {
+  const records = JSON.parse(localStorage.getItem(`local_timer_dashboard__${safeId}`) || "[]");
+  const html = records.map(r =>
+    `<p><strong>${r.readableTime}</strong> – ${new Date(r.timestamp).toLocaleString()}<br>${r.note ? '📝 ' + r.note : ''}</p>`
+  ).join('');
+  const win = window.open('', '', 'width=800,height=600');
+  win.document.write(`<html><head><title>${safeId} Report</title></head><body><h2>${safeId} - Timer History</h2>${html}</body></html>`);
+  win.document.close();
+  win.print();
+}
+
+function navigateSummary(direction) {
+  if (summaryMode === 'monthly') {
+    monthOffset += direction;
+    showMonthlyCircularSummary();
+  } else if (summaryMode === 'weekly') {
+    weekOffset += direction;
+    showWeeklyCircularSummary();
+  } else if (summaryMode === 'yearly') {
+    yearOffset += direction;
+    showYearlyCircularSummary();
+  } else if (summaryMode === 'daily') {
+    dayOffset += direction;
+    showDailyCircularSummary();
+  } else {
+    alert("Navigation is only supported for daily, weekly, monthly, and yearly.");
+  }
+}
+
+function toggleSummaryDropdown() {
+  const dropdown = document.getElementById("summaryDropdown");
+  dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+}
+
+function setSummaryMode(mode) {
+  summaryMode = mode;
+  document.getElementById("summaryDropdown").style.display = "none";
+  document.querySelector(".top-buttons").style.display = "block";
+  document.getElementById("cardContainer").style.display = "none"; // optional
+
+  if (mode === "monthly") {
+    monthOffset = 0;
+    showMonthlyCircularSummary();
+  } else if (mode === "weekly") {
+    weekOffset = 0;
+    showWeeklyCircularSummary();
+  } else if (mode === "yearly") {
+    yearOffset = 0;
+    showYearlyCircularSummary();
+  } else if (mode === "daily") {
+    dayOffset = 0;
+    showDailyCircularSummary(); // 👈 this is new
+  } else if (mode === "custom") {
+    promptCustomRange();
+  }
+}
+
+function showDailyCircularSummary() {
+  const targetDate = new Date();
+  targetDate.setDate(targetDate.getDate() + dayOffset);
+  targetDate.setHours(0, 0, 0, 0);
+
+  const nextDay = new Date(targetDate);
+  nextDay.setDate(nextDay.getDate() + 1);
+
+  const labelText = targetDate.toDateString();
+  document.getElementById("monthlySummaryLabel").innerText = `📅 Daily Summary: ${labelText}`;
+
+  renderCircularSummary(targetDate, nextDay);
+}
+
+
+function showWeeklyCircularSummary() {
+  const now = new Date();
+  const start = new Date(now);
+  start.setDate(start.getDate() - (start.getDay() || 7) + (weekOffset * 7));
+  start.setHours(0, 0, 0, 0);
+
+  const end = new Date(start);
+  end.setDate(start.getDate() + 6);
+  end.setHours(23, 59, 59, 999);
+
+  const labelText = `${start.toDateString()} – ${end.toDateString()}`;
+  document.getElementById("monthlySummaryLabel").innerText = `📆 Weekly Summary: ${labelText}`;
+
+  renderCircularSummary(start, end);
+}
+
+function showMonthlyCircularSummary() {
+  const now = new Date();
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth() + monthOffset, 1);
+  const endOfMonth = new Date(now.getFullYear(), now.getMonth() + monthOffset + 1, 0, 23, 59, 59);
+
+  const labelText = `${startOfMonth.toLocaleString('default', { month: 'long' })} ${startOfMonth.getFullYear()}`;
+  document.getElementById("monthlySummaryLabel").innerText = `🧭 ${labelText} Summary`;
+
+  renderCircularSummary(startOfMonth, endOfMonth);
+}
+
+function showYearlyCircularSummary() {
+  const now = new Date();
+  const startOfYear = new Date(now.getFullYear() + yearOffset, 0, 1, 0, 0, 0);
+  const endOfYear = new Date(now.getFullYear() + yearOffset, 11, 31, 23, 59, 59);
+
+  const labelText = `${startOfYear.getFullYear()}`;
+  document.getElementById("monthlySummaryLabel").innerText = `📅 Yearly Summary: ${labelText}`;
+
+  renderCircularSummary(startOfYear, endOfYear);
+}
+
+
+function promptCustomRange() {
+  document.getElementById("customRangeModal").style.display = "flex";
+}
+
+
+function closeCustomModal() {
+  document.getElementById("customRangeModal").style.display = "none";
+  document.getElementById("customStartDate").value = "";
+  document.getElementById("customEndDate").value = "";
+}
+
+function applyCustomRange() {
+  const startInput = document.getElementById("customStartDate").value;
+  const endInput = document.getElementById("customEndDate").value;
+
+  if (!startInput || !endInput) {
+    alert("Please select both start and end dates.");
+    return;
+  }
+
+  const startDate = new Date(startInput);
+  const endDate = new Date(endInput);
+
+  if (startDate > endDate) {
+    alert("Start date must be before or equal to end date.");
+    return;
+  }
+
+  closeCustomModal();
+
+  document.getElementById("monthlySummaryLabel").innerText = `🛠️ Custom Range: ${startDate.toDateString()} – ${endDate.toDateString()}`;
+  renderCircularSummary(startDate, endDate);
+}
+
+
+function renderCircularSummary(startDate, endDate) {
+  const subjectData = [];
+  let totalMs = 0;
+
+  subjects.forEach(subject => {
+    const safeId = subject.replace(/\s+/g, "");
+    const records = JSON.parse(localStorage.getItem(`local_timer_dashboard__${safeId}`) || "[]");
+    const subjectTotal = records
+      .filter(r => {
+        const ts = new Date(r.timestamp);
+        return ts >= startDate && ts <= endDate;
+      })
+      .reduce((sum, r) => sum + r.elapsedMs, 0);
+
+    if (subjectTotal > 0) {
+      totalMs += subjectTotal;
+      subjectData.push({ subject, ms: subjectTotal });
+    }
+  });
+
+  // If nothing recorded
+  if (totalMs === 0) {
+    document.getElementById("monthlyTotalCenter").innerText = `No data in this range.`;
+    document.getElementById("monthlySubjectDetails").innerHTML = "";
+    if (window.monthlyDonutChartInstance) window.monthlyDonutChartInstance.destroy();
+    document.getElementById("monthlyCircularWrapper").style.display = "block";
+    return;
+  }
+
+  // Show total time at center
+  const hrs = Math.floor(totalMs / 3600000);
+  const mins = Math.floor((totalMs % 3600000) / 60000);
+  const secs = Math.floor((totalMs % 60000) / 1000);
+  document.getElementById("monthlyTotalCenter").innerText = `Total: ${hrs} hr ${mins} min ${secs} sec`;
+
+  // Prepare data
+  const labels = subjectData.map(d => d.subject);
+  const data = subjectData.map(d => +(d.ms / 3600000).toFixed(2)); // hours
+  const colors = subjectData.map((_, i) => `hsl(${i * 37 % 360}, 80%, 60%)`);
+
+  // Draw chart
+  const ctx = document.getElementById("monthlyDonutChart").getContext("2d");
+  if (window.monthlyDonutChartInstance) window.monthlyDonutChartInstance.destroy();
+
+  window.monthlyDonutChartInstance = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels,
+      datasets: [{
+        data,
+        backgroundColor: colors,
+        borderWidth: 2,
+        borderColor: "#222"
+      }]
+    },
+    options: {
+      cutout: "65%",
+      plugins: {
+        legend: {
+          display: true,
+          labels: { color: "#eee" }
+        }
+      }
+    }
+  });
+
+  // Render each subject below chart
+  const container = document.getElementById("monthlySubjectDetails");
+  container.innerHTML = "";
+  subjectData.forEach((d, i) => {
+    const percent = ((d.ms / totalMs) * 100).toFixed(1);
+    const h = Math.floor(d.ms / 3600000);
+    const m = Math.floor((d.ms % 3600000) / 60000);
+    const s = Math.floor((d.ms % 60000) / 1000);
+
+    const item = document.createElement("div");
+    item.style.background = "#222";
+    item.style.borderLeft = `4px solid ${colors[i]}`;
+    item.style.padding = "12px";
+    item.style.borderRadius = "10px";
+    item.innerHTML = `
+      <strong style="color:${colors[i]}">${d.subject}</strong><br/>
+      ⏱️ ${h}h ${m}m ${s}s<br/>
+      📊 ${percent}% of range
+    `;
+    container.appendChild(item);
+  });
+
+  document.getElementById("monthlyCircularWrapper").style.display = "block";
+}
+
+
+
+
+function renderChart(safeId) {
+  const canvas = document.getElementById(`chart-${safeId}`);
+  if (!canvas) return;
+
+  const ctx = canvas.getContext('2d');
+  const records = JSON.parse(localStorage.getItem(`local_timer_dashboard__${safeId}`) || "[]");
+
+  const dailyTotals = {};
+
+  // Aggregate time per day
+  records.forEach(r => {
+     const date = new Date(r.timestamp).toLocaleDateString("en-CA"); // ✅ Local date
+
+    if (!dailyTotals[date]) dailyTotals[date] = 0;
+    dailyTotals[date] += r.elapsedMs;
+  });
+
+  // Prepare data for last 7 days
+  const labels = [];
+  const data = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    const key = d.toISOString().split('T')[0];
+    labels.push(key.slice(5)); // MM-DD
+    const ms = dailyTotals[key] || 0;
+    data.push((ms / 3600000).toFixed(2)); // hours
+  }
+
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Hours Spent',
+        data,
+        borderColor: '#00bcd4',
+        backgroundColor: 'rgba(0,188,212,0.2)',
+        fill: true,
+        tension: 0.3
+      }]
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: {
+            callback: value => `${value}h`
+          }
+        }
+      },
+      plugins: {
+        legend: {
+          display: false
+        }
+      }
+    }
+  });
+}
+
+
+let globalChartInstance = null;
+
+function renderGlobalChart(dailyTotals) {
+  const canvas = document.getElementById("globalChart");
+  const ctx = canvas.getContext("2d");
+
+  if (globalChartInstance) {
+    globalChartInstance.destroy();
+  }
+
+  const labels = [];
+  const data = [];
+
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    const key = d.toISOString().split("T")[0]; // YYYY-MM-DD
+    labels.push(key.slice(5)); // MM-DD
+    const ms = dailyTotals[key] || 0;
+    data.push((ms / 3600000).toFixed(2)); // convert ms to hours
+  }
+
+  globalChartInstance = new Chart(ctx, {
+    type: "line",
+    data: {
+      labels,
+      datasets: [{
+        label: "Hours Spent",
+        data,
+        borderColor: "#00bcd4",
+        backgroundColor: "rgba(0,188,212,0.2)",
+        fill: true,
+        tension: 0.3
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        title: {
+          display: true,
+          text: "⏱️ Time Spent in Last 7 Days (All Subjects)",
+          color: "#00bcd4",
+          font: { size: 16 }
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: {
+            color: "#ccc",
+            callback: value => `${value}h`
+          }
+        },
+        x: {
+          ticks: { color: "#ccc" }
+        }
+      }
+    }
+  });
+}
+
+</script>
+<script>
+
+
+let logOffset = 0;
+
+function toggleLogBox() {
+  const box = document.getElementById("logBox");
+  box.style.display = box.style.display === "none" ? "block" : "none";
+  if (box.style.display === "block") loadCombinedLogs();
+}
+
+function navigateLogs(dir) {
+  logOffset += dir;
+  loadCombinedLogs();
+}
+
+function loadCombinedLogs() {
+  const targetDate = new Date();
+  targetDate.setDate(targetDate.getDate() + logOffset);
+  targetDate.setHours(0, 0, 0, 0);
+
+  const label = document.getElementById("logDateLabel");
+  const content = document.getElementById("logContent");
+  const selectedSubject = document.getElementById("subjectFilter").value;
+  label.textContent = targetDate.toDateString();
+  content.innerHTML = "";
+
+  let foundAny = false;
+  let dayTotalMs = 0;
+
+  const subjects = [
+    "Art and Culture", "Current Affairs", "Ecology", "Economics", "English", "Geography", "GS", "History", "Math", "Mock",  
+   "NeonRainbow", "News Paper", "Polity", "Reasoning", "Science"
+ ];
+
+  const processSubject = (subj) => {
+    const safeId = subj.replace(/\s+/g, "");
+    const records = JSON.parse(localStorage.getItem(`local_timer_dashboard__${safeId}`) || "[]");
+
+    const filtered = records.filter(r => {
+      const t = new Date(r.timestamp);
+      return t >= targetDate && t < new Date(targetDate.getTime() + 86400000);
+    });
+
+    const subjectTotalMs = filtered.reduce((sum, r) => sum + r.elapsedMs, 0);
+    if (filtered.length > 0) {
+      foundAny = true;
+      dayTotalMs += subjectTotalMs;
+
+      content.innerHTML += `<h4 style='color:#00bcd4;'>${subj} <span style="color:#8bc34a; font-size: 0.9em;">⏱️ ${msToTime(subjectTotalMs)}</span></h4>` + filtered.map(r => `
+        <div class="record-card">
+          <div class="record-time">🕒 ${r.readableTime}</div>
+          <div class="record-date">${new Date(r.timestamp).toLocaleString()}</div>
+          ${r.note ? `
+            <div class="record-note">
+              <strong>📝 Notes:</strong>
+              <ul>${r.note.split('|').map(n => `<li>${n.trim()}</li>`).join('')}</ul>
+            </div>` : ''}
+        </div>
+      `).join('');
+    }
+  };
+
+  if (selectedSubject === "all") {
+    subjects.forEach(processSubject);
+  } else {
+    const matchingSubject = subjects.find(s => s.replace(/\s+/g, "") === selectedSubject);
+    if (matchingSubject) processSubject(matchingSubject);
+  }
+
+  // 🟡 Append total time of the day beside date label
+  if (dayTotalMs > 0) {
+    label.innerHTML = `${targetDate.toDateString()} <span style="color:#8bc34a; font-size: 0.9em;">(Total: ${msToTime(dayTotalMs)})</span>`;
+  }
+
+  if (!foundAny) content.innerHTML = '<p style="color:#bbb;">No logs found for this day.</p>';
+}
+
+
+function hideMonthlyCircular() {
+  document.getElementById("monthlyCircularWrapper").style.display = "none";
+
+  // Optionally reset the month offset when closed
+  monthOffset = 0;
+
+  // Optional: destroy chart instance to save memory
+  if (window.monthlyDonutChartInstance) {
+    window.monthlyDonutChartInstance.destroy();
+    window.monthlyDonutChartInstance = null;
+  }
+}
+
+</script>
+<script>
+window.addEventListener("beforeunload", function (e) {
+  let unsaved = false;
+
+  for (const key in state) {
+    if (!state[key]) continue;
+
+    const isRunning = state[key].running;
+    const elapsed = state[key].elapsed;
+
+    // If the timer was started (elapsed > 0) or is currently running but not saved
+    if (isRunning || elapsed > 0) {
+      unsaved = true;
+      break;
+    }
+  }
+
+  if (unsaved) {
+    const message = "You have unsaved timer data. Are you sure you want to leave without saving?";
+    e.preventDefault(); // Required in some browsers
+    e.returnValue = message; // Standard
+    return message; // For older browsers
+  }
+});
+
+
+
+
+function openPrintableReportTab() {
+  const allSubjects = [
+    "Art and Culture", "Current Affairs", "Ecology", "Economics", "English", "Geography", "GS", "History", "Math", "Mock",  
+   "NeonRainbow", "News Paper", "Polity", "Reasoning", "Science"
+];
+
+  let html = `
+    <html>
+    <head>
+      <title>📘 Study Summary Report</title>
+      <style>
+        body { font-family: sans-serif; padding: 30px; line-height: 1.6; max-width: 800px; margin: auto; background: #fdfdfd; color: #222; }
+        h1 { color: #2196f3; }
+        h2 { color: #4caf50; border-bottom: 2px solid #eee; padding-bottom: 4px; }
+        .subject { margin-bottom: 25px; }
+        .entry { margin: 10px 0; padding-left: 12px; border-left: 4px solid #90caf9; background: #f9f9f9; padding: 8px; border-radius: 5px; }
+        .note { color: #555; margin-top: 4px; }
+        @media print {
+          button { display: none; }
+        }
+      </style>
+    </head>
+    <body>
+      <h1>📘 Study Summary Report</h1>
+      <button onclick="window.print()" style="padding:10px 16px; background:#2196f3; color:white; border:none; border-radius:6px; cursor:pointer;">🖨️ Print This Report</button>
+  `;
+
+  for (const subject of allSubjects) {
+    const safeId = subject.replace(/\s+/g, "");
+    const records = JSON.parse(localStorage.getItem(`local_timer_dashboard__${safeId}`) || "[]");
+    if (records.length === 0) continue;
+
+    const totalMs = records.reduce((sum, r) => sum + r.elapsedMs, 0);
+    const hrs = Math.floor(totalMs / 3600000);
+    const mins = Math.floor((totalMs % 3600000) / 60000);
+    const secs = Math.floor((totalMs % 60000) / 1000);
+
+    html += `
+      <div class="subject">
+        <h2>📚 ${subject}</h2>
+        <p>⏱️ Total Time: ${hrs}h ${mins}m ${secs}s</p>
+    `;
+
+    for (const record of records.slice().reverse()) {
+      const dateStr = new Date(record.timestamp).toLocaleString();
+      html += `
+        <div class="entry">
+          ⏳ ${record.readableTime} | 📅 ${dateStr}
+          ${record.note ? `<div class="note">📝 ${record.note}</div>` : ""}
+        </div>
+      `;
+    }
+
+    html += `</div>`;
+  }
+
+  html += `</body></html>`;
+
+  const newWindow = window.open("", "_blank");
+  newWindow.document.open();
+  newWindow.document.write(html);
+  newWindow.document.close();
+}
+
+
+
+function renderConsistencyHeatmap(safeId, containerId) {
+  const grid = document.getElementById(containerId); // ✅ Correct direct match
+  if (!grid) return;
+
+
+  const records = JSON.parse(localStorage.getItem(`local_timer_dashboard__${safeId}`) || "[]");
+
+  const dayMap = {};
+  for (const record of records) {
+    const date = new Date(record.timestamp);
+     const key = date.toLocaleDateString("en-CA"); // Returns YYYY-MM-DD in local time
+    dayMap[key] = (dayMap[key] || 0) + record.elapsedMs;
+  }
+
+  const sortedDurations = Object.values(dayMap).sort((a, b) => b - a);
+  const maxTime = sortedDurations[0] || 1;
+
+  const today = new Date();
+  const start = new Date(today);
+  start.setDate(today.getDate() - 179);
+  const cells = [];
+
+let lastMonth = null;
+for (let d = new Date(start); d <= today; d.setDate(d.getDate() + 1)) {
+  const key = d.toISOString().split("T")[0];
+  const time = dayMap[key] || 0;
+  const intensity = Math.round((time / maxTime) * 5);
+
+  // Add month label at the first of the month
+  if (d.getDate() === 1 || (lastMonth !== null && d.getMonth() !== lastMonth)) {
+    const label = document.createElement("div");
+    label.textContent = d.toLocaleString("default", { month: "short" });
+    label.style.gridRow = "1 / -1"; // Span all rows
+    label.style.writingMode = "vertical-rl";
+    label.style.textAlign = "center";
+    label.style.fontSize = "10px";
+    label.style.color = "#888";
+    label.style.padding = "2px 4px";
+    cells.push(label);
+  }
+
+  const box = document.createElement("div");
+  box.style.width = "12px";
+  box.style.height = "12px";
+  box.style.borderRadius = "3px";
+  box.style.backgroundColor = getHeatColor(intensity);
+  box.title = `${key}\n${msToReadable(time)}`;
+  cells.push(box);
+
+  lastMonth = d.getMonth();
+}
+
+
+  grid.innerHTML = "";
+  cells.forEach(cell => grid.appendChild(cell));
+  
+  // 👇 Scroll to right end after rendering
+setTimeout(() => {
+  const wrapper = grid.parentElement;
+  wrapper.scrollLeft = wrapper.scrollWidth;
+}, 0);
+}
+
+function getHeatColor(level) {
+  const shades = ["#111", "#1e1b40", "#322e71", "#4a40a3", "#6456ff", "#877aff"];
+  return shades[Math.min(level, shades.length - 1)];
+}
+
+function msToReadable(ms) {
+  const h = Math.floor(ms / 3600000);
+  const m = Math.floor((ms % 3600000) / 60000);
+  return h || m ? `${h}h ${m}m` : "No activity";
+}
+
+
+function openConsistencyModal() {
+  document.getElementById("consistencyModal").style.display = "block";
+
+  // Render overall consistency
+  renderOverallConsistency("overall-heatmap-grid");
+
+  const container = document.getElementById("subject-wise-heatmaps");
+  container.innerHTML = "";
+
+  subjects.forEach(subject => {
+    const safeId = subject.replace(/\s+/g, "");
+    const div = document.createElement("div");
+    div.innerHTML = `
+      <h3>${subject}</h3>
+      <div class="heatmap-wrapper" style="overflow-x:auto; margin-bottom:20px;">
+        <div class="heatmap" id="modal-heatmap-${safeId}" style="display:grid; grid-auto-flow:column; grid-template-rows:repeat(7,12px); gap:4px;"></div>
+      </div>
+    `;
+    container.appendChild(div);
+
+    // Delay ensures the element exists in DOM
+    setTimeout(() => {
+      renderConsistencyHeatmap(safeId, `modal-heatmap-${safeId}`);
+    }, 0);
+  });
+}
+
+function closeConsistencyModal() {
+  document.getElementById("consistencyModal").style.display = "none";
+}
+
+function renderOverallConsistency(containerId) {
+  const grid = document.getElementById(containerId);
+  grid.innerHTML = "";
+
+  const totalMap = {};
+
+  subjects.forEach(subject => {
+    const safeId = subject.replace(/\s+/g, "");
+    const records = JSON.parse(localStorage.getItem(`local_timer_dashboard__${safeId}`) || "[]");
+
+    for (const record of records) {
+      const date = new Date(record.timestamp);
+      const key = date.toLocaleDateString("en-CA"); // Returns YYYY-MM-DD in local time
+      totalMap[key] = (totalMap[key] || 0) + record.elapsedMs;
+    }
+  });
+
+  const sortedDurations = Object.values(totalMap).sort((a, b) => b - a);
+  const maxTime = sortedDurations[0] || 1;
+
+  const today = new Date();
+  const start = new Date(today);
+  start.setDate(today.getDate() - 179);
+
+  let lastMonth = null;
+for (let d = new Date(start); d <= today; d.setDate(d.getDate() + 1)) {
+  const key = d.toLocaleDateString("en-CA"); // Use local date key
+  const time = totalMap[key] || 0;
+  const intensity = Math.round((time / maxTime) * 5);
+
+  // 👉 Insert month label at the beginning of a new month
+  if (d.getDate() === 1 || (lastMonth !== null && d.getMonth() !== lastMonth)) {
+    const label = document.createElement("div");
+    label.textContent = d.toLocaleString("default", { month: "short" });
+    label.style.gridRow = "1 / -1";
+    label.style.writingMode = "vertical-rl";
+    label.style.textAlign = "center";
+    label.style.fontSize = "10px";
+    label.style.color = "#888";
+    label.style.padding = "2px 4px";
+    grid.appendChild(label);
+  }
+
+  const box = document.createElement("div");
+  box.style.width = "12px";
+  box.style.height = "12px";
+  box.style.borderRadius = "3px";
+  box.style.backgroundColor = getHeatColor(intensity);
+  box.title = `${key}\n${msToReadable(time)}`;
+  grid.appendChild(box);
+
+  lastMonth = d.getMonth();
+}
+
+// ✅ Scroll to the rightmost end
+setTimeout(() => {
+  grid.scrollLeft = grid.scrollWidth;
+}, 0);
+}
+
+
+function showChronologicalLogs() {
+  const logs = [];
+
+  subjects.forEach(subject => {
+    const safeId = subject.replace(/\s+/g, "");
+    const records = JSON.parse(localStorage.getItem(`local_timer_dashboard__${safeId}`) || "[]");
+
+    for (const record of records) {
+      logs.push({
+        subject,
+        note: record.note || "",
+        timestamp: record.timestamp,
+        duration: msToReadable(record.elapsedMs)
+      });
+    }
+  });
+
+  // Sort by time
+   logs.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)); // Latest first
+
+
+  // Format logs
+  const formatted = logs.map(log => {
+    const time = new Date(log.timestamp).toLocaleTimeString("en-IN", {
+      hour: '2-digit', minute: '2-digit', hour12: true
+    });
+
+    const date = new Date(log.timestamp).toLocaleDateString("en-IN", {
+      year: "numeric", month: "short", day: "numeric"
+    });
+
+    return `📅 ${date} | 🕒 ${time} — ${log.subject}: ${log.note} (${log.duration})`;
+  }).join("\n");
+
+if (logs.length === 0) {
+  document.getElementById("chronologicalLogsContent").innerHTML = "<p>No logs found.</p>";
+  return;
+}
+
+const html = logs.map(log => {
+  const time = new Date(log.timestamp).toLocaleTimeString("en-IN", {
+    hour: '2-digit', minute: '2-digit', hour12: true
+  });
+
+  const date = new Date(log.timestamp).toLocaleDateString("en-IN", {
+    year: "numeric", month: "short", day: "numeric"
+  });
+
+  return `
+    <div style="background:#2c2c2c; padding:12px 16px; border-radius:8px; margin-bottom:10px; box-shadow:0 0 4px rgba(0,0,0,0.3);">
+      <div style="font-weight:bold; font-size:15px;">📅 ${date} | 🕒 ${time}</div>
+      <div><strong style="color:#8cd2ff;">${log.subject}</strong>: ${log.note || "<i>No note</i>"}</div>
+      <div style="font-size:13px; color:#aaa;">⏱️ ${log.duration}</div>
+    </div>
+  `;
+}).join("");
+
+// Store for global use
+fullLogList = logs;
+renderLogs(logs);
+
+// Populate subject filter dropdown
+const subjectSelect = document.getElementById("logSubjectFilter");
+subjectSelect.innerHTML = '<option value="">🔎 All Subjects</option>';
+[...new Set(logs.map(log => log.subject))].forEach(subject => {
+  const option = document.createElement("option");
+  option.value = subject;
+  option.textContent = subject;
+  subjectSelect.appendChild(option);
+});
+
+document.getElementById("chronologicalLogsModal").style.display = "block";
+}
+
+function closeChronologicalLogsModal() {
+  document.getElementById("chronologicalLogsModal").style.display = "none";
+}
+
+let fullLogList = []; // Store all logs globally
+
+function applyLogFilters() {
+  const subject = document.getElementById("logSubjectFilter").value;
+  const date = document.getElementById("logDateFilter").value;
+
+  const filtered = fullLogList.filter(log => {
+    const logDate = log.timestamp.split("T")[0];
+    return (!subject || log.subject === subject) &&
+           (!date || logDate === date);
+  });
+
+  renderLogs(filtered);
+}
+
+function renderLogs(logs) {
+  const container = document.getElementById("chronologicalLogsContent");
+  if (logs.length === 0) {
+    container.innerHTML = "<p>No logs found.</p>";
+    return;
+  }
+
+  const html = logs.map((log, index) => {
+    const time = new Date(log.timestamp).toLocaleTimeString("en-IN", {
+      hour: '2-digit', minute: '2-digit', hour12: true
+    });
+
+    const date = new Date(log.timestamp).toLocaleDateString("en-IN", {
+      year: "numeric", month: "short", day: "numeric"
+    });
+
+    return `
+      <div class="log-entry" data-date="${log.timestamp.split("T")[0]}" id="log-${index}" style="background:#2c2c2c; padding:12px 16px; border-radius:8px; margin-bottom:10px; box-shadow:0 0 4px rgba(0,0,0,0.3);">
+        <div style="font-weight:bold; font-size:15px;">📅 ${date} | 🕒 ${time}</div>
+        <div><strong style="color:#8cd2ff;">${log.subject}</strong>: ${log.note || "<i>No note</i>"}</div>
+        <div style="font-size:13px; color:#aaa;">⏱️ ${log.duration}</div>
+      </div>
+    `;
+  }).join("");
+
+  container.innerHTML = html;
+}
+
+function jumpToDate() {
+  const targetDate = document.getElementById("logDateFilter").value;
+  if (!targetDate) return;
+
+  const el = document.querySelector(`.log-entry[data-date="${targetDate}"]`);
+  if (el) {
+    el.scrollIntoView({ behavior: "smooth", block: "start" });
+    el.style.outline = "2px solid #8cd2ff";
+    setTimeout(() => el.style.outline = "", 1500);
+  } else {
+    alert("No log found for selected date.");
+  }
+}
+
+</script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const widget = document.getElementById("myRemind-widget");
+    const mini = document.getElementById("myRemind-mini");
+    const input = document.getElementById("myRemind-input");
+    const timeInput = document.getElementById("myRemind-time");
+    const list = document.getElementById("myRemind-list");
+    const form = document.getElementById("myRemind-form");
+    const closeBtn = document.getElementById("myRemind-close-btn");
+    const header = document.getElementById("myRemind-header");
+
+    let myRemindTasks = JSON.parse(localStorage.getItem("myRemindTasks")) || [];
+const reminderSound = new Audio("soft_alarm.mp3");
+reminderSound.preload = "auto";
+reminderSound.loop = true;
+
+    function renderTasks() {
+      list.innerHTML = "";
+      myRemindTasks.forEach((task, index) => {
+        const item = document.createElement("div");
+        item.className = "myRemind-task";
+        if (task.done) item.classList.add("done");
+
+        const p = document.createElement("p");
+        p.textContent = task.text;
+
+        const delBtn = document.createElement("button");
+        delBtn.className = "myRemind-del-btn";
+        delBtn.textContent = "✕";
+        delBtn.onclick = () => {
+          myRemindTasks.splice(index, 1);
+          updateTasks();
+        };
+
+        const doneBtn = document.createElement("button");
+        doneBtn.className = "myRemind-done-btn";
+        doneBtn.textContent = "✔";
+        doneBtn.onclick = () => {
+          myRemindTasks[index].done = !myRemindTasks[index].done;
+          updateTasks();
+        };
+
+        item.appendChild(doneBtn);
+        item.appendChild(p);
+        item.appendChild(delBtn);
+
+        if (task.remindAt) {
+          const timeTag = document.createElement("small");
+          timeTag.textContent = `🕒 ${new Date(task.remindAt).toLocaleString()}`;
+          item.appendChild(timeTag);
+        }
+
+        list.appendChild(item);
+      });
+    }
+
+    function updateTasks() {
+      localStorage.setItem("myRemindTasks", JSON.stringify(myRemindTasks));
+      renderTasks();
+    }
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      const text = input.value.trim();
+      const remindAt = timeInput.value;
+      if (text) {
+        myRemindTasks.push({
+          text,
+          done: false,
+          remindAt: remindAt || null,
+          notified: false
+        });
+        input.value = "";
+        timeInput.value = "";
+        updateTasks();
+      }
+    });
+
+    // Hide widget
+    closeBtn.onclick = () => {
+      widget.style.display = "none";
+      mini.style.display = "flex";
+    };
+
+    // Show widget
+    mini.onclick = () => {
+      widget.style.display = "block";
+      mini.style.display = "none";
+    };
+
+    // Make draggable
+    let offsetX, offsetY, isDragging = false;
+
+    header.addEventListener("mousedown", (e) => {
+      isDragging = true;
+      offsetX = e.clientX - widget.offsetLeft;
+      offsetY = e.clientY - widget.offsetTop;
+      header.style.cursor = "grabbing";
+    });
+
+    document.addEventListener("mousemove", (e) => {
+      if (isDragging) {
+        widget.style.left = `${e.clientX - offsetX}px`;
+        widget.style.top = `${e.clientY - offsetY}px`;
+        widget.style.bottom = "auto";
+        widget.style.right = "auto";
+      }
+    });
+
+    document.addEventListener("mouseup", () => {
+      isDragging = false;
+      header.style.cursor = "grab";
+    });
+
+    // 🔔 Check reminders every minute
+    setInterval(() => {
+      const now = new Date().toISOString();
+      myRemindTasks.forEach((task, index) => {
+        if (
+          task.remindAt &&
+          !task.notified &&
+          new Date(task.remindAt) <= new Date(now)
+        ) {
+         reminderSound.play();
+setTimeout(() => {
+  if (confirm(`🔔 Reminder: ${task.text}`)) {
+    reminderSound.pause();
+    reminderSound.currentTime = 0;
+  }
+  task.notified = true;
+  updateTasks();
+}, 100);
+
+        }
+      });
+    }, 60000); // every 60 seconds
+
+    // Initial render
+    renderTasks();
+
+    // Start in mini mode
+    widget.style.display = "none";
+    mini.style.display = "flex";
+  });
+</script>
+
+<div id="customRangeModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.7); z-index:9999; align-items:center; justify-content:center;">
+  <div style="background:#222; padding:30px; border-radius:12px; max-width:90%; color:#fff;">
+    <h3 style="text-align:center; color:#00e5ff;">🛠️ Choose Custom Date Range</h3>
+    <div style="display:flex; flex-direction:column; gap:12px; margin-top:20px;">
+      <label>Start Date: <input id="customStartDate" type="date" style="padding:8px; border-radius:6px; background:#111; color:white; border:none;"></label>
+      <label>End Date: <input id="customEndDate" type="date" style="padding:8px; border-radius:6px; background:#111; color:white; border:none;"></label>
+    </div>
+    <div style="text-align:center; margin-top:20px;">
+      <button onclick="applyCustomRange()" style="padding:10px 18px; background:#4caf50; color:white; border:none; border-radius:8px;">Apply</button>
+      <button onclick="closeCustomModal()" style="padding:10px 18px; margin-left:10px; background:#f44336; color:white; border:none; border-radius:8px;">Cancel</button>
+    </div>
+  </div>
+</div>
+<div id="consistencyModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.8); z-index:9999; overflow:auto; padding:20px;">
+  <div style="background:#1e1e1e; color:#eee; padding:20px; border-radius:10px; max-width:900px; margin:auto;">
+    <button onclick="closeConsistencyModal()" style="float:right; font-size:1.5em;">❌</button>
+    <h2 style="margin-bottom:20px;">📊 Consistency Tracker (All Subjects)</h2>
+
+    <div id="overall-heatmap" style="margin-bottom:40px;">
+      <h3>📈 Overall Consistency</h3>
+      <div class="heatmap-wrapper" style="overflow-x:auto;">
+        <div class="heatmap" id="overall-heatmap-grid" style="display:grid; grid-auto-flow:column; grid-template-rows:repeat(7, 12px); gap:4px;"></div>
+      </div>
+    </div>
+
+    <div id="subject-wise-heatmaps">
+      <!-- Subject heatmaps will go here -->
+    </div>
+  </div>
+</div>
+<div id="chronologicalLogsModal" 
+     style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; 
+            background: rgba(0,0,0,0.85); z-index: 9999; padding: 20px;">
+
+  <div style="background:#1e1e1e; color:#eee; padding:0; border-radius:12px; max-width:900px; 
+              margin:auto; height:90vh; display:flex; flex-direction:column; 
+              box-shadow:0 0 15px rgba(0,0,0,0.5);">
+
+    <!-- 🔒 This entire section (header and filters) must be inside -->
+    <div style="padding: 20px; border-bottom: 1px solid #444; background-color: #1e1e1e; position: sticky; top: 0; z-index: 2;">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+        <h2 style="margin: 0; flex:1;">🧾 Your Logs</h2>
+        <button onclick="closeChronologicalLogsModal()" style="background:none; border:none; color:#eee; font-size:1.8em; cursor:pointer;">❌</button>
+      </div>
+      <div style="margin-top: 10px; display: flex; gap: 10px; flex-wrap: wrap;">
+        <select id="logSubjectFilter" onchange="applyLogFilters()" style="padding: 5px;">
+          <option value="">🔎 All Subjects</option>
+        </select>
+        <input type="date" id="logDateFilter" onchange="applyLogFilters()" style="padding: 5px;">
+        <button onclick="jumpToDate()" style="padding: 5px 10px;">📅 Jump to Date</button>
+      </div>
+    </div>
+
+    <!-- Logs container -->
+    <div id="chronologicalLogsContent" style="overflow-y: auto; padding: 20px; font-size:16px; line-height:1.8; font-family: 'Segoe UI', sans-serif; flex:1;">
+    </div>
+
+  </div>
+</div>
+
+
+
+<div id="myRemind-widget">
+  <div id="myRemind-header">
+    <span>📝 Tasks</span>
+    <button id="myRemind-close-btn">−</button>
+  </div>
+  <form id="myRemind-form">
+  <input type="text" id="myRemind-input" placeholder="Add task..." required />
+  <input type="datetime-local" id="myRemind-time" />
+  <button type="submit" id="myRemind-add-btn">➕ Add</button>
+</form>
+
+  <div id="myRemind-list"></div>
+</div>
+<div id="myRemind-mini">📝</div>
+
+<script>
+  window.addEventListener("load", () => {
+    setTimeout(() => {
+      document.getElementById("neon-loader").style.display = "none";
+    }, 2500); // matches fade duration
+  });
+</script>
+<!-- Firebase + Sync integration (paste near end of body, before </body>) -->
+<!-- 1) Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+
+<script>
+/* ========== CONFIG (use the credentials you provided) ========== */
+const firebaseConfig = {
+  apiKey: "AIzaSyCGiOMRZHI_PdbuzIkQK8Kk4YcFXHBWtpc",
+  authDomain: "mathsquiz-5a3b7.firebaseapp.com",
+  projectId: "mathsquiz-5a3b7",
+  storageBucket: "mathsquiz-5a3b7.appspot.com",
+  messagingSenderId: "127657807004",
+  appId: "1:127657807004:web:ef17beddcbb04c5de0f159",
+  measurementId: "G-Q73EQ54DPG"
+};
+
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+/* ========== Simple tiny auth UI injection ========== */
+(function injectAuthUI(){
+  const container = document.createElement('div');
+  container.id = 'auth-container';
+  container.style.cssText = 'position:fixed;bottom:22px;left:22px;z-index:9999;background:#111;color:#fff;padding:12px;border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,0.4);';
+  container.innerHTML = `
+    <div id="auth-area">
+      <div style="font-weight:600;margin-bottom:6px">User</div>
+      <input id="auth-email" placeholder="email" style="width:220px;padding:8px;margin-bottom:6px;border-radius:6px;border:1px solid #333" />
+      <input id="auth-pass" type="password" placeholder="password" style="width:220px;padding:8px;margin-bottom:8px;border-radius:6px;border:1px solid #333" />
+      <div style="display:flex;gap:8px;">
+        <button id="btn-signup" style="padding:8px 10px">Sign up</button>
+        <button id="btn-signin" style="padding:8px 10px">Sign in</button>
+        <button id="btn-signout" style="padding:8px 10px;display:none">Sign out</button>
+      </div>
+      <div id="auth-status" style="font-size:12px;color:#9ca3af;margin-top:8px">Offline allowed — sign in when online to sync</div>
+    </div>
+  `;
+  document.body.appendChild(container);
+
+  document.getElementById('btn-signup').onclick = () => {
+    const email = document.getElementById('auth-email').value;
+    const pass = document.getElementById('auth-pass').value;
+    if(!email || !pass) return alert('Provide email & password');
+    auth.createUserWithEmailAndPassword(email, pass).catch(e => alert(e.message));
+  };
+  document.getElementById('btn-signin').onclick = () => {
+    const email = document.getElementById('auth-email').value;
+    const pass = document.getElementById('auth-pass').value;
+    if(!email || !pass) return alert('Provide email & password');
+    auth.signInWithEmailAndPassword(email, pass).catch(e => alert(e.message));
+  };
+  document.getElementById('btn-signout').onclick = () => auth.signOut();
+})();
+
+/* ========== Utility: iterate subject local keys ========== */
+function listAllSubjectLocalKeys(){
+  // matches your key pattern: local_timer_dashboard__<safeId>
+  const keys = [];
+  for(let i=0;i<localStorage.length;i++){
+    const k = localStorage.key(i);
+    if(k && k.startsWith('local_timer_dashboard__')) keys.push(k);
+  }
+  return keys;
+}
+
+/* ========== Save wrapper: local + remote (hybrid) ========== */
+/* Replace or call this function from your existing saveProgress() after the local save logic.
+   It will try to send the new record to Firestore if online & auth'd; otherwise mark unsynced locally.
+*/
+async function trySyncRecordToFirestore(subjectSafeId, record){
+  try{
+    const user = auth.currentUser;
+    // Make a copy for firestore record
+    const doc = {
+      subjectSafeId,
+      timestamp: record.timestamp,
+      elapsedMs: record.elapsedMs,
+      readableTime: record.readableTime,
+      note: record.note || '',
+      source: 'local',
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+    if(user && navigator.onLine){
+      // write under users/{uid}/records
+      await db
+  .collection('users')
+  .doc(user.uid)
+  .collection('subjects')
+  .doc(subjectSafeId)
+  .collection('records')
+  .add(doc);
+
+      // mark as synced in localStorage by returning true
+      return true;
+    }
+  }catch(err){
+    console.warn('Sync failed', err);
+  }
+  return false;
+}
+
+/* Helper to mark a local-store record as synced (add `synced: true`), we store a metadata alongside data:
+   We will rewrite the array with an added `synced: true` on that item so it won't be reuploaded.
+*/
+function markLocalRecordSynced(localKey, recordTimestamp){
+  const arr = JSON.parse(localStorage.getItem(localKey) || '[]');
+  const newArr = arr.map(r => {
+    if(r.timestamp === recordTimestamp) return Object.assign({}, r, { _synced: true });
+    return r;
+  });
+  localStorage.setItem(localKey, JSON.stringify(newArr));
+}
+
+/* Use this function to push unsynced local items (first-login or reconnect sync) */
+async function pushUnsyncedLocalToFirestore(){
+  const keys = listAllSubjectLocalKeys();
+  const user = auth.currentUser;
+  if(!user || !navigator.onLine) return;
+  for(const k of keys){
+    const safeId = k.replace('local_timer_dashboard__','');
+    const arr = JSON.parse(localStorage.getItem(k) || '[]');
+    for(const rec of arr){
+      // skip already marked synced
+      if(rec._synced) continue;
+      const synced = await trySyncRecordToFirestore(safeId, rec);
+      if(synced) markLocalRecordSynced(k, rec.timestamp);
+    }
+  }
+}
+
+/* ========== First-login injection from localStorage -> Firestore ========== */
+let _firstSyncDoneForUid = null;
+auth.onAuthStateChanged(async (user) => {
+  const status = document.getElementById('auth-status');
+  const signoutBtn = document.getElementById('btn-signout');
+  const signinBtn = document.getElementById('btn-signin');
+  if(user){
+    status.innerText = `Signed in as ${user.email}. Syncing...`;
+    signinBtn.style.display = 'none';
+    document.getElementById('btn-signup').style.display = 'none';
+    signoutBtn.style.display = 'inline-block';
+
+    // If first login OR first time this session for this UID, run a bulk push
+    if(_firstSyncDoneForUid !== user.uid){
+      _firstSyncDoneForUid = user.uid;
+      if(navigator.onLine){
+        await pushUnsyncedLocalToFirestore();
+      }
+    }
+    // Always try background sync after sign-in if online
+    if(navigator.onLine) setTimeout(pushUnsyncedLocalToFirestore, 2000);
+  } else {
+    status.innerText = navigator.onLine ? 'Not signed in. Online: signin to sync.' : 'Offline: you can use the app without signing in.';
+    signoutBtn.style.display = 'none';
+    document.getElementById('btn-signup').style.display = 'inline-block';
+    signinBtn.style.display = 'inline-block';
+  }
+});
+
+/* ========== Connection watchers: sync on reconnect ========== */
+window.addEventListener('online', () => {
+  const status = document.getElementById('auth-status');
+  status.innerText = auth.currentUser ? `Back online. Syncing...` : `Back online. Sign in to sync.`;
+  // start pushing unsynced local items if user signed in
+  if(auth.currentUser) pushUnsyncedLocalToFirestore();
+});
+
+window.addEventListener('offline', () => {
+  const status = document.getElementById('auth-status');
+  status.innerText = 'Offline: continue using local storage. Data will sync when back online.';
+});
+
+/* ========== Integration note: patch your saveProgress() ========
+   Replace the ending localStorage write/alert in your saveProgress() with:
+     // after you push to localStorage:
+     const localKey = `local_timer_dashboard__${safeId}`;
+     // existing localStorage write already done...
+     // Now try to sync:
+     (async () => {
+       const synced = await trySyncRecordToFirestore(safeId, record);
+       if(synced) markLocalRecordSynced(localKey, record.timestamp);
+     })();
+   OR simply call pushUnsyncedLocalToFirestore() after saving (works as well).
+*/
+
+/* Convenience: auto-sync after any local save (non-blocking) */
+function onLocalSaveTriggered(){
+  // non-blocking: will attempt to sync only if user & online
+  if(auth.currentUser && navigator.onLine) pushUnsyncedLocalToFirestore();
+}
+
+/* Hook into existing saveProgress: call onLocalSaveTriggered() after localStorage setItem (I saw that in your saveProgress function). */
+</script>
+
+</body>
+</html>
