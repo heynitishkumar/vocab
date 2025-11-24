@@ -6,6 +6,7 @@
 
 
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -810,6 +811,7 @@
 <div class="card-container" id="cardContainer"></div>
 
 <script>
+
 let dayOffset = 0;
 let monthOffset = 0;
 let weekOffset = 0;
@@ -2263,6 +2265,8 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
+let _syncInProgress = false;
+
 
 /* ========== Simple tiny auth UI injection ========== */
 (function injectAuthUI(){
@@ -2395,7 +2399,8 @@ auth.onAuthStateChanged(async (user) => {
       }
     }
     // Always try background sync after sign-in if online
-    if(navigator.onLine) setTimeout(pushUnsyncedLocalToFirestore, 2000);
+    if(navigator.onLine) setTimeout(fullSync, 1500);
+
   } else {
     status.innerText = navigator.onLine ? 'Not signed in. Online: signin to sync.' : 'Offline: you can use the app without signing in.';
     signoutBtn.style.display = 'none';
@@ -2406,11 +2411,10 @@ auth.onAuthStateChanged(async (user) => {
 
 /* ========== Connection watchers: sync on reconnect ========== */
 window.addEventListener('online', () => {
-  const status = document.getElementById('auth-status');
-  status.innerText = auth.currentUser ? `Back online. Syncing...` : `Back online. Sign in to sync.`;
-  // start pushing unsynced local items if user signed in
-  if(auth.currentUser) pushUnsyncedLocalToFirestore();
+  if(auth.currentUser) fullSync();
+  else document.getElementById('auth-status').innerText = "Back online. Sign in to sync.";
 });
+
 
 window.addEventListener('offline', () => {
   const status = document.getElementById('auth-status');
@@ -2564,6 +2568,28 @@ window.addEventListener('online', async () => {
 function manualPullAll() {
   if (!auth.currentUser) return alert('Sign in first');
   fetchAllSubjectsFromFirestore().then(() => alert('Pull complete'));
+}
+
+
+async function fullSync() {
+  if (_syncInProgress) return; // prevents repeated loops
+  _syncInProgress = true;
+
+  const status = document.getElementById('auth-status');
+  status.innerText = "Syncing...";
+
+  try {
+    await pushUnsyncedLocalToFirestore();
+    // 🔥 If you have fetchAllSubjectsFromFirestore(), call it:
+    if (typeof fetchAllSubjectsFromFirestore === 'function') {
+      await fetchAllSubjectsFromFirestore();
+    }
+  } catch(err){
+    console.warn("Full sync failed:", err);
+  } finally {
+    _syncInProgress = false;
+    status.innerText = "Synced ✔";
+  }
 }
 
 /* ========== Integration note: patch your saveProgress() ========
