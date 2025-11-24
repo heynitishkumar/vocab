@@ -6,7 +6,6 @@
 
 
 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -2507,15 +2506,19 @@ async function fetchRecordsFromFirestore(subjectSafeId) {
  * Fetch all subjects that we currently have local keys for.
  * If you prefer to fetch a server-side list of subjects, you can implement that later.
  */
-async function fetchAllSubjectsFromFirestore(){
+async function fetchAllSubjectsFromFirestore() {
   const user = auth.currentUser;
-  if(!user) return;
-  const keys = listAllSubjectLocalKeys();
-  for(const k of keys){
-    const safeId = k.replace('local_timer_dashboard__','');
-    await fetchRecordsFromFirestore(safeId);
+  if (!user) return;
+
+  // 🔥 Step 1: fetch subjects from server (real source of truth)
+  const serverSubjects = await fetchServerSubjects();
+
+  // 🔥 Step 2: fetch each subject's records
+  for (const subjectId of serverSubjects) {
+    await fetchRecordsFromFirestore(subjectId);
   }
 }
+
 
 /**
  * Fetch all remote subjects the user actually has stored on server (optional,
@@ -2612,6 +2615,25 @@ function onLocalSaveTriggered(){
 }
 
 /* Hook into existing saveProgress: call onLocalSaveTriggered() after localStorage setItem (I saw that in your saveProgress function). */
+
+async function fetchServerSubjects() {
+  const user = auth.currentUser;
+  if (!user) return [];
+
+  try {
+    const snap = await db
+      .collection("users")
+      .doc(user.uid)
+      .collection("subjects")
+      .get();
+
+    return snap.docs.map(doc => doc.id); // an array of subject IDs
+  } catch (err) {
+    console.warn("fetchServerSubjects failed", err);
+    return [];
+  }
+}
+
 </script>
 
 </body>
