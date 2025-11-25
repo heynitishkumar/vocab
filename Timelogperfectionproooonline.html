@@ -6,6 +6,7 @@
 
 
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -745,6 +746,91 @@
 }
 
 </style>
+<style>
+/* Sexy subject list */
+#subjectList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+  max-width: 980px;
+  margin: 18px auto 30px;
+  padding: 0;
+  list-style: none;
+}
+
+.subject-item {
+  background: linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+  border: 1px solid rgba(255,255,255,0.04);
+  border-radius: 14px;
+  padding: 14px 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  user-select: none;
+  transition: transform .18s ease, box-shadow .18s ease;
+  box-shadow: 0 6px 18px rgba(2,6,23,0.35);
+}
+.subject-item:focus { outline: none; box-shadow: 0 10px 30px rgba(0,188,212,0.08); transform: translateY(-4px); }
+.subject-name {
+  font-weight: 700;
+  color: #e6f7fb;
+  font-size: 1rem;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.subject-meta {
+  font-size: .82rem;
+  color: #a9dfe8;
+}
+
+/* action pill on the right */
+.subject-action {
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.icon-play {
+  width:44px;
+  height:44px;
+  border-radius:10px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background: linear-gradient(180deg,#00c6ff,#0072ff);
+  color:white;
+  box-shadow: 0 6px 14px rgba(0,188,212,0.18);
+  font-size: 18px;
+  transition: transform .12s ease;
+}
+.icon-play:active { transform: scale(.95); }
+
+/* swipe hint */
+.swipe-hint {
+  font-size: .78rem;
+  color: #9fbfc7;
+  margin-top: 6px;
+}
+
+/* swipe visual during drag */
+.subject-item.dragging {
+  transform: translateX(6px) scale(1.01);
+  box-shadow: 0 18px 38px rgba(0,0,0,0.45);
+}
+.subject-item.swipe-success {
+  border-color: rgba(139, 195, 74, 0.9);
+  box-shadow: 0 12px 28px rgba(139,195,74,0.12);
+  transform: translateX(10px);
+}
+
+/* make list responsive for small screens */
+@media (max-width:520px) {
+  #subjectList { grid-template-columns: 1fr; padding: 6px; }
+  .icon-play { width:40px; height:40px; }
+}
+</style>
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -836,7 +922,8 @@
 
 <div id="sessionPrompt">
   <h2 style="text-align: center; color: #1976d2;">Which session do you want to start?</h2>
-  <div class="session-selection" id="sessionButtons"></div>
+  <ul id="subjectList" aria-label="Subjects list"></ul>
+
 </div>
 <div class="top-buttons">
   <button onclick="showGlobalTodaysTotal()"><i class="fa-solid fa-calendar-day"></i> Today’s Overall Total</button>
@@ -1154,29 +1241,174 @@ function showGlobalMonthlyTotal() {
   });
   document.getElementById("globalTotalDisplay").textContent = `📅 Monthly Total (All Cards): ${msToTime(totalMs)}`;
 }
+(function renderSubjectList() {
+  const container = document.getElementById('subjectList');
+  container.innerHTML = ''; // clear
 
-subjects.forEach(subj => {
-  const btn = document.createElement("button");
-  btn.textContent = subj;
-btn.onclick = async () => {
-    const safeId = subj.replace(/\s+/g, "");
+  subjects.forEach(subj => {
+    const safeId = subj.replace(/\s+/g, '');
+    const li = document.createElement('li');
+    li.className = 'subject-item';
+    li.tabIndex = 0;
+    li.setAttribute('role', 'button');
+    li.setAttribute('aria-pressed', 'false');
+    li.dataset.safeId = safeId;
+    li.innerHTML = `
+      <div style="display:flex;flex-direction:column;flex:1">
+        <div class="subject-name">${subj}</div>
+        <div class="swipe-hint">Swipe → to open & start • Tap to open</div>
+      </div>
+      <div class="subject-action">
+        <div class="icon-play" title="Open & Start" aria-label="Open and start ${subj}">▶</div>
+      </div>
+    `;
 
-    // 🔥 FIRST sync cloud → local so UI loads with real data
+    // Ensure local key exists before any sync attempts
+    const localKey = `local_timer_dashboard__${safeId}`;
+    if (!localStorage.getItem(localKey)) localStorage.setItem(localKey, "[]");
+
+    // Click behavior: open card
+    li.addEventListener('click', async (ev) => {
+      ev.preventDefault();
+      // normal open
+      await openSubjectAndShowCard(subj, false);
+    });
+
+    // Play icon quick-start: open and start timer immediately
+    const play = li.querySelector('.icon-play');
+    play.addEventListener('click', async (ev) => {
+      ev.stopPropagation();
+      await openSubjectAndShowCard(subj, true);
+    });
+
+    // Keyboard support: Enter -> open, Space -> open+start
+    li.addEventListener('keydown', async (ev) => {
+      if (ev.key === 'Enter') {
+        ev.preventDefault();
+        await openSubjectAndShowCard(subj, false);
+      } else if (ev.key === ' ') {
+        ev.preventDefault();
+        await openSubjectAndShowCard(subj, true);
+      }
+    });
+
+    // Pointer/touch swipe detection (works for mouse & touch via pointer events)
+    attachSwipeHandlers(li, subj);
+
+    container.appendChild(li);
+  });
+})();
+
+/* Shared opener: fetch -> create card -> optionally start timer */
+async function openSubjectAndShowCard(subject, startImmediately = false) {
+  const safeId = subject.replace(/\s+/g, "");
+  // Ensure local key (fix1)
+  const localKey = `local_timer_dashboard__${safeId}`;
+  if (!localStorage.getItem(localKey)) localStorage.setItem(localKey, "[]");
+
+  // show a tiny non-blocking loader (optional UX)
+  const li = document.querySelector(`[data-safe-id="${safeId}"]`);
+  if (li) {
+    li.classList.add('dragging');
+  }
+
+  // Fetch latest remote -> local (merge without opening floating logs)
+  try {
     await fetchRecordsFromFirestore(safeId);
+  } catch (e) { /* ignore fetch errors for UX */ }
 
-    // Now show UI normally
-    document.getElementById("sessionPrompt").style.display = "none";
-    document.querySelector(".top-buttons").style.display = "block";
-    document.getElementById("cardContainer").style.display = "flex";
-    document.getElementById("cardContainer").innerHTML = "";
-    createCard(subj);
+  // Show UI
+  document.getElementById("sessionPrompt").style.display = "none";
+  document.querySelector(".top-buttons").style.display = "block";
+  document.getElementById("cardContainer").style.display = "flex";
+  document.getElementById("cardContainer").innerHTML = "";
 
-    // 🔥 Refresh again to ensure nothing is missed
-    refreshCardUI(safeId);
-};
+  // createCard prepares state and DOM
+  createCard(subject);
 
-  document.getElementById("sessionButtons").appendChild(btn);
-});
+  // refresh inline UI for the newly created card (no floating open)
+  setTimeout(() => refreshCardUI(safeId, { openFloating: false, force: true }), 80);
+
+  // optionally start immediately
+  if (startImmediately) {
+    // small delay to ensure state exists
+    setTimeout(() => {
+      try {
+        startTimer(safeId);
+      } catch(e) {
+        console.warn("Could not start timer immediately:", e);
+      }
+    }, 120);
+  }
+
+  if (li) {
+    li.classList.remove('dragging');
+    li.classList.add('swipe-success');
+    setTimeout(() => li.classList.remove('swipe-success'), 600);
+  }
+}
+
+/* Swipe / pointer detection helper */
+function attachSwipeHandlers(el, subject) {
+  let startX = 0;
+  let startY = 0;
+  let tracking = false;
+  let moved = false;
+  const threshold = 40; // px to consider a swipe
+  const safeId = subject.replace(/\s+/g, '');
+
+  const onPointerDown = (e) => {
+    tracking = true;
+    moved = false;
+    startX = e.clientX || (e.touches && e.touches[0] && e.touches[0].clientX) || 0;
+    startY = e.clientY || (e.touches && e.touches[0] && e.touches[0].clientY) || 0;
+    el.classList.add('dragging');
+    el.setPointerCapture && el.setPointerCapture(e.pointerId);
+  };
+
+  const onPointerMove = (e) => {
+    if (!tracking) return;
+    const curX = e.clientX || (e.touches && e.touches[0] && e.touches[0].clientX);
+    const curY = e.clientY || (e.touches && e.touches[0] && e.touches[0].clientY);
+    if (!curX) return;
+    const dx = curX - startX;
+    const dy = curY - startY;
+    // ignore vertical drags
+    if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 20) return;
+    if (Math.abs(dx) > 8) moved = true;
+    // small visual follow - subtle
+    el.style.transform = `translateX(${Math.min(Math.max(dx, -12), 20)}px)`;
+  };
+
+  const onPointerUp = async (e) => {
+    if (!tracking) return;
+    tracking = false;
+    el.style.transform = '';
+    el.classList.remove('dragging');
+
+    const endX = e.clientX || (e.changedTouches && e.changedTouches[0] && e.changedTouches[0].clientX) || startX;
+    const dx = endX - startX;
+
+    if (dx > threshold) {
+      // right-swipe detected: open & start
+      await openSubjectAndShowCard(subject, true);
+    } else if (!moved) {
+      // treat as tap on the whole item
+      await openSubjectAndShowCard(subject, false);
+    }
+  };
+
+  // pointer events with fallbacks for touch/mouse
+  el.addEventListener('pointerdown', onPointerDown);
+  el.addEventListener('pointermove', onPointerMove);
+  el.addEventListener('pointerup', onPointerUp);
+  el.addEventListener('pointercancel', onPointerUp);
+
+  // for older mobile browsers: touch fallback
+  el.addEventListener('touchstart', (e) => onPointerDown(e.touches[0]));
+  el.addEventListener('touchmove', (e) => onPointerMove(e.touches[0]));
+  el.addEventListener('touchend', (e) => onPointerUp(e.changedTouches[0]));
+}
 
 function triggerConfetti() {
   confetti({
@@ -2574,14 +2806,16 @@ async function fetchRecordsFromFirestore(subjectSafeId) {
     });
 
     const changed = mergeRemoteToLocal(subjectSafeId, docs);
-   if (changed) {
+if (changed) {
   const safeId = subjectSafeId;
-  try {
-    refreshCardUI(safeId);   // 🔥 Clean, compact, auto UI refresh
-  } catch (e) {
-    // not fatal — if UI elements don't exist ignore
-  }
+
+  // Refresh card ONLY if open, and do NOT open floating log panel
+  refreshCardUI(safeId, { openFloating: false });
+
+  // Optional delayed refresh to ensure UI updates after DOM load
+  setTimeout(() => refreshCardUI(safeId, { openFloating: false, force: true }), 500);
 }
+
 
     return true;
   } catch (err) {
@@ -2704,17 +2938,70 @@ function onLocalSaveTriggered(){
 /* Hook into existing saveProgress: call onLocalSaveTriggered() after localStorage setItem (I saw that in your saveProgress function). */
 
 
-function refreshCardUI(safeId) {
-    // Refresh everything that depends on localStorage
+let _refreshTimers = {}; // for per-card debounce handles
+
+function refreshCardUI(safeId, opts = { openFloating: false, force: false }) {
+  // If card not present and not forced, skip heavy work
+  if (!opts.force && !document.getElementById(`card-${safeId}`)) {
+    // nothing to update visually now
+    return;
+  }
+
+  // Debounce per card for 300ms
+  if (_refreshTimers[safeId]) clearTimeout(_refreshTimers[safeId]);
+  _refreshTimers[safeId] = setTimeout(() => {
     try {
-        viewRecords(safeId);
+      // Update inline list in the open card (no floating panel)
+      renderRecordList(safeId);
+
+      // Totals and chart only if the card is present (avoid heavy chart creation if card not visible)
+      if (document.getElementById(`card-${safeId}`)) {
         showTodaysTotal(safeId);
         showCardTotal(safeId);
         renderChart(safeId);
+      }
+
+      // Optionally open floating panel if caller explicitly wants it
+      if (opts.openFloating) {
+        try {
+          viewRecords(safeId); // this opens floating panel
+        } catch (e) {
+          console.warn("Failed to open floating logs:", e);
+        }
+      }
     } catch (e) {
-        console.warn("UI refresh skipped:", e);
+      console.warn("refreshCardUI failed", e);
+    } finally {
+      delete _refreshTimers[safeId];
     }
+  }, 300);
 }
+
+// Render records INSIDE the card (no floating panel)
+function renderRecordList(safeId) {
+  try {
+    const listEl = document.getElementById(`recordList-${safeId}`);
+    if (!listEl) return; // card not mounted -> nothing to do
+
+    const records = JSON.parse(localStorage.getItem(`local_timer_dashboard__${safeId}`) || "[]").slice().reverse();
+
+    if (records.length === 0) {
+      listEl.innerHTML = `<p style="color:#aaa; padding:8px;">No records found.</p>`;
+      return;
+    }
+
+    listEl.innerHTML = records.map(r => `
+      <div class="record-card" style="margin-bottom:8px; padding:8px;">
+        <div class="record-time">🕒 ${r.readableTime}</div>
+        <div class="record-date">${new Date(r.timestamp).toLocaleString()}</div>
+        ${r.note ? `<div class="record-note">📝 ${r.note}</div>` : ''}
+      </div>
+    `).join('');
+  } catch (e) {
+    console.warn("renderRecordList failed", e);
+  }
+}
+
 
 </script>
 
