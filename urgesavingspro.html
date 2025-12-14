@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Urge → Savings (Deep)</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: system-ui;
+  background: #020617;
+  color: #e5e7eb;
+  padding: 14px;
+}
+.app {
+  max-width: 440px;
+  margin: auto;
+}
+h1 {
+  text-align: center;
+  margin-bottom: 2px;
+}
+.sub {
+  text-align: center;
+  font-size: 13px;
+  opacity: 0.6;
+  margin-bottom: 12px;
+}
+.card {
+  background: #020617;
+  border: 1px solid #1e293b;
+  border-radius: 14px;
+  padding: 14px;
+  margin-bottom: 12px;
+}
+input, button {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  font-size: 15px;
+}
+input {
+  background: #020617;
+  color: #e5e7eb;
+  border: 1px solid #1e293b;
+}
+button {
+  background: #22c55e;
+  font-weight: 600;
+  margin-top: 8px;
+}
+.quick {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.quick button {
+  width: auto;
+  padding: 8px 10px;
+  background: #334155;
+  color: #e5e7eb;
+  font-size: 13px;
+}
+.total {
+  font-size: 26px;
+  font-weight: 700;
+  text-align: center;
+}
+.stat {
+  font-size: 13px;
+  opacity: 0.7;
+  text-align: center;
+}
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+li {
+  background: #020617;
+  border: 1px solid #1e293b;
+  border-radius: 10px;
+  padding: 10px;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.time {
+  font-size: 11px;
+  opacity: 0.6;
+}
+.del {
+  color: #ef4444;
+  cursor: pointer;
+  margin-left: 10px;
+}
+.toast {
+  position: fixed;
+  bottom: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #16a34a;
+  color: #022c22;
+  padding: 10px 14px;
+  border-radius: 999px;
+  font-size: 14px;
+  display: none;
+}
+
+/* Floating Import / Export Panel */
+.fab {
+  position: fixed;
+  bottom: 18px;
+  right: 18px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #334155;
+  color: #e5e7eb;
+  font-size: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 1000;
+  opacity: 0.85;
+}
+
+.panel {
+  position: fixed;
+  bottom: 70px;
+  right: 18px;
+  background: #020617;
+  border: 1px solid #1e293b;
+  border-radius: 12px;
+  padding: 6px;
+  display: none;
+  z-index: 1000;
+}
+
+.panel button {
+  background: none;
+  color: #e5e7eb;
+  border: none;
+  padding: 10px 14px;
+  font-size: 14px;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+}
+
+.panel button:hover {
+  background: #1e293b;
+  border-radius: 8px;
+}
+
+</style>
+</head>
+
+<body>
+<div class="app">
+
+<h1>Urge → Savings</h1>
+<div class="sub">Impulse logged. Discipline compounded.</div>
+
+<div class="card">
+  <input id="item" placeholder="Urge (Coffee, Chocolate…)" />
+  <input id="price" type="number" placeholder="Price (₹)" />
+  <button onclick="addEntry()">Save Instead</button>
+</div>
+
+<div class="card">
+  <div class="sub">Quick Add (Learns You)</div>
+  <div class="quick" id="quick"></div>
+</div>
+
+<div class="card">
+  <div class="sub">Total Saved</div>
+  <div class="total">₹ <span id="total">0</span></div>
+  <div class="stat" id="stat"></div>
+</div>
+
+<div class="card">
+  <ul id="list"></ul>
+</div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const STORAGE_KEY = "urgeSavingsDeep_v1";
+
+let data = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+
+function uid() {
+  return "US-" + Date.now() + "-" + Math.floor(Math.random() * 1000);
+}
+
+function save() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  render();
+}
+
+function addEntry(itemOverride, priceOverride) {
+  const itemEl = document.getElementById("item");
+  const priceEl = document.getElementById("price");
+
+  const item = itemOverride || itemEl.value.trim();
+  const price = priceOverride || Number(priceEl.value);
+
+  if (!item || !price) return alert("Add item and price");
+
+  const now = new Date();
+
+  data.unshift({
+    id: uid(),
+    item,
+    price,
+    ts: now.getTime(),
+    readable: now.toLocaleString()
+  });
+
+  itemEl.value = item;
+  priceEl.value = "";
+
+  toast(`₹${price} saved • ${item}`);
+  save();
+}
+
+function deleteEntry(id) {
+  if (!confirm("Delete this entry?\nDiscipline once recorded is hard to fake.")) return;
+  data = data.filter(e => e.id !== id);
+  save();
+}
+
+function render() {
+  const total = data.reduce((s, e) => s + e.price, 0);
+  document.getElementById("total").textContent = total;
+
+  const todayStr = new Date().toDateString();
+  const todaySum = data
+    .filter(e => new Date(e.ts).toDateString() === todayStr)
+    .reduce((s, e) => s + e.price, 0);
+
+  document.getElementById("stat").textContent =
+    `Today ₹${todaySum} • Total Entries ${data.length}`;
+
+  document.getElementById("list").innerHTML =
+    data.slice(0, 12).map(e => `
+      <li>
+        <div class="row">
+          <strong>${e.item}</strong>
+          <span>
+            ₹${e.price}
+            <span class="del" onclick="deleteEntry('${e.id}')">✕</span>
+          </span>
+        </div>
+        <div class="time">${e.readable}</div>
+      </li>
+    `).join("");
+
+  // Quick buttons (frequency based)
+  const freq = {};
+  data.forEach(e => {
+    freq[e.item] = freq[e.item] || { price: e.price, count: 0 };
+    freq[e.item].count++;
+  });
+
+  document.getElementById("quick").innerHTML =
+    Object.entries(freq)
+      .sort((a, b) => b[1].count - a[1].count)
+      .slice(0, 6)
+      .map(([item, obj]) =>
+        `<button onclick="addEntry('${item}', ${obj.price})">${item} ₹${obj.price}</button>`
+      ).join("");
+}
+
+function toast(msg) {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.style.display = "block";
+  setTimeout(() => t.style.display = "none", 1800);
+}
+
+render();
+
+function togglePanel() {
+  const p = document.getElementById("panel");
+  p.style.display = p.style.display === "block" ? "none" : "block";
+}
+
+// Close panel when tapping outside
+document.addEventListener("click", e => {
+  const panel = document.getElementById("panel");
+  const fab = document.querySelector(".fab");
+  if (!panel.contains(e.target) && !fab.contains(e.target)) {
+    panel.style.display = "none";
+  }
+});
+
+function exportData() {
+  const blob = new Blob(
+    [JSON.stringify(data, null, 2)],
+    { type: "application/json" }
+  );
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "urge-savings-backup.json";
+  a.click();
+  toast("Data exported");
+}
+
+function importData() {
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = "application/json";
+  input.onchange = e => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const parsed = JSON.parse(reader.result);
+        if (!Array.isArray(parsed)) throw "Invalid file";
+        data = parsed;
+        save();
+        toast("Data imported");
+      } catch {
+        alert("Invalid backup file");
+      }
+    };
+    reader.readAsText(e.target.files[0]);
+  };
+  input.click();
+}
+
+</script>
+<!-- Floating Import / Export -->
+<div class="fab" onclick="togglePanel()">≡</div>
+
+<div class="panel" id="panel">
+  <button onclick="exportData()">⬇ Export data</button>
+  <button onclick="importData()">⬆ Import data</button>
+</div>
+
+</body>
+</html>
