@@ -94,7 +94,8 @@
     const calendarContainer = document.getElementById("calendarContainer");
     const today = new Date();
     const currentYear = today.getFullYear();
-    const ringStart = new Date(currentYear, 6, 11); // July 11
+    const ringStart = new Date(2025, 6, 11); // FIXED anchor date
+
 
     function generateCalendar(month, year) {
       const daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -151,3 +152,4 @@
   </script>
 </body>
 </html>
+
